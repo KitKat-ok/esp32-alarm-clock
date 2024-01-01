@@ -65,7 +65,7 @@ void initButtons()
 
 void initBuzzer() {
   pinMode(BUZZER_PIN, OUTPUT);
-  ledcSetup(0, 440, 8);
+  ledcSetup(0, 2000, 8);
   ledcAttachPin(BUZZER_PIN, 0);
   Serial.println("Buzzer initialized");
 }

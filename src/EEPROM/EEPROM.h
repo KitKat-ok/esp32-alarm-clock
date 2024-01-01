@@ -3,16 +3,9 @@
 
 #include "../defines.h"
 
-struct AlarmEntry {
-  int id;
-  int day;
-  int hour;
-  int minute;
-};
+void readAlarms();
 
-const int maxAlarms = 7;
-extern AlarmEntry alarms[maxAlarms];
-
+void saveAlarms();
 
 
 #endif

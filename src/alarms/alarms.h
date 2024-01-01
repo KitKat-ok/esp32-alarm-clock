@@ -5,7 +5,7 @@
 
 void onAlarm();
 void createAlarmTask();
-
+void ringAlarm(void *parameter);
 
 extern bool sunday;
 extern bool monday;

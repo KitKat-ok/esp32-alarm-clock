@@ -1,5 +1,5 @@
 #include "alarms.h"
-
+#include <HTTPClient.h>
 
 bool sunday = false;
 bool monday = false;
@@ -26,7 +26,13 @@ int minutesSaturday = 0;
 
 bool ringedToday = false;
 
-void ringAlarm();
+
+
+void ringAlarm(void *parameter);
+void createRiningingTask();
+
+void sendOnPostRequest();
+void sendOffPostRequest();
 
 void checkAlarm(int alarmHours, int alarmMinutes);
 void checkAllAlarms(void *pvParameters);
@@ -48,50 +54,44 @@ void checkAllAlarms(void *pvParameters) {
   while(1) {
   switch (weekday()) {
     case 1:
-      Serial.println("Sunday");
-      if (sunday = true)
+      if (sunday == true)
       {
+        Serial.println(sunday);
           checkAlarm(hoursSunday, minutesSunday);
       }
       break;
     case 2:
-          Serial.println("Monday");
-                if (monday = true)
+                if (monday == true)
       {
           checkAlarm(hoursMonday, minutesMonday);
       }
       break;
     case 3:
-      Serial.println("Tuesday");
-            if (tuesday = true)
+            if (tuesday ==true)
       {
           checkAlarm(hoursTuesday, minutesTuesday);
       }
       break;
     case 4:
-      Serial.println("Wednesday");
-            if (wednesday = true)
+            if (wednesday == true)
       {
           checkAlarm(hoursWednesday, minutesWednesday);
       }
       break;
     case 5:
-      Serial.println("Thursday");
-            if (thursday = true)
+            if (thursday == true)
       {
           checkAlarm(hoursThursday, minutesThursday);
       }
       break;
     case 6:
-      Serial.println("Friday");
-            if (friday = true)
+            if (friday == true)
       {
           checkAlarm(hoursFriday, minutesFriday);
       }
       break;
     case 7:
-      Serial.println("Saturday");
-            if (saturday = true)
+            if (saturday == true)
       {
           checkAlarm(hoursSaturday, minutesSaturday);
       }
@@ -118,21 +118,105 @@ void checkAlarm(int alarmHours, int alarmMinutes) {
   if (currentHours == alarmHours && currentMinutes == alarmMinutes && ringedToday == false) {
     Serial.print("Alarm! It's time to wake up on ");
     ringedToday = true;
-    ringAlarm();  
+    createRiningingTask(); 
     }
 }
 
 
-void ringAlarm() {
+TaskHandle_t Alarm;
+
+void createRiningingTask() {
+  xTaskCreatePinnedToCore(
+      ringAlarm,   // Function to implement the task
+      "ringAlarm", // Name of the task
+      10000,          // Stack size (words)
+      NULL,           // Parameter to pass
+      2,              // Priority
+      &Alarm,           // Task handle
+      0               // Core to run the task on (Core 1)
+  );
+}
+
+void ringAlarm(void *parameter) {
+  unsigned long startTime = millis() + 180000;
+  unsigned long currentTime = millis();
+  sendOnPostRequest();
+  while (1)
+  {
+    currentTime = millis();
+  if (currentTime >= startTime || WiFi.SSID() == "dragonn") {
+
     for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++) {
-    // Set the PWM duty cycle (0 to 255)
-    ledcWrite(0, dutyCycle);
-    delay(10);  // Adjust the delay based on your needs
+      ledcWrite(0, dutyCycle);
+      Serial.println(dutyCycle);
+    }
+    for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--) {
+      ledcWrite(0, dutyCycle);
+      Serial.println(dutyCycle);
+    }
   }
 
-   for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--) {
-    // Set the PWM duty cycle (0 to 255)
-    ledcWrite(0, dutyCycle);
-    delay(10);  // Adjust the delay based on your needs
+  if (touchRead(32) < 20)
+  {
+    vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
+    sendOffPostRequest();
+    vTaskDelete(Alarm);
   }
+}
+}
+
+
+
+
+void sendOnPostRequest() {
+ if ((WiFi.status() == WL_CONNECTED)) { //Check WiFi connection status
+ if (WiFi.SSID() == "dragonn2")
+ {
+ 
+  HTTPClient http;
+
+  http.begin("http://192.168.88.74/gateways/0x1/RGB/command"); //Specify destination for HTTP request
+  http.addHeader("Content-Type", "application/json"); //Specify content-type header
+
+  int httpResponseCode = http.POST("{\"state\": \"ON\", \"transition\": 300}"); //Send the actual POST request
+
+  if (httpResponseCode > 0) {
+    String response = http.getString();                   //Get the response to the request
+    Serial.println(httpResponseCode); //Print return code
+    Serial.println(response);         //Print request answer
+  } else {
+    Serial.print("Error on sending POST: ");
+    Serial.println(httpResponseCode);
+  }
+
+  http.end(); //Free resources
+ }
+ }
+}
+
+
+
+
+void sendOffPostRequest() {
+ if ((WiFi.status() == WL_CONNECTED)) { //Check WiFi connection status
+  if (WiFi.SSID() == "dragonn2") {
+  HTTPClient http;
+
+  http.begin("http://192.168.88.74/gateways/0x1/RGB/command"); //Specify destination for HTTP request
+  http.addHeader("Content-Type", "application/json"); //Specify content-type header
+
+  int httpResponseCode = http.POST("{\"state\": \"OFF\", \"transition\": 300}"); //Send the actual POST request
+
+  if (httpResponseCode > 0) {
+    String response = http.getString();                   //Get the response to the request
+    Serial.println(httpResponseCode); //Print return code
+    Serial.println(response);         //Print request answer
+  } else {
+    Serial.print("Error on sending POST: ");
+    Serial.println(httpResponseCode);
+  }
+
+  http.end(); //Free resources
+ }
+ }
 }

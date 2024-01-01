@@ -8,6 +8,7 @@ void setup()
   createWifiTask();
   createDimmingTask();
   initMenus();
+  readAlarms();
   display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 

@@ -110,6 +110,7 @@ MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(Friday)
       , SUBMENU(Saturday)
       , SUBMENU(Sunday)
+      , OP("Save alarms", saveAlarms, enterEvent)
       , EXIT("<Back")
 );
 
@@ -123,6 +124,12 @@ MENU(weatherMenu, "Weather Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyl
   do {
     showMainPage();
   } while(digitalRead(BUTTON_EXIT_PIN));
+  return proceed;
+}
+
+    result saveAlarms(eventMask e, navNode &nav, prompt &item)
+{
+  saveAlarms();
   return proceed;
 }
 
