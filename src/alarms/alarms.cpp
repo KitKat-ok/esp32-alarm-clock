@@ -1,32 +1,17 @@
 #include "alarms.h"
 #include <HTTPClient.h>
 
-bool sunday = false;
-bool monday = false;
-bool tuesday = false;
-bool wednesday = false;
-bool thursday = false;
-bool friday = false;
-bool saturday = false;
-
-int hoursSunday = 0;
-int minutesSunday = 0;
-int hoursMonday = 0;
-int minutesMonday = 0;
-int hoursTuesday = 0;
-int minutesTuesday = 0;
-int hoursWednesday = 0;
-int minutesWednesday = 0;
-int hoursThursday = 0;
-int minutesThursday = 0;
-int hoursFriday = 0;
-int minutesFriday = 0;
-int hoursSaturday = 0;
-int minutesSaturday = 0;
+Day days[] = {
+    {false, 0, 0},  // Sunday
+    {false, 0, 0},  // Monday
+    {false, 0, 0},  // Tuesday
+    {false, 0, 0},  // Wednesday
+    {false, 0, 0},  // Thursday
+    {false, 0, 0},  // Friday
+    {false, 0, 0}   // Saturday
+};
 
 bool ringedToday = false;
-
-
 
 void ringAlarm(void *parameter);
 void createRiningingTask();
@@ -51,59 +36,19 @@ void createAlarmTask() {
 }
 
 void checkAllAlarms(void *pvParameters) {
-  while(1) {
-  switch (weekday()) {
-    case 1:
-      if (sunday == true)
-      {
-        Serial.println(sunday);
-          checkAlarm(hoursSunday, minutesSunday);
-      }
-      break;
-    case 2:
-                if (monday == true)
-      {
-          checkAlarm(hoursMonday, minutesMonday);
-      }
-      break;
-    case 3:
-            if (tuesday ==true)
-      {
-          checkAlarm(hoursTuesday, minutesTuesday);
-      }
-      break;
-    case 4:
-            if (wednesday == true)
-      {
-          checkAlarm(hoursWednesday, minutesWednesday);
-      }
-      break;
-    case 5:
-            if (thursday == true)
-      {
-          checkAlarm(hoursThursday, minutesThursday);
-      }
-      break;
-    case 6:
-            if (friday == true)
-      {
-          checkAlarm(hoursFriday, minutesFriday);
-      }
-      break;
-    case 7:
-            if (saturday == true)
-      {
-          checkAlarm(hoursSaturday, minutesSaturday);
-      }
-      break;
-  }
-    if (hour() == 0 && minute() == 0 && second() == 0)
-    {
-      ringedToday = false;
+    while (1) {
+        int currentDay = weekday() - 1; // Adjust to 0-based index
+
+        if (days[currentDay].isSet) {
+            checkAlarm(days[currentDay].hours, days[currentDay].minutes);
+        }
+
+        if (hour() == 0 && minute() == 0 && second() == 0) {
+            ringedToday = false;
+        }
+
+    vTaskDelay(pdMS_TO_TICKS(1 * 1000));
     }
-    
-    vTaskDelay(pdMS_TO_TICKS(1000));
-  }
 }
 
 
@@ -156,7 +101,7 @@ void ringAlarm(void *parameter) {
     }
   }
 
-  if (touchRead(32) < 20)
+  if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
   {
     vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
     sendOffPostRequest();

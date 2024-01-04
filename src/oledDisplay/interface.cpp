@@ -18,87 +18,87 @@ const colorDef<uint16_t> colors[6] MEMMODE={
 
 int ledCtrl=HIGH;
 
-TOGGLE(monday,mondayToggle,"Monday:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(days[0].isSet,mondayToggle,"Monday:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("On",true,doNothing,noEvent)
   ,VALUE("Off",false,doNothing,noEvent)
 );
 
 MENU(Monday, "Monday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       ,SUBMENU(mondayToggle)
-     ,FIELD(hoursMonday,"Hours:","",0,24,1,0,doNothing,noEvent,noStyle)
-      ,FIELD(minutesMonday,"Minutes:","",0,60,10,1,doNothing,noEvent,noStyle)
+     ,FIELD(days[0].hours,"Hours:","",0,24,1,0,doNothing,noEvent,noStyle)
+      ,FIELD(days[0].minutes,"Minutes:","",0,60,10,1,doNothing,noEvent,noStyle)
      , EXIT("<Back")
     );
 
-    TOGGLE(tuesday, tuesdayToggle, "Tuesday:", doNothing, noEvent, noStyle
+    TOGGLE(days[1].isSet, tuesdayToggle, "Tuesday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Tuesday, "Tuesday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(tuesdayToggle)
-      , FIELD(hoursTuesday, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(minutesTuesday, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[1].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[1].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(wednesday, wednesdayToggle, "Wednesday:", doNothing, noEvent, noStyle
+TOGGLE(days[2].isSet, wednesdayToggle, "Wednesday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Wednesday, "Wednesday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(wednesdayToggle)
-      , FIELD(hoursWednesday, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(minutesWednesday, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[2].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[2].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(thursday, thursdayToggle, "Thursday:", doNothing, noEvent, noStyle
+TOGGLE(days[3].isSet, thursdayToggle, "Thursday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Thursday, "Thursday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(thursdayToggle)
-      , FIELD(hoursThursday, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(minutesThursday, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[3].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[3].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(friday, fridayToggle, "Friday:", doNothing, noEvent, noStyle
+TOGGLE(days[4].isSet, fridayToggle, "Friday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Friday, "Friday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(fridayToggle)
-      , FIELD(hoursFriday, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(minutesFriday, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[4].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[4].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(saturday, saturdayToggle, "Saturday:", doNothing, noEvent, noStyle
+TOGGLE(days[5].isSet, saturdayToggle, "Saturday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Saturday, "Saturday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(saturdayToggle)
-      , FIELD(hoursSaturday, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(minutesSaturday, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[5].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[5].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(sunday, sundayToggle, "Sunday:", doNothing, noEvent, noStyle
+TOGGLE(days[6].isSet, sundayToggle, "Sunday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Sunday, "Sunday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(sundayToggle)
-      , FIELD(hoursSunday, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(minutesSunday, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[6].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[6].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 

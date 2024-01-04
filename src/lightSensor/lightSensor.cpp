@@ -23,7 +23,7 @@ void dimmingFunction(void *pvParameters)
     {
         int currentHour = hour();
         int currentMinute = minute();
-        if (touchRead(32) < 20)
+        if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
         {
             display.dim(false);
             LedDisplay.setBrightness(7);
@@ -43,7 +43,7 @@ void dimmingFunction(void *pvParameters)
         unsigned long startTime = millis();
         while ((millis() - startTime) < 3000)
         {
-            if (touchRead(32) < 20)
+            if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
             {
                 break;
                 
