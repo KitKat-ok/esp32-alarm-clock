@@ -5,10 +5,15 @@ int sampleIndex = 0;
 
 int batteryPercentage;
 
+float charging = false;
+
 
 void initBattery() {
+  pinMode(CHARGING_PIN, INPUT);
+  pinMode(FULLY_CHARGED_PIN, INPUT);
    for (int i = 0; i < NUM_SAMPLES; ++i) {
-    voltageSamples[i] = MIN_VOLTAGE;
+    float rawVoltage = analogRead(VOLTAGE_DIVIDER_PIN) * (3.3 / 4095.0) + 0.8;
+    voltageSamples[i] = rawVoltage;
   }
 }
 
@@ -27,9 +32,51 @@ void createBatteryTask() {
 }
 
 
+
+String wifiStatusToString(int status) {
+  switch (status) {
+    case WL_IDLE_STATUS:
+      return "Idle";
+    case WL_NO_SSID_AVAIL:
+      return "No SSID Available";
+    case WL_SCAN_COMPLETED:
+      return "Scan Completed";
+    case WL_CONNECTED:
+      return "Connected";
+    case WL_CONNECT_FAILED:
+      return "Connect Failed";
+    case WL_CONNECTION_LOST:
+      return "Connection Lost";
+    case WL_DISCONNECTED:
+      return "Disconnected";
+    default:
+      return "Unknown Status";
+  }
+}
+
+
 void manageBattery(void *parameter) {
-  while (1)
+  while (true)
   {
+     int chargingState = digitalRead(CHARGING_PIN);
+    int standbyState = digitalRead(FULLY_CHARGED_PIN);
+    eTaskState taskState = eTaskGetState(wifiTask);
+    if (standbyState == HIGH || chargingState == HIGH)
+    {
+      charging = true;
+      Serial.println("charging");
+      Serial.println(wifiStatusToString(WiFi.status()));
+      if (!WiFi.isConnected() && WiFiTaskRunning == false)
+      {
+        Serial.println("launching WiFi task");
+        createWifiTask();
+      }
+    } else {
+      charging = false;
+        turnOffWifi();
+      Serial.println("Not charging");
+    }
+    
     batteryPercentage = getBatteryPercentage();
     vTaskDelay(pdMS_TO_TICKS(500));
   }

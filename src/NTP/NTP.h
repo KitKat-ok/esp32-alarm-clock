@@ -5,5 +5,8 @@
 
 void createTimeTask();
 void synchronizeAndSetTime();
+void deleteTimeTask();
+
+extern TaskHandle_t NTPTask;
 
 #endif

@@ -2,6 +2,7 @@
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
+TaskHandle_t NTPTask;
 
 void syncTimeTask(void *parameter);
 
@@ -13,12 +14,14 @@ void createTimeTask() {
       10000,          // Stack size (words)
       NULL,           // Parameter to pass
       1,              // Priority
-      NULL,           // Task handle
+      &NTPTask,           // Task handle
       1               // Core to run the task on (Core 1)
   );
 }
 
-
+void deleteTimeTask() {
+  vTaskDelete(NTPTask);
+}
 
 void syncTimeTask(void *parameter) {
   while (true) {

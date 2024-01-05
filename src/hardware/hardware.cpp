@@ -69,3 +69,5 @@ void initBuzzer() {
   ledcAttachPin(BUZZER_PIN, 0);
   Serial.println("Buzzer initialized");
 }
+
+
