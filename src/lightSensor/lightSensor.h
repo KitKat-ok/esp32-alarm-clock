@@ -5,4 +5,6 @@
 
 void createDimmingTask();
 
+extern TaskHandle_t dimmingTask;
+
 #endif

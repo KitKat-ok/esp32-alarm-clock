@@ -36,7 +36,7 @@ void createAlarmTask() {
 }
 
 void checkAllAlarms(void *pvParameters) {
-    while (1) {
+    while(true) {
         int currentDay = weekday() - 1; // Adjust to 0-based index
 
         if (days[currentDay].isSet) {
@@ -86,10 +86,10 @@ void ringAlarm(void *parameter) {
   unsigned long startTime = millis() + 180000;
   unsigned long currentTime = millis();
   sendOnPostRequest();
-  while (1)
+  while(true)
   {
     currentTime = millis();
-  if (currentTime >= startTime || WiFi.SSID() == "dragonn") {
+  if (currentTime >= startTime || WiFi.SSID() != "dragonn2" || WiFi.status() != WL_CONNECTED) {
 
     for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++) {
       ledcWrite(0, dutyCycle);

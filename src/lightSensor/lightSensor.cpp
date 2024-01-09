@@ -4,22 +4,25 @@ void dimmingFunction(void *pvParameters);
 void dimOledDisplay();
 void dimLedDisplay();
 
+TaskHandle_t dimmingTask;
+
 void createDimmingTask()
 {
+    Serial.print("creating dimmingTask");
     xTaskCreatePinnedToCore(
         dimmingFunction, /* Task function. */
         "DimTask",       /* String with name of task. */
         10000,           /* Stack size in words. */
         NULL,            /* Parameter passed as input of the task */
         1,               /* Priority of the task. */
-        NULL,            /* Task handle. */
+        &dimmingTask,            /* Task handle. */
         0                /* Core where the task should run. */
     );
 }
 
 void dimmingFunction(void *pvParameters)
 {
-    for (;;)
+    while(true)
     {
         int currentHour = hour();
         int currentMinute = minute();

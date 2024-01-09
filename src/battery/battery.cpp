@@ -7,11 +7,15 @@ int batteryPercentage;
 
 float charging = false;
 
+bool wentToSleep = false;
 
-void initBattery() {
-  pinMode(CHARGING_PIN, INPUT);
-  pinMode(FULLY_CHARGED_PIN, INPUT);
-   for (int i = 0; i < NUM_SAMPLES; ++i) {
+void goToSleep();
+void initSleep();
+
+void initBattery()
+{
+  for (int i = 0; i < NUM_SAMPLES; ++i)
+  {
     float rawVoltage = analogRead(VOLTAGE_DIVIDER_PIN) * (3.3 / 4095.0) + 0.8;
     voltageSamples[i] = rawVoltage;
   }
@@ -19,71 +23,169 @@ void initBattery() {
 
 void manageBattery(void *parameter);
 
-void createBatteryTask() {
-    xTaskCreatePinnedToCore(
-    manageBattery,          // Function to implement the task
-    "Battery",        // Task name
-    10000,           // Stack size (words)
-    NULL,            // Task input parameter
-    1,               // Priority (0 is lowest)
-    NULL,   // Task handle
-    0                // Core to run the task on (0 or 1)
+void createBatteryTask()
+{
+  xTaskCreatePinnedToCore(
+      manageBattery, // Function to implement the task
+      "Battery",     // Task name
+      10000,         // Stack size (words)
+      NULL,          // Task input parameter
+      1,             // Priority (0 is lowest)
+      NULL,          // Task handle
+      0              // Core to run the task on (0 or 1)
   );
 }
 
-
-
-String wifiStatusToString(int status) {
-  switch (status) {
-    case WL_IDLE_STATUS:
-      return "Idle";
-    case WL_NO_SSID_AVAIL:
-      return "No SSID Available";
-    case WL_SCAN_COMPLETED:
-      return "Scan Completed";
-    case WL_CONNECTED:
-      return "Connected";
-    case WL_CONNECT_FAILED:
-      return "Connect Failed";
-    case WL_CONNECTION_LOST:
-      return "Connection Lost";
-    case WL_DISCONNECTED:
-      return "Disconnected";
-    default:
-      return "Unknown Status";
+String wifiStatusToString(int status)
+{
+  switch (status)
+  {
+  case WL_IDLE_STATUS:
+    return "Idle";
+  case WL_NO_SSID_AVAIL:
+    return "No SSID Available";
+  case WL_SCAN_COMPLETED:
+    return "Scan Completed";
+  case WL_CONNECTED:
+    return "Connected";
+  case WL_CONNECT_FAILED:
+    return "Connect Failed";
+  case WL_CONNECTION_LOST:
+    return "Connection Lost";
+  case WL_DISCONNECTED:
+    return "Disconnected";
+  default:
+    return "Unknown Status";
   }
 }
 
-
-void manageBattery(void *parameter) {
+void manageBattery(void *parameter)
+{
   while (true)
   {
-     int chargingState = digitalRead(CHARGING_PIN);
-    int standbyState = digitalRead(FULLY_CHARGED_PIN);
-    eTaskState taskState = eTaskGetState(wifiTask);
-    if (standbyState == HIGH || chargingState == HIGH)
+    batteryPercentage = getBatteryPercentage();
+
+    int chargingState = analogRead(CHARGING_PIN);
+    int standbyState = analogRead(FULLY_CHARGED_PIN);
+    Serial.print("Charging State: ");
+    Serial.println(chargingState);
+
+    Serial.print("Standby State: ");
+    Serial.println(standbyState);
+    Serial.println("WiFi status " + wifiStatusToString(WiFi.status()));
+
+    eTaskState WiFiTaskState = eTaskGetState(wifiTask);
+    eTaskState dimmingWiFiTaskState = eTaskGetState(dimmingTask);
+    if (standbyState > 4000 || chargingState > 4000)
     {
       charging = true;
+      wentToSleep = false;
+      lightMeter.configure(BH1750::CONTINUOUS_HIGH_RES_MODE);
       Serial.println("charging");
-      Serial.println(wifiStatusToString(WiFi.status()));
       if (!WiFi.isConnected() && WiFiTaskRunning == false)
       {
         Serial.println("launching WiFi task");
         createWifiTask();
       }
-    } else {
+      if (dimmingWiFiTaskState == eReady || dimmingWiFiTaskState == eDeleted)
+      {
+        createDimmingTask();
+      }
+    }
+    else
+    {
       charging = false;
-        turnOffWifi();
+      if (dimmingWiFiTaskState == eRunning || dimmingWiFiTaskState == eBlocked)
+      {
+        vTaskDelete(dimmingTask);
+      }
+      
+      turnOffWifi();
+      lightMeter.configure(BH1750::CONTINUOUS_LOW_RES_MODE);
+      while (wentToSleep == false)
+      {
+        Serial.println("Going to sleep in 50 seconds");
+        for (int i = 0; i < 50; i++)
+        {
+          chargingState = analogRead(CHARGING_PIN);
+          standbyState = analogRead(FULLY_CHARGED_PIN);
+          vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 1 second
+          if ((standbyState > 4000) || (chargingState > 4000))
+          {
+            Serial.println("Charger Connected not going to sleep");
+            vTaskDelay(pdMS_TO_TICKS(100));
+            break; // Break the loop if the condition is met
+          }
+        }
+        if ((standbyState > 4000) || (chargingState > 4000))
+        {
+          break; // Break the loop if the condition is met
+        }
+        Serial.println("Going to sleep");
+        vTaskDelay(pdMS_TO_TICKS(100));
+        wentToSleep = true;
+        goToSleep();
+      }
+
+      if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER)
+      {
+        Serial.println("Woke up from Timer");
+        display.dim(true);
+        LedDisplay.setBrightness(0);
+        LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+        static unsigned long startTime = millis();
+        if (millis() - startTime >= TIMER_WAKUP_TIME)
+        {
+          Serial.println("Going to sleep");
+          vTaskDelay(pdMS_TO_TICKS(100));
+          goToSleep();
+          startTime = millis();
+        }
+      }
+
+      if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD || esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0)
+      {
+        Serial.println("Woke up from buttons");
+        static unsigned long startTime = millis();
+
+        if (millis() - startTime >= GPIO_WAKUP_TIME)
+        {
+          Serial.println("Going to sleep");
+          vTaskDelay(pdMS_TO_TICKS(100));
+          goToSleep();
+          startTime = millis();
+        }
+      }
       Serial.println("Not charging");
     }
-    
-    batteryPercentage = getBatteryPercentage();
-    vTaskDelay(pdMS_TO_TICKS(500));
+    vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
 
+void initSleep()
+{
+  esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
 
-int getBatteryPercentage() {
+  esp_sleep_enable_timer_wakeup(60 * 1000000);
+
+  touchSleepWakeUpEnable(TOUCH_BUTTON_PIN, TOUCH_BUTTON_THRESHOLD);
+}
+
+void goToSleep()
+{
+  display.dim(true);
+  LedDisplay.setBrightness(0);
+  LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+
+  WiFi.disconnect(true);
+  WiFi.mode(WIFI_OFF);
+
+  initSleep();
+  esp_light_sleep_start();
+}
+
+int getBatteryPercentage()
+{
   // Read the raw voltage
   float rawVoltage = analogRead(VOLTAGE_DIVIDER_PIN) * (3.3 / 4095.0) + 0.8;
 
@@ -95,7 +197,8 @@ int getBatteryPercentage() {
 
   // Calculate the average of the stored voltages
   float smoothedVoltage = 0;
-  for (int i = 0; i < NUM_SAMPLES; i++) {
+  for (int i = 0; i < NUM_SAMPLES; i++)
+  {
     smoothedVoltage += voltageSamples[i];
   }
   smoothedVoltage /= NUM_SAMPLES;
@@ -106,7 +209,7 @@ int getBatteryPercentage() {
   {
     percentage = 0;
     return percentage;
-  } else 
-  return percentage;
-  
+  }
+  else
+    return percentage;
 }

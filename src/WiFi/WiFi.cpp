@@ -54,22 +54,22 @@ void createWifiTask()
 
 void turnOffWifi()
 {
-  if (WiFi.isConnected())
+  if (WiFi.status() == WL_CONNECTED)
   {
+    WiFi.setAutoConnect(false);
+    WiFi.setAutoReconnect(false);
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
+    Serial.println("turning WiFi off");
   }
   
   if (tasksLaunched == true)
   {
-    eTaskState NTPtaskState = eTaskGetState(NTPTask);
-    if (NTPtaskState == eRunning && WiFi.isConnected() || NTPtaskState == eBlocked && WiFi.isConnected())
-    {
       Serial.println("turning NTP off");
       WiFi.disconnect(true);
       WiFi.mode(WIFI_OFF);
       deleteTimeTask();
-    }
+      tasksLaunched = false;
   }
 }
 

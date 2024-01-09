@@ -8,15 +8,17 @@ void initOledDisplay();
 void initLedDisplay();
 void initLightSensor();
 void initBuzzer();
+void initButtons();
 
 void initHardware()
 {
   delay(2000);
   Serial.begin(9600);
+  initBuzzer();
+  initButtons();
   initOledDisplay();
   initLedDisplay();
   initLightSensor();
-  initBuzzer();
   setTime(0, 0, 0, 1, 1, 1970);
 }
 
@@ -63,11 +65,20 @@ void initButtons()
   Serial.println("Buttons initialized");
 }
 
-void initBuzzer() {
+void initBuzzer()
+{
   pinMode(BUZZER_PIN, OUTPUT);
   ledcSetup(0, 2000, 8);
   ledcAttachPin(BUZZER_PIN, 0);
   Serial.println("Buzzer initialized");
+  for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++)
+  {
+    ledcWrite(0, dutyCycle);
+    Serial.println(dutyCycle);
+  }
+  for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--)
+  {
+    ledcWrite(0, dutyCycle);
+    Serial.println(dutyCycle);
+  }
 }
-
-
