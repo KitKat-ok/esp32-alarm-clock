@@ -6,5 +6,6 @@
 void createDimmingTask();
 
 extern TaskHandle_t dimmingTask;
+extern bool dimmingTaskRunning;
 
 #endif

@@ -75,7 +75,7 @@ void manageBattery(void *parameter)
     Serial.println("WiFi status " + wifiStatusToString(WiFi.status()));
 
     eTaskState WiFiTaskState = eTaskGetState(wifiTask);
-    eTaskState dimmingWiFiTaskState = eTaskGetState(dimmingTask);
+    WiFiTaskState = eTaskGetState(wifiTask);
     if (standbyState > 4000 || chargingState > 4000)
     {
       charging = true;
@@ -87,21 +87,24 @@ void manageBattery(void *parameter)
         Serial.println("launching WiFi task");
         createWifiTask();
       }
-      if (dimmingWiFiTaskState == eReady || dimmingWiFiTaskState == eDeleted)
+      if (dimmingTaskRunning == false)
       {
         createDimmingTask();
+        vTaskDelay(5000);
       }
     }
     else
     {
       charging = false;
-      if (dimmingWiFiTaskState == eRunning || dimmingWiFiTaskState == eBlocked)
+      if (dimmingTaskRunning == true)
       {
         vTaskDelete(dimmingTask);
+        dimmingTaskRunning = false;
       }
       
       turnOffWifi();
       lightMeter.configure(BH1750::CONTINUOUS_LOW_RES_MODE);
+      vTaskDelay(pdMS_TO_TICKS(500));
       while (wentToSleep == false)
       {
         Serial.println("Going to sleep in 50 seconds");
@@ -122,7 +125,7 @@ void manageBattery(void *parameter)
           break; // Break the loop if the condition is met
         }
         Serial.println("Going to sleep");
-        vTaskDelay(pdMS_TO_TICKS(100));
+        vTaskDelay(pdMS_TO_TICKS(200));
         wentToSleep = true;
         goToSleep();
       }
@@ -137,21 +140,24 @@ void manageBattery(void *parameter)
         if (millis() - startTime >= TIMER_WAKUP_TIME)
         {
           Serial.println("Going to sleep");
-          vTaskDelay(pdMS_TO_TICKS(100));
+          vTaskDelay(pdMS_TO_TICKS(200));
           goToSleep();
           startTime = millis();
         }
       }
 
-      if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD || esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0)
+      if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD)
       {
-        Serial.println("Woke up from buttons");
+        Serial.println("Woke up from touch button");
+        display.dim(false);
+        LedDisplay.setBrightness(7);
+        LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
         static unsigned long startTime = millis();
 
         if (millis() - startTime >= GPIO_WAKUP_TIME)
         {
           Serial.println("Going to sleep");
-          vTaskDelay(pdMS_TO_TICKS(100));
+          vTaskDelay(pdMS_TO_TICKS(200));
           goToSleep();
           startTime = millis();
         }
@@ -166,7 +172,7 @@ void initSleep()
 {
   esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
 
-  esp_sleep_enable_timer_wakeup(60 * 1000000);
+  esp_sleep_enable_timer_wakeup(SLEEPING_TIME);
 
   touchSleepWakeUpEnable(TOUCH_BUTTON_PIN, TOUCH_BUTTON_THRESHOLD);
 }

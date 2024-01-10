@@ -24,13 +24,13 @@ TOGGLE(days[0].isSet,mondayToggle,"Monday:",doNothing,noEvent,noStyle//,doExit,e
 );
 
 MENU(Monday, "Monday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-      ,SUBMENU(mondayToggle)
-     ,FIELD(days[0].hours,"Hours:","",0,24,1,0,doNothing,noEvent,noStyle)
-      ,FIELD(days[0].minutes,"Minutes:","",0,60,10,1,doNothing,noEvent,noStyle)
+     , SUBMENU(mondayToggle)
+     , FIELD(days[0].hours,"Hours:","",0,24,1,0,doNothing,noEvent,noStyle)
+     , FIELD(days[0].minutes,"Minutes:","",0,60,10,1,doNothing,noEvent,noStyle)
      , EXIT("<Back")
     );
 
-    TOGGLE(days[1].isSet, tuesdayToggle, "Tuesday:", doNothing, noEvent, noStyle
+TOGGLE(days[1].isSet, tuesdayToggle, "Tuesday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );

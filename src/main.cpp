@@ -6,11 +6,13 @@ void setup()
 
   initHardware();
   initBattery();
-  createWifiTask();
   createDimmingTask();
+  delay(5000);
+  createWifiTask();
   createBatteryTask();
   initMenus();
   readAlarms();
+  initTemperature();
   display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 

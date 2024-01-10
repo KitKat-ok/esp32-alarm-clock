@@ -4,6 +4,8 @@ void dimmingFunction(void *pvParameters);
 void dimOledDisplay();
 void dimLedDisplay();
 
+bool dimmingTaskRunning = false;
+
 TaskHandle_t dimmingTask;
 
 void createDimmingTask()
@@ -24,6 +26,8 @@ void dimmingFunction(void *pvParameters)
 {
     while(true)
     {
+        dimmingTaskRunning = true;
+
         int currentHour = hour();
         int currentMinute = minute();
         if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
