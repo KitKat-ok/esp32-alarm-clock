@@ -114,18 +114,20 @@ MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , EXIT("<Back")
 );
 
+result showEvent(eventMask e, navNode &nav, prompt &item)
+{
+  initTempGraph();
+  do {
+    loopTempGraph();
+  } while(digitalRead(BUTTON_EXIT_PIN));
+  display.clearDisplay();
+  return proceed;
+}
+
 MENU(weatherMenu, "Weather Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
      , OP("Sub1", showEvent, enterEvent)
      , EXIT("<Back")
     );
-
-    result showEvent(eventMask e, navNode &nav, prompt &item)
-{
-  do {
-    showMainPage();
-  } while(digitalRead(BUTTON_EXIT_PIN));
-  return proceed;
-}
 
     result saveAlarms(eventMask e, navNode &nav, prompt &item)
 {

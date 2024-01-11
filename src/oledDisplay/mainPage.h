@@ -4,7 +4,6 @@
 #include "defines.h"
 
 void showMainPage();
-void initTemperature();
 
 
 #endif

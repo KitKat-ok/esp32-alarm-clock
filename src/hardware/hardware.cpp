@@ -1,6 +1,6 @@
 #include "hardware.h"
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+OLED_SSD1306_Chart display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 TM1637Display LedDisplay = TM1637Display(CLK, DIO);
 BH1750 lightMeter;
 

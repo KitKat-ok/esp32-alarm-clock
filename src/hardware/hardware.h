@@ -3,7 +3,7 @@
 
 #include "../defines.h"
 
-extern Adafruit_SSD1306 display;
+extern OLED_SSD1306_Chart display;
 extern TM1637Display LedDisplay;
 extern BH1750 lightMeter;
 

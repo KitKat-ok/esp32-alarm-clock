@@ -12,7 +12,7 @@ void setup()
   createBatteryTask();
   initMenus();
   readAlarms();
-  initTemperature();
+  createTempTask();
   display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
