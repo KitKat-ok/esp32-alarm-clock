@@ -19,6 +19,9 @@ void initHardware()
   initOledDisplay();
   initLedDisplay();
   initLightSensor();
+  analogReadResolution(12);
+  analogSetAttenuation(ADC_11db);
+  adcAttachPin(TEMP_SENS_PIN);
   setTime(0, 0, 0, 1, 1, 1970);
 }
 

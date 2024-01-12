@@ -6,13 +6,12 @@ Smoothed<float> tempSensor;
 
 float readTemperature()
 {
-    tempSensor.add(analogRead(TEMP_SENS_PIN));
+    tempSensor.add(analogReadMilliVolts(TEMP_SENS_PIN));
     int sensorValue = tempSensor.get();
-    Serial.println(String(sensorValue));
+    Serial.println("Smotthened reading: " + String(sensorValue));
+    Serial.println("Bare reading: " + String(analogRead(TEMP_SENS_PIN)));
 
-    // Convert the analog reading to voltage
-    float voltage = ((sensorValue / 4095.0) * VOLTAGE_REFERENCE) + 0.1308;
-    voltage = round(voltage * 1000.0) / 1000.0; // Round to 3 decimal places
+    float voltage = (sensorValue / 1000.0) - 0.02;
     Serial.println(String(voltage, 3));
 
     float temperatureC = voltage - 0.5;
@@ -41,7 +40,7 @@ void setTemperature(void *pvParameters)
             temperatureArray[TEMP_CHART_READINGS - 1] = temperature; // Replace with your temperature reading function
             previousMillisTemp = currentMillis;
         }
-        vTaskDelay(10);
+        vTaskDelay(1000);
     }
 }
 
