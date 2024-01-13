@@ -2,7 +2,7 @@
 
 using namespace Menu;
 
-void showEvent();
+void showTempChart();
 
 
 const colorDef<uint16_t> colors[6] MEMMODE={
@@ -114,7 +114,7 @@ MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , EXIT("<Back")
 );
 
-result showEvent(eventMask e, navNode &nav, prompt &item)
+result showTempChart(eventMask e, navNode &nav, prompt &item)
 {
   initTempGraph();
   do {
@@ -125,7 +125,7 @@ result showEvent(eventMask e, navNode &nav, prompt &item)
 }
 
 MENU(weatherMenu, "Weather Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-     , OP("Sub1", showEvent, enterEvent)
+     , OP("Room Temperature", showTempChart, enterEvent)
      , EXIT("<Back")
     );
 
@@ -178,6 +178,6 @@ void handleMenus() {
 }
 
 
-void showEvent() {
+void showTempChart() {
   Serial.println("test");
 }

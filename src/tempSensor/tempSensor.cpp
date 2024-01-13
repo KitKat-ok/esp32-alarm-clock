@@ -11,13 +11,15 @@ float readTemperature()
     Serial.println("Smotthened reading: " + String(sensorValue));
     Serial.println("Bare reading: " + String(analogRead(TEMP_SENS_PIN)));
 
-    float voltage = (sensorValue / 1000.0) - 0.037;
+    float voltage = sensorValue;
     Serial.println(String(voltage, 3));
 
-    float temperatureC = voltage - 0.5;
-    temperatureC = temperatureC / 0.01;
+    float Tc = 10;
+    float V0c = 500;
 
-    return temperatureC;
+    float temperatureC = (voltage / Tc) - (V0c / Tc);
+
+    return temperatureC - 2.0;
 }
 
 const unsigned long intervalTemp = 60000; // Interval in milliseconds (30 seconds)
@@ -48,6 +50,15 @@ void createTempTask()
 {
     Serial.print("creating tempTask");
     tempSensor.begin(SMOOTHED_AVERAGE, TEMP_SMOOTH_FACTOR);
+
+    temperature = readTemperature();
+
+    for (int i = 0; i < TEMP_CHART_READINGS - 1; i++)
+    {
+        temperatureArray[i] = temperatureArray[i + 1];
+    }
+
+    temperatureArray[TEMP_CHART_READINGS - 1] = temperature; 
     xTaskCreatePinnedToCore(
         setTemperature, /* Task function. */
         "DimTask",      /* String with name of task. */
