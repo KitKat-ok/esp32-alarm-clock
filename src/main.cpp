@@ -7,7 +7,6 @@ void setup()
   initHardware();
   initBattery();
   createDimmingTask();
-  delay(5000);
   createWifiTask();
   createBatteryTask();
   initMenus();
@@ -16,9 +15,23 @@ void setup()
   display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
+bool initialMenuRunning = false;
+
 void loop()
 {
-  handleMenus();
   showTime();
-  display.display();
+  if (menuRunning != initialMenuRunning) {
+    Serial.println("Menu state has changed.");
+    display.clearDisplay();
+    display.display();
+    delay(100);
+    wakeUpMenu();
+    menuRunning = false;
+    initialMenuRunning = menuRunning;  
+  }
+  if (menuRunning == false)
+  {
+    handleMenus();
+    display.display();
+  }
 }

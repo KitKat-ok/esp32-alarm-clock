@@ -39,7 +39,8 @@ void checkAllAlarms(void *pvParameters) {
     while(true) {
         int currentDay = weekday() - 1; // Adjust to 0-based index
 
-        if (days[currentDay].isSet) {
+        if (days[currentDay].isSet == true && ringedToday == false) {
+          Serial.println("checking alarm");
             checkAlarm(days[currentDay].hours, days[currentDay].minutes);
         }
 
@@ -51,7 +52,17 @@ void checkAllAlarms(void *pvParameters) {
     }
 }
 
+void disableAllAlarms() {
+  for (int i = 0; i < 7; i++) {
+    days[i].isSet = false;
+  }
+}
 
+void enableAllAlarms() {
+  for (int i = 0; i < 7; i++) {
+    days[i].isSet = true;
+  }
+}
 
 
 void checkAlarm(int alarmHours, int alarmMinutes) {
@@ -94,10 +105,12 @@ void ringAlarm(void *parameter) {
     for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++) {
       ledcWrite(0, dutyCycle);
       Serial.println(dutyCycle);
+      delay(5);
     }
     for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--) {
       ledcWrite(0, dutyCycle);
       Serial.println(dutyCycle);
+      delay(5);
     }
   }
 
@@ -107,6 +120,7 @@ void ringAlarm(void *parameter) {
     sendOffPostRequest();
     vTaskDelete(Alarm);
   }
+  vTaskDelay(pdMS_TO_TICKS(1));
 }
 }
 

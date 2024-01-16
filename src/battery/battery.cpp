@@ -76,7 +76,7 @@ void manageBattery(void *parameter)
 
     eTaskState WiFiTaskState = eTaskGetState(wifiTask);
     WiFiTaskState = eTaskGetState(wifiTask);
-    if (standbyState > 4000 || chargingState > 4000)
+    if (standbyState > 3000 || chargingState > 3000)
     {
       charging = true;
       wentToSleep = false;
@@ -180,6 +180,7 @@ void initSleep()
 void goToSleep()
 {
   display.dim(true);
+  display.display();
   LedDisplay.setBrightness(0);
   LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
 

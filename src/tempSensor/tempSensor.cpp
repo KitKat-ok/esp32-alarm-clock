@@ -11,11 +11,11 @@ float readTemperature()
     Serial.println("Smotthened reading: " + String(sensorValue));
     Serial.println("Bare reading: " + String(analogRead(TEMP_SENS_PIN)));
 
-    float voltage = sensorValue;
+    float voltage = sensorValue / 1000.0;
     Serial.println(String(voltage, 3));
 
-    float Tc = 10;
-    float V0c = 500;
+    float Tc = 0.01;   // Temperature coefficient in V/°C
+    float V0c = 0.5; // Sensor output voltage at 0°C in V
 
     float temperatureC = (voltage / Tc) - (V0c / Tc);
 

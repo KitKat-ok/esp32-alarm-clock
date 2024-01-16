@@ -2,8 +2,10 @@
 
 using namespace Menu;
 
-void showTempChart();
+bool menuRunning = false;
 
+unsigned long startTime;  // Variable to store the start time
+const unsigned long delayTime = 600000;  // 10 minutes in milliseconds
 
 const colorDef<uint16_t> colors[6] MEMMODE={
   {{0,0},{0,1,1}},//bgColor
@@ -14,93 +16,107 @@ const colorDef<uint16_t> colors[6] MEMMODE={
   {{1,1},{1,0,0}},//titleColor
 };
 
-#define LEDPIN LED_BUILTIN
-
-int ledCtrl=HIGH;
-
-TOGGLE(days[0].isSet,mondayToggle,"Monday:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(days[1].isSet,mondayToggle,"Monday:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("On",true,doNothing,noEvent)
   ,VALUE("Off",false,doNothing,noEvent)
 );
 
 MENU(Monday, "Monday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
      , SUBMENU(mondayToggle)
-     , FIELD(days[0].hours,"Hours:","",0,24,1,0,doNothing,noEvent,noStyle)
-     , FIELD(days[0].minutes,"Minutes:","",0,60,10,1,doNothing,noEvent,noStyle)
+     , FIELD(days[1].hours,"Hours:","",0,24,1,0,doNothing,noEvent,noStyle)
+     , FIELD(days[1].minutes,"Minutes:","",0,60,10,1,doNothing,noEvent,noStyle)
      , EXIT("<Back")
     );
 
-TOGGLE(days[1].isSet, tuesdayToggle, "Tuesday:", doNothing, noEvent, noStyle
+TOGGLE(days[2].isSet, tuesdayToggle, "Tuesday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Tuesday, "Tuesday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(tuesdayToggle)
-      , FIELD(days[1].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[1].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[2].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[2].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(days[2].isSet, wednesdayToggle, "Wednesday:", doNothing, noEvent, noStyle
+TOGGLE(days[3].isSet, wednesdayToggle, "Wednesday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Wednesday, "Wednesday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(wednesdayToggle)
-      , FIELD(days[2].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[2].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[3].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[3].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(days[3].isSet, thursdayToggle, "Thursday:", doNothing, noEvent, noStyle
+TOGGLE(days[4].isSet, thursdayToggle, "Thursday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Thursday, "Thursday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(thursdayToggle)
-      , FIELD(days[3].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[3].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[4].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[4].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(days[4].isSet, fridayToggle, "Friday:", doNothing, noEvent, noStyle
+TOGGLE(days[5].isSet, fridayToggle, "Friday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Friday, "Friday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(fridayToggle)
-      , FIELD(days[4].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[4].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[5].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[5].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(days[5].isSet, saturdayToggle, "Saturday:", doNothing, noEvent, noStyle
+TOGGLE(days[6].isSet, saturdayToggle, "Saturday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Saturday, "Saturday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(saturdayToggle)
-      , FIELD(days[5].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[5].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[6].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[6].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(days[6].isSet, sundayToggle, "Sunday:", doNothing, noEvent, noStyle
+TOGGLE(days[0].isSet, sundayToggle, "Sunday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
 MENU(Sunday, "Sunday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(sundayToggle)
-      , FIELD(days[6].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[6].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(days[0].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(days[0].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
+
+result saveAlarms(eventMask e, navNode &nav, prompt &item)
+{
+  saveAlarms();
+  return proceed;
+}
+
+result enableAlarms(eventMask e, navNode &nav, prompt &item)
+{
+  enableAllAlarms();
+  return proceed;
+}
+
+result disableAlarms(eventMask e, navNode &nav, prompt &item)
+{
+  disableAllAlarms();
+  return proceed;
+}
 
 MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(Monday)
@@ -110,34 +126,131 @@ MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(Friday)
       , SUBMENU(Saturday)
       , SUBMENU(Sunday)
-      , OP("Save alarms", saveAlarms, enterEvent)
+      , OP("Save alarms ---------------", saveAlarms, enterEvent)
+      , OP("Disable alarms", disableAlarms, enterEvent)
+      , OP("Enable alarms", enableAlarms, enterEvent)
       , EXIT("<Back")
 );
-
-result showTempChart(eventMask e, navNode &nav, prompt &item)
+result showTempChart()
 {
   initTempGraph();
-  do {
+  sleepMenu();
+  menuRunning = true;
+  while (digitalRead(BUTTON_EXIT_PIN))
+  { 
     loopTempGraph();
-  } while(digitalRead(BUTTON_EXIT_PIN));
+    unsigned long currentTime = millis();  // Get the current time
+    if (currentTime - startTime >= delayTime) {
+    break;
+    startTime = currentTime;
+    }
+  }
+  
   display.clearDisplay();
+  refreshMenu();
   return proceed;
 }
 
-MENU(weatherMenu, "Weather Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-     , OP("Room Temperature", showTempChart, enterEvent)
+result showLightChart()
+{
+  initLightGraph();
+  sleepMenu();
+  menuRunning = true;
+  while (digitalRead(BUTTON_EXIT_PIN))
+  { 
+    loopLightGraph();
+    unsigned long currentTime = millis();  // Get the current time
+    if (currentTime - startTime >= delayTime) {
+    break;
+    startTime = currentTime;
+    }
+  }
+  
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
+
+result showCurrentWeather()
+{
+  menuRunning = true;
+  sleepMenu();
+  todaysWeather();
+  delay(100);
+  do {
+    todaysWeather();
+    unsigned long currentTime = millis();  // Get the current time
+    if (currentTime - startTime >= delayTime) {
+    break;
+    startTime = currentTime;
+    }
+    while(digitalRead(BUTTON_EXIT_PIN));
+  } while(digitalRead(BUTTON_EXIT_PIN));
+  display.stopscroll();
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
+
+result showTomorrowsWeather()
+{
+  menuRunning = true;
+  sleepMenu();
+  tommorowsWeather();
+  delay(100);
+  do {
+    tommorowsWeather();
+    unsigned long currentTime = millis();  // Get the current time
+    if (currentTime - startTime >= delayTime) {
+    break;
+    startTime = currentTime;
+    }
+    while(digitalRead(BUTTON_EXIT_PIN));
+  } while(digitalRead(BUTTON_EXIT_PIN));
+  display.stopscroll();
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
+
+result showDaysAfterWeather()
+{
+  menuRunning = true;
+  sleepMenu();
+  daysAfterWeather();
+  delay(100);
+  do {
+    daysAfterWeather();
+    unsigned long currentTime = millis();  // Get the current time
+    if (currentTime - startTime >= delayTime) {
+    break;
+    startTime = currentTime;
+    }
+    while(digitalRead(BUTTON_EXIT_PIN));
+  } while(digitalRead(BUTTON_EXIT_PIN));
+  display.stopscroll();
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
+
+MENU(sensors, "Sensor Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
+     , OP("Temperature", showTempChart, enterEvent)
+     , OP("Light", showLightChart, enterEvent)
      , EXIT("<Back")
     );
 
-    result saveAlarms(eventMask e, navNode &nav, prompt &item)
-{
-  saveAlarms();
-  return proceed;
-}
+MENU(weatherMenu, "Weather Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
+     , OP("Current Weather", showCurrentWeather, enterEvent)
+     , OP("Tomorrow's cast", showTomorrowsWeather, enterEvent)
+     , OP("Day After's Cast", showDaysAfterWeather, enterEvent)
+     , EXIT("<Back")
+    );
 
 MENU(mainMenu, "Main Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
   , SUBMENU(alarmMenu)
   , SUBMENU(weatherMenu)
+  , SUBMENU(sensors)
   ,EXIT("<Back")
 );
 
@@ -171,13 +284,24 @@ void initMenus() {
 void handleMenus() {
   nav.poll();
 
-  
-        if (nav.sleepTask) {
-        showMainPage();
+  if (nav.sleepTask) {
   }
 }
 
+void sleepMenu() {
+    nav.idleOn();
+}
 
-void showTempChart() {
-  Serial.println("test");
+void refreshMenu() {
+  nav.refresh();
+}
+
+void wakeUpMenu() {
+  display.clearDisplay();
+  display.display();
+  refreshMenu();
+  nav.idleOff();
+  refreshMenu();
+  display.clearDisplay();
+  display.display();
 }

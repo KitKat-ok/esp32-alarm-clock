@@ -13,15 +13,13 @@ void initButtons();
 void initHardware()
 {
   delay(2000);
-  Serial.begin(9600);
+  Serial.begin(115200);
   initBuzzer();
   initButtons();
   initOledDisplay();
   initLedDisplay();
   initLightSensor();
   analogReadResolution(12);
-  analogSetAttenuation(ADC_11db);
-  adcAttachPin(TEMP_SENS_PIN);
   setTime(0, 0, 0, 1, 1, 1970);
 }
 
@@ -78,10 +76,13 @@ void initBuzzer()
   {
     ledcWrite(0, dutyCycle);
     Serial.println(dutyCycle);
+    delay(5);
   }
+  delay(10);
   for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--)
   {
     ledcWrite(0, dutyCycle);
     Serial.println(dutyCycle);
+    delay(5);
   }
 }

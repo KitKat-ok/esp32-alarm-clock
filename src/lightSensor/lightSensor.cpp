@@ -17,21 +17,39 @@ void createDimmingTask()
         10000,           /* Stack size in words. */
         NULL,            /* Parameter passed as input of the task */
         1,               /* Priority of the task. */
-        &dimmingTask,            /* Task handle. */
+        &dimmingTask,    /* Task handle. */
         0                /* Core where the task should run. */
     );
 }
 
+const unsigned long intervalLight = 60000; // Interval in milliseconds (30 seconds)
+unsigned long previousMillisLight = 0;     // Will store last time the function was called
+
 void dimmingFunction(void *pvParameters)
 {
-    while(true)
+    while (true)
     {
+        unsigned long currentMillis = millis(); // Get the current time
+        if (currentMillis - previousMillisLight >= intervalLight)
+        {
+            for (int i = 0; i < TEMP_CHART_READINGS - 1; i++)
+            {
+                lightArray[i] = lightArray[i + 1];
+            }
+
+            // Add the new reading to the end of the array
+            lightArray[TEMP_CHART_READINGS - 1] = lightMeter.readLightLevel(); // Replace with your temperature reading function
+            previousMillisLight = currentMillis;
+        }
         dimmingTaskRunning = true;
 
         int currentHour = hour();
         int currentMinute = minute();
         if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
         {
+            Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
+
+            Serial.println("setting max brightness");
             display.dim(false);
             LedDisplay.setBrightness(7);
             LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
@@ -44,6 +62,8 @@ void dimmingFunction(void *pvParameters)
             currentMinute = minute();
             dimOledDisplay();
             dimLedDisplay();
+            Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
+
             Serial.println("Reading brightness and dimming displays accordingly");
             LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
         }
@@ -53,7 +73,6 @@ void dimmingFunction(void *pvParameters)
             if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
             {
                 break;
-                
             }
             vTaskDelay(pdMS_TO_TICKS(1));
         }

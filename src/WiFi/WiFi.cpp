@@ -69,6 +69,7 @@ void turnOffWifi()
       WiFi.disconnect(true);
       WiFi.mode(WIFI_OFF);
       deleteTimeTask();
+      deleteWeatherTask();
       tasksLaunched = false;
   }
 }
@@ -81,6 +82,7 @@ void WiFiEvent(WiFiEvent_t event)
     Serial.println("WiFi connected");
     if (tasksLaunched == false)
     {
+      createWeatherTask();
       synchronizeAndSetTime();
       createAlarmTask();
       createTimeTask();

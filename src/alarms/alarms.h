@@ -7,6 +7,9 @@ void onAlarm();
 void createAlarmTask();
 void ringAlarm(void *parameter);
 
+void disableAllAlarms();
+void enableAllAlarms();  // <-- Added semicolon here
+
 struct Day {
     bool isSet;
     int hours;
@@ -14,6 +17,5 @@ struct Day {
 };
 
 extern Day days[7];  // Declaration of the array
-
 
 #endif

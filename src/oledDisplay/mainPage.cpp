@@ -10,7 +10,7 @@ void showMainPage()
     display.setTextSize(1);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(String(batteryPercentage) + "%", SCREEN_HEIGHT / 3 - 7);
-    centerText(getWeekdayName(), SCREEN_HEIGHT / 2 + 10);
+    centerText(getCurrentWeekdayName(), SCREEN_HEIGHT / 2 + 10);
     centerText("Temp: " + String(temperature) + " C", SCREEN_HEIGHT / 2 + 20);
     display.display();
 }
