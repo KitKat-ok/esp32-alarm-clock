@@ -4,11 +4,15 @@ OLED_SSD1306_Chart display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 TM1637Display LedDisplay = TM1637Display(CLK, DIO);
 BH1750 lightMeter;
 
+OneWire oneWire(TEMP_SENS_PIN);
+DallasTemperature tempSensor(&oneWire);
+
 void initOledDisplay();
 void initLedDisplay();
 void initLightSensor();
 void initBuzzer();
 void initButtons();
+void initTempSensor();
 
 void initHardware()
 {
@@ -20,6 +24,7 @@ void initHardware()
   initLedDisplay();
   initLightSensor();
   analogReadResolution(12);
+  initTempSensor();
   setTime(0, 0, 0, 1, 1, 1970);
 }
 
@@ -66,23 +71,40 @@ void initButtons()
   Serial.println("Buttons initialized");
 }
 
+int melody[] = {
+ NOTE_E4, NOTE_G4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6
+  };
+
+int noteDurations[] = {
+  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
+};
+
 void initBuzzer()
 {
-  pinMode(BUZZER_PIN, OUTPUT);
-  ledcSetup(0, 2000, 8);
-  ledcAttachPin(BUZZER_PIN, 0);
-  Serial.println("Buzzer initialized");
-  for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++)
-  {
-    ledcWrite(0, dutyCycle);
-    Serial.println(dutyCycle);
-    delay(5);
-  }
-  delay(10);
-  for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--)
-  {
-    ledcWrite(0, dutyCycle);
-    Serial.println(dutyCycle);
-    delay(5);
-  }
+  int melody[] = {
+ NOTE_E4, NOTE_G4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6
+  };
+
+int noteDurations[] = {
+  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
+};
+ pinMode(BUZZER_PIN, OUTPUT);
+ ledcSetup(0, 2000, 8);
+ ledcAttachPin(BUZZER_PIN, 0);
+ Serial.println("Buzzer initialized");
+ for (int i = 0; i < sizeof(melody)/sizeof(melody[0]); i++) {
+    int noteDuration = 1000 / noteDurations[i];
+    tone(BUZZER_PIN, melody[i], noteDuration);
+
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+
+    noTone(BUZZER_PIN);
+ }
+}
+
+
+void initTempSensor()
+{
+  tempSensor.begin();
 }

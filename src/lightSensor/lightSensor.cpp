@@ -96,7 +96,7 @@ void dimLedDisplay()
     int lightLevel = lightMeter.readLightLevel();
     if (lightLevel > LED_DIM_THRESHOLD)
     {
-        LedDisplay.setBrightness(map(constrain(lightLevel, 0, LED_DIM_THRESHOLD), 0, LED_DIM_THRESHOLD, 0, 7));
+        LedDisplay.setBrightness(map(constrain(lightLevel, LED_DIM_THRESHOLD, 100), LED_DIM_THRESHOLD, 100, 0, 7));
         Serial.println("Brightness of Led display " + String(map(constrain(lightLevel, 0, LED_DIM_THRESHOLD), 0, LED_DIM_THRESHOLD, 0, 7)));
     }
     else

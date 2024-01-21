@@ -31,8 +31,12 @@ void deleteWeatherTask()
 
 void weatherTask(void *parameter)
 {
-    syncWeather();
-    vTaskDelay(pdMS_TO_TICKS(30 * 60 * 1000));
+    while (true)
+    {
+        Serial.println("Syncing weather");
+        syncWeather();
+        vTaskDelay(pdMS_TO_TICKS(30 * 60 * 1000));
+    }
 }
 
 void syncWeather()
@@ -40,6 +44,7 @@ void syncWeather()
     if (OPEN_WEATHER_API_KEY != "" && WEATHER_LONGTIT != "" && WEATHER_LATIT != "")
     {
         forecast = new OW_forecast;
+
         bool status = ow.getForecast(forecast, OPEN_WEATHER_API_KEY, WEATHER_LATIT, WEATHER_LONGTIT, WEATHER_UNIT, WEATHER_LANG, false);
         if (status == true && forecast)
         {
@@ -68,7 +73,6 @@ void syncWeather()
                     c = c + 1;
                 }
             }
-            dumpWeather();
             isWeatherAvailable = true;
             delete forecast;
         }
@@ -81,34 +85,6 @@ void syncWeather()
     {
         isWeatherAvailable = false;
     }
-}
-
-void dumpWeather()
-{
-  Serial.println("City name: " + forecast->city_name);
-  Serial.println("Latitude: " + String(ow.lat));
-  Serial.println("Longitude: " + String(ow.lon));
-  Serial.println("Timezone: " + String(forecast->timezone));
-  for (int i = 0; i < MAX_DAYS; i++)
-  {
-    Serial.println("");
-    Serial.println("Day number: " + String(i + 1) + " weather info:");
-    for (int j = 0; j < WEATHER_PER_DAY; j++)
-    {
-      Serial.println("");
-      Serial.println("Information for day " + String(i) + " number " + String(j));
-      Serial.println("Temperature: " + String(weatherForecastData[i][j].temp) + "C");
-      Serial.println("Minimal temperature: " + String(weatherForecastData[i][j].minTemp));
-      Serial.println("Pressure: " + String(weatherForecastData[i][j].pressure) + "hPa");
-      Serial.println("Humidity: " + String(weatherForecastData[i][j].humidity) + "%");
-      Serial.println("Weather condition: " + weatherConditionIdToStr(weatherForecastData[i][j].weatherConditionId));
-      Serial.println("Cloudiness: " + String(weatherForecastData[i][j].cloudsPerc) + "%");
-      Serial.println("WindSpeed: " + String(weatherForecastData[i][j].windSpeed) + "m/s");
-      Serial.println("Wind guts: " + String(weatherForecastData[i][j].windGusts) + "m/s");
-      Serial.println("Visibility: " + String(weatherForecastData[i][j].visibility) + "km");
-      Serial.println("Probability of precipitation: " + String(weatherForecastData[i][j].pop) + "%");
-    }
-  }
 }
 
 String weatherConditionIdToStr(int weatherCode)
@@ -244,5 +220,3 @@ String weatherConditionIdToStr(int weatherCode)
         return "Unknown weather code";
     }
 }
-
-

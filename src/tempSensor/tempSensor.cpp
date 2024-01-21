@@ -2,24 +2,11 @@
 
 float temperature = 0.0;
 
-Smoothed<float> tempSensor;
-
 float readTemperature()
 {
-    tempSensor.add(analogReadMilliVolts(TEMP_SENS_PIN));
-    int sensorValue = tempSensor.get();
-    Serial.println("Smotthened reading: " + String(sensorValue));
-    Serial.println("Bare reading: " + String(analogRead(TEMP_SENS_PIN)));
-
-    float voltage = sensorValue / 1000.0;
-    Serial.println(String(voltage, 3));
-
-    float Tc = 0.01;   // Temperature coefficient in V/°C
-    float V0c = 0.5; // Sensor output voltage at 0°C in V
-
-    float temperatureC = (voltage / Tc) - (V0c / Tc);
-
-    return temperatureC - 2.0;
+    tempSensor.requestTemperatures(); 
+    float temperatureC = tempSensor.getTempCByIndex(0);
+    return temperatureC;
 }
 
 const unsigned long intervalTemp = 60000; // Interval in milliseconds (30 seconds)
@@ -49,7 +36,6 @@ void setTemperature(void *pvParameters)
 void createTempTask()
 {
     Serial.print("creating tempTask");
-    tempSensor.begin(SMOOTHED_AVERAGE, TEMP_SMOOTH_FACTOR);
 
     temperature = readTemperature();
 

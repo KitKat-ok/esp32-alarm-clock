@@ -28,4 +28,20 @@ String getWeekdayName(int weekday)
   return weekdays[weekdayIndex - 1];       // Adjust index to match array (0 = Sunday, 1 = Monday, etc.)
 }
 
+String getNextDayName(int daysAfterToday) {
+  // Get the current time
+  time_t currentTime = now();
+
+  // Calculate the future time by adding days
+  time_t futureTime = currentTime + (daysAfterToday * 24 * 60 * 60);
+
+  // Get the day of the week for the future time
+  int dayOfWeek = weekday(futureTime);
+
+  // Get the name of the day
+  String dayName = dayStr(dayOfWeek);
+
+  return dayName;
+}
+
 

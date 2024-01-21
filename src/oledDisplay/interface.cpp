@@ -5,7 +5,7 @@ using namespace Menu;
 bool menuRunning = false;
 
 unsigned long startTime;  // Variable to store the start time
-const unsigned long delayTime = 600000;  // 10 minutes in milliseconds
+const unsigned long delayTime = 6000;  // 10 minutes in milliseconds
 
 const colorDef<uint16_t> colors[6] MEMMODE={
   {{0,0},{0,1,1}},//bgColor
@@ -139,11 +139,6 @@ result showTempChart()
   while (digitalRead(BUTTON_EXIT_PIN))
   { 
     loopTempGraph();
-    unsigned long currentTime = millis();  // Get the current time
-    if (currentTime - startTime >= delayTime) {
-    break;
-    startTime = currentTime;
-    }
   }
   
   display.clearDisplay();
@@ -159,11 +154,6 @@ result showLightChart()
   while (digitalRead(BUTTON_EXIT_PIN))
   { 
     loopLightGraph();
-    unsigned long currentTime = millis();  // Get the current time
-    if (currentTime - startTime >= delayTime) {
-    break;
-    startTime = currentTime;
-    }
   }
   
   display.clearDisplay();
@@ -175,15 +165,26 @@ result showCurrentWeather()
 {
   menuRunning = true;
   sleepMenu();
+  currentWeather();
+  delay(100);
+  do {
+    currentWeather();
+    while(digitalRead(BUTTON_EXIT_PIN));
+  } while(digitalRead(BUTTON_EXIT_PIN));
+  display.stopscroll();
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
+
+result showTodaysWeather()
+{
+  menuRunning = true;
+  sleepMenu();
   todaysWeather();
   delay(100);
   do {
     todaysWeather();
-    unsigned long currentTime = millis();  // Get the current time
-    if (currentTime - startTime >= delayTime) {
-    break;
-    startTime = currentTime;
-    }
     while(digitalRead(BUTTON_EXIT_PIN));
   } while(digitalRead(BUTTON_EXIT_PIN));
   display.stopscroll();
@@ -200,11 +201,6 @@ result showTomorrowsWeather()
   delay(100);
   do {
     tommorowsWeather();
-    unsigned long currentTime = millis();  // Get the current time
-    if (currentTime - startTime >= delayTime) {
-    break;
-    startTime = currentTime;
-    }
     while(digitalRead(BUTTON_EXIT_PIN));
   } while(digitalRead(BUTTON_EXIT_PIN));
   display.stopscroll();
@@ -221,11 +217,6 @@ result showDaysAfterWeather()
   delay(100);
   do {
     daysAfterWeather();
-    unsigned long currentTime = millis();  // Get the current time
-    if (currentTime - startTime >= delayTime) {
-    break;
-    startTime = currentTime;
-    }
     while(digitalRead(BUTTON_EXIT_PIN));
   } while(digitalRead(BUTTON_EXIT_PIN));
   display.stopscroll();
@@ -242,6 +233,7 @@ MENU(sensors, "Sensor Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
 
 MENU(weatherMenu, "Weather Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("Current Weather", showCurrentWeather, enterEvent)
+     , OP("Today's cast", showTodaysWeather, enterEvent)
      , OP("Tomorrow's cast", showTomorrowsWeather, enterEvent)
      , OP("Day After's Cast", showDaysAfterWeather, enterEvent)
      , EXIT("<Back")
@@ -285,6 +277,7 @@ void handleMenus() {
   nav.poll();
 
   if (nav.sleepTask) {
+    showMainPage();
   }
 }
 

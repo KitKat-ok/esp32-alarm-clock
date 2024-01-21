@@ -3,7 +3,7 @@
 void displaywidget(int code_no);
 String convertWindDirection(uint16_t degrees);
 
-void todaysWeather()
+void currentWeather()
 {
     display.clearDisplay();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
@@ -31,6 +31,41 @@ void todaysWeather()
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
+void todaysWeather()
+{
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    displaywidget(weatherForecastData[0][4].weatherConditionId);
+    display.setTextSize(1);
+    display.setCursor(54, 20);
+    display.print(getNextDayName(1)); // Prints city name ie: Marmagao in my case
+    display.drawLine(57, 25, 127, 25, WHITE);
+
+    float tmax = -9999;
+    float tmin = 9999;
+    for (int i = 0; i < 8; i++)
+    {
+        if (weatherForecastData[0][i].maxTemp > tmax)
+            tmax = weatherForecastData[0][i].maxTemp;
+        if (weatherForecastData[0][i].minTemp < tmin)
+            tmin = weatherForecastData[0][i].minTemp;
+    }
+
+    display.setCursor(57, 35);
+    display.print("Min " + String(tmin) + "C");
+    display.setCursor(57, 45);
+    display.print("Max " + String(tmax) + "C");
+    display.setCursor(0, SCREEN_HEIGHT - 1);
+    display.setFont(&Roboto_Black_9);
+    display.print(weatherConditionIdToStr(weatherForecastData[0][4].weatherConditionId));
+    display.print("\t");
+    display.print("");
+    display.startscrollleft(0x07, 0x07);
+    display.display();
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+}
+
 void tommorowsWeather()
 {
     display.clearDisplay();
@@ -39,7 +74,7 @@ void tommorowsWeather()
     displaywidget(weatherForecastData[1][4].weatherConditionId);
     display.setTextSize(1);
     display.setCursor(54, 20);
-    display.print(getWeekdayName(weekday(now()) + 1)); // Prints city name ie: Marmagao in my case
+    display.print(getNextDayName(1)); // Prints city name ie: Marmagao in my case
     display.drawLine(57, 25, 127, 25, WHITE);
 
     float tmax = -9999;
@@ -56,10 +91,6 @@ void tommorowsWeather()
     display.print("Min " + String(tmin) + "C");
     display.setCursor(57, 45);
     display.print("Max " + String(tmax) + "C");
-    display.setCursor(57, 55);
-    display.print(weatherForecastData[1][4].windSpeed);
-    display.print("m/s ");
-    display.println(convertWindDirection(weatherForecastData[1][4].windDirection));
     display.setCursor(0, SCREEN_HEIGHT - 1);
     display.setFont(&Roboto_Black_9);
     display.print(weatherConditionIdToStr(weatherForecastData[1][4].weatherConditionId));
@@ -77,7 +108,7 @@ void daysAfterWeather() {
     displaywidget(weatherForecastData[2][4].weatherConditionId);
     display.setTextSize(1);
     display.setCursor(54, 20);
-    display.print(getWeekdayName(weekday(now()) + 2)); // Prints city name ie: Marmagao in my case
+    display.print(getNextDayName(2)); // Prints city name ie: Marmagao in my case
     display.drawLine(57, 25, 127, 25, WHITE);
 
     float tmax = -9999;

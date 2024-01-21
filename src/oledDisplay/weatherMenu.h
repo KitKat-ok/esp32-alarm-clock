@@ -3,8 +3,9 @@
 
 #include "defines.h"
 
-void todaysWeather();
+void currentWeather();
 void tommorowsWeather();
 void daysAfterWeather();
+void todaysWeather();
 
 #endif

@@ -8,4 +8,6 @@ String getCurrentWeekdayName();
 
 String getWeekdayName(int weekday);
 
+String getNextDayName(int daysAfterToday);
+
 #endif
