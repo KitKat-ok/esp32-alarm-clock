@@ -135,10 +135,14 @@ result showTempChart()
 {
   initTempGraph();
   sleepMenu();
+  startTime = millis(); 
   menuRunning = true;
   while (digitalRead(BUTTON_EXIT_PIN))
   { 
     loopTempGraph();
+    if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+    }
   }
   
   display.clearDisplay();
@@ -150,10 +154,14 @@ result showLightChart()
 {
   initLightGraph();
   sleepMenu();
+  startTime = millis(); 
   menuRunning = true;
   while (digitalRead(BUTTON_EXIT_PIN))
   { 
     loopLightGraph();
+    if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+    }
   }
   
   display.clearDisplay();
@@ -164,13 +172,14 @@ result showLightChart()
 result showCurrentWeather()
 {
   menuRunning = true;
+  startTime = millis(); 
   sleepMenu();
   currentWeather();
   delay(100);
-  do {
-    currentWeather();
-    while(digitalRead(BUTTON_EXIT_PIN));
-  } while(digitalRead(BUTTON_EXIT_PIN));
+  while(digitalRead(BUTTON_EXIT_PIN)) {
+        if (millis() - startTime >= 1 * 60 * 1000) {
+      break;
+  }}
   display.stopscroll();
   display.clearDisplay();
   refreshMenu();
@@ -182,11 +191,13 @@ result showTodaysWeather()
   menuRunning = true;
   sleepMenu();
   todaysWeather();
+  startTime = millis(); 
   delay(100);
-  do {
-    todaysWeather();
-    while(digitalRead(BUTTON_EXIT_PIN));
-  } while(digitalRead(BUTTON_EXIT_PIN));
+  while(digitalRead(BUTTON_EXIT_PIN)) {
+  if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+  }
+  }
   display.stopscroll();
   display.clearDisplay();
   refreshMenu();
@@ -198,11 +209,13 @@ result showTomorrowsWeather()
   menuRunning = true;
   sleepMenu();
   tommorowsWeather();
+  startTime = millis(); 
   delay(100);
-  do {
-    tommorowsWeather();
-    while(digitalRead(BUTTON_EXIT_PIN));
-  } while(digitalRead(BUTTON_EXIT_PIN));
+  while(digitalRead(BUTTON_EXIT_PIN)) {
+  if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+  }
+  }
   display.stopscroll();
   display.clearDisplay();
   refreshMenu();
@@ -214,11 +227,13 @@ result showDaysAfterWeather()
   menuRunning = true;
   sleepMenu();
   daysAfterWeather();
+  startTime = millis(); 
   delay(100);
-  do {
-    daysAfterWeather();
-    while(digitalRead(BUTTON_EXIT_PIN));
-  } while(digitalRead(BUTTON_EXIT_PIN));
+  while(digitalRead(BUTTON_EXIT_PIN)) {
+  if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+  }
+  }
   display.stopscroll();
   display.clearDisplay();
   refreshMenu();

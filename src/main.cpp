@@ -6,8 +6,8 @@ void setup()
 
   initHardware();
   initBattery();
+  initWifi();
   createDimmingTask();
-  createWifiTask();
   createBatteryTask();
   initMenus();
   readAlarms();

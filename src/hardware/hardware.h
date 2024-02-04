@@ -13,5 +13,6 @@ extern OneWire oneWire;
 extern DallasTemperature tempSensor;
 
 void initHardware();
+void LowBattery();
 
 #endif

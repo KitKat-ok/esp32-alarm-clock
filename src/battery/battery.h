@@ -8,5 +8,6 @@ void createBatteryTask();
 void initBattery();
 
 extern int batteryPercentage;
+extern float charging;
 
 #endif

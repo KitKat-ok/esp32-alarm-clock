@@ -63,6 +63,7 @@ void manageBattery(void *parameter)
 {
   while (true)
   {
+    LowBattery();
     batteryPercentage = getBatteryPercentage();
 
     int chargingState = analogRead(CHARGING_PIN);
@@ -76,9 +77,8 @@ void manageBattery(void *parameter)
 
     eTaskState WiFiTaskState = eTaskGetState(wifiTask);
     WiFiTaskState = eTaskGetState(wifiTask);
-    if (standbyState > 3000 || chargingState > 3000)
+    if (standbyState > 3000 || chargingState > 20)
     {
-      charging = true;
       wentToSleep = false;
       lightMeter.configure(BH1750::CONTINUOUS_HIGH_RES_MODE);
       Serial.println("charging");
@@ -113,14 +113,14 @@ void manageBattery(void *parameter)
           chargingState = analogRead(CHARGING_PIN);
           standbyState = analogRead(FULLY_CHARGED_PIN);
           vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 1 second
-          if ((standbyState > 4000) || (chargingState > 4000))
+          if ((standbyState > 3000) || (chargingState > 20))
           {
             Serial.println("Charger Connected not going to sleep");
             vTaskDelay(pdMS_TO_TICKS(100));
             break; // Break the loop if the condition is met
           }
         }
-        if ((standbyState > 4000) || (chargingState > 4000))
+        if ((standbyState > 3000) || (chargingState > 20))
         {
           break; // Break the loop if the condition is met
         }

@@ -2,7 +2,7 @@
 
 WiFiMulti wifiMulti;
 
-TaskHandle_t wifiTask;
+TaskHandle_t wifiTask = NULL;
 
 void initWifi();
 void WiFiEvent(WiFiEvent_t event);
@@ -11,9 +11,24 @@ bool WiFiTaskRunning = false;
 
 bool tasksLaunched = false;
 
+void initWiFiHandle(void *parameter) {
+  while (true)
+  {
+      vTaskDelete(NULL);
+  }
+}
+
 void initWifi()
 {
 
+  xTaskCreatePinnedToCore(
+      initWiFiHandle, // Task function
+      "WiFiTask",    // Task name
+      4096,          // Stack size
+      NULL,          // Task parameters
+      1,             // Priority
+      &wifiTask,     // Task handle
+      1);    
   wifiMulti.addAP(SSID1, PASSWORD1);
   wifiMulti.addAP(SSID2, PASSWORD2);
 }

@@ -10,8 +10,8 @@ void initTempGraph()
     display.setChartWidthAndHeight(SCREEN_WIDTH, (SCREEN_HEIGHT / 1.5) - 3);
     display.setXIncrement(2);
     display.setAxisDivisionsInc(5, 5);
-    display.setYLimits(0, 35);
-    display.setYLimitLabels("0", "40");
+    display.setYLimits(0.00, 35.00);
+    display.setYLimitLabels("0", "35");
     display.setYLabelsVisible(true);
     display.setPointGeometry(POINT_GEOMETRY_NONE);
     display.setPlotMode(SINGLE_PLOT_MODE);
@@ -56,7 +56,7 @@ void initLightGraph()
     display.setChartWidthAndHeight(SCREEN_WIDTH, (SCREEN_HEIGHT / 1.5) - 3);
     display.setXIncrement(2);
     display.setAxisDivisionsInc(5, 5);
-    display.setYLimits(0, 300);
+    display.setYLimits(0.00, 300.00);
     display.setYLimitLabels("0", "300");
     display.setYLabelsVisible(true);
     display.setPointGeometry(POINT_GEOMETRY_NONE);
