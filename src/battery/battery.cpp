@@ -77,8 +77,9 @@ void manageBattery(void *parameter)
 
     eTaskState WiFiTaskState = eTaskGetState(wifiTask);
     WiFiTaskState = eTaskGetState(wifiTask);
-    if (standbyState > 3000 || chargingState > 20)
+    if (standbyState > 3000 || chargingState >1800)
     {
+      charging = true;
       wentToSleep = false;
       lightMeter.configure(BH1750::CONTINUOUS_HIGH_RES_MODE);
       Serial.println("charging");
@@ -113,14 +114,14 @@ void manageBattery(void *parameter)
           chargingState = analogRead(CHARGING_PIN);
           standbyState = analogRead(FULLY_CHARGED_PIN);
           vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 1 second
-          if ((standbyState > 3000) || (chargingState > 20))
+          if ((standbyState > 3000) || (chargingState >1800))
           {
             Serial.println("Charger Connected not going to sleep");
             vTaskDelay(pdMS_TO_TICKS(100));
             break; // Break the loop if the condition is met
           }
         }
-        if ((standbyState > 3000) || (chargingState > 20))
+        if ((standbyState > 3000) || (chargingState >1800))
         {
           break; // Break the loop if the condition is met
         }
@@ -194,7 +195,8 @@ void goToSleep()
 int getBatteryPercentage()
 {
   // Read the raw voltage
-  float rawVoltage = analogRead(VOLTAGE_DIVIDER_PIN) * (3.3 / 4095.0) + 0.8;
+  float rawVoltage = analogRead(VOLTAGE_DIVIDER_PIN) * (3.30 / 4095.00) + 0.9;
+  Serial.println("Battery voltage: " + String(rawVoltage));
 
   // Store the new voltage in the array
   voltageSamples[sampleIndex] = rawVoltage;
@@ -203,7 +205,7 @@ int getBatteryPercentage()
   sampleIndex = (sampleIndex + 1) % NUM_SAMPLES;
 
   // Calculate the average of the stored voltages
-  float smoothedVoltage = 0;
+  float smoothedVoltage = 0.00;
   for (int i = 0; i < NUM_SAMPLES; i++)
   {
     smoothedVoltage += voltageSamples[i];
@@ -211,7 +213,7 @@ int getBatteryPercentage()
   smoothedVoltage /= NUM_SAMPLES;
 
   // Calculate and return the battery percentage
-  int percentage = ((smoothedVoltage - MIN_VOLTAGE) / (MAX_VOLTAGE - MIN_VOLTAGE)) * 100.0;
+  int percentage = ((smoothedVoltage - MIN_VOLTAGE) / (MAX_VOLTAGE - MIN_VOLTAGE)) * 100.00;
   if (percentage < 0)
   {
     percentage = 0;

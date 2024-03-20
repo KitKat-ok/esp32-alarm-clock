@@ -24,7 +24,7 @@ void loop()
     Serial.println("Menu state has changed.");
     display.clearDisplay();
     display.display();
-    delay(1);
+    delay(1000);
     wakeUpMenu();
     menuRunning = false;
     initialMenuRunning = menuRunning;  

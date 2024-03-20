@@ -45,11 +45,21 @@ void dimmingFunction(void *pvParameters)
 
         int currentHour = hour();
         int currentMinute = minute();
-        if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
+#define BUTTON_UP_PIN GPIO_NUM_12
+#define BUTTON_DOWN_PIN GPIO_NUM_13
+#define BUTTON_CONFIRM_PIN GPIO_NUM_14
+#define BUTTON_EXIT_PIN GPIO_NUM_15
+
+        if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
+            digitalRead(BUTTON_UP_PIN) == LOW ||
+            digitalRead(BUTTON_DOWN_PIN) == LOW ||
+            digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+            digitalRead(BUTTON_EXIT_PIN) == LOW)
         {
-            Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
+            Serial.println("Button pressed");
 
             Serial.println("setting max brightness");
+            display.ssd1306_command(SSD1306_DISPLAYON);
             display.dim(false);
             LedDisplay.setBrightness(7);
             LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
@@ -67,10 +77,15 @@ void dimmingFunction(void *pvParameters)
             Serial.println("Reading brightness and dimming displays accordingly");
             LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
         }
+
         unsigned long startTime = millis();
         while ((millis() - startTime) < 3000)
         {
-            if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
+            if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
+                digitalRead(BUTTON_UP_PIN) == LOW ||
+                digitalRead(BUTTON_DOWN_PIN) == LOW ||
+                digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+                digitalRead(BUTTON_EXIT_PIN) == LOW)
             {
                 break;
             }
@@ -81,12 +96,20 @@ void dimmingFunction(void *pvParameters)
 
 void dimOledDisplay()
 {
-    if (lightMeter.readLightLevel() > OLED_DIM_THRESHOLD)
+    if (lightMeter.readLightLevel() == 0.0)
+    {
+        display.dim(true);
+        display.ssd1306_command(SSD1306_DISPLAYOFF);
+        Serial.println("display off");
+    }
+    else if (lightMeter.readLightLevel() > OLED_DIM_THRESHOLD)
     {
         display.dim(false);
+        display.ssd1306_command(SSD1306_DISPLAYON);
     }
     else
     {
+        display.ssd1306_command(SSD1306_DISPLAYON);
         display.dim(true);
     }
 }

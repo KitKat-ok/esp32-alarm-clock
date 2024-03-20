@@ -33,8 +33,20 @@ void initHardware()
 void LowBattery() // Prevents battery voltage from going too low by hybernating needs reset after this happens connecting the charger wont wake it up
 {
   float rawVoltage = analogRead(VOLTAGE_DIVIDER_PIN) * (3.3 / 4095.0) + 0.8;
-  if (rawVoltage < 3.70)
+  int chargingState = analogRead(CHARGING_PIN);
+  int standbyState = analogRead(FULLY_CHARGED_PIN);
+  if (standbyState > 3000 || chargingState > 3000)
   {
+    charging = true;
+  }
+  else
+  {
+    charging = false;
+  }
+
+  if (rawVoltage < 3.40 & charging == false)
+  {
+    esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
     Serial.print("Battery too low! going to sleep to prevent restarting");
 
     pinMode(BUZZER_PIN, OUTPUT);
@@ -47,20 +59,21 @@ void LowBattery() // Prevents battery voltage from going too low by hybernating 
 
     for (size_t i = 0; i < 10; i++)
     {
-    for (int dutyCycle = 0; dutyCycle >= 255; dutyCycle--)
-    {
-      ledcWrite(0, dutyCycle);
-      Serial.println(dutyCycle);
-      delay(5);
-    }
+      for (int dutyCycle = 0; dutyCycle >= 255; dutyCycle--)
+      {
+        ledcWrite(0, dutyCycle);
+        Serial.println(dutyCycle);
+        delay(5);
+      }
 
-    for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--)
-    {
-      ledcWrite(0, dutyCycle);
-      Serial.println(dutyCycle);
-      delay(5);
+      for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--)
+      {
+        ledcWrite(0, dutyCycle);
+        Serial.println(dutyCycle);
+        delay(5);
+      }
     }
-    }
+    esp_sleep_enable_timer_wakeup(30 * 60 * 1000000);
     esp_deep_sleep_start();
   }
 }
@@ -109,18 +122,13 @@ void initButtons()
 }
 
 int melody[] = {
-    NOTE_E4, NOTE_G4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6};
+    NOTE_C5, NOTE_G5, NOTE_C6};
 
 int noteDurations[] = {
-    8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8};
+    5, 5, 5};
 
 void initBuzzer()
 {
-  int melody[] = {
-      NOTE_E4, NOTE_G4, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_C6};
-
-  int noteDurations[] = {
-      8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8};
   pinMode(BUZZER_PIN, OUTPUT);
   ledcSetup(0, 2000, 8);
   ledcAttachPin(BUZZER_PIN, 0);
@@ -129,9 +137,6 @@ void initBuzzer()
   {
     int noteDuration = 1000 / noteDurations[i];
     tone(BUZZER_PIN, melody[i], noteDuration);
-
-    int pauseBetweenNotes = noteDuration * 1.30;
-    delay(pauseBetweenNotes);
 
     noTone(BUZZER_PIN);
   }

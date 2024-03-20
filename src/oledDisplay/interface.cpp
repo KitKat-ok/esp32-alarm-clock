@@ -146,6 +146,7 @@ result showTempChart()
   }
   
   display.clearDisplay();
+  display.display();
   refreshMenu();
   return proceed;
 }
@@ -165,6 +166,7 @@ result showLightChart()
   }
   
   display.clearDisplay();
+  display.display();
   refreshMenu();
   return proceed;
 }
