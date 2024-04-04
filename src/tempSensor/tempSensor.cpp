@@ -17,7 +17,7 @@ void setTemperature(void *pvParameters)
     while (true)
     {
         unsigned long currentMillis = millis(); // Get the current time
-        temperature = readTemperature();
+        temperature = readTemperature() - TEMP_OFFSET;
         if (currentMillis - previousMillisTemp >= intervalTemp)
         {
             for (int i = 0; i < TEMP_CHART_READINGS - 1; i++)
@@ -37,7 +37,7 @@ void createTempTask()
 {
     Serial.print("creating tempTask");
 
-    temperature = readTemperature();
+    temperature = readTemperature() - TEMP_OFFSET;
 
     for (int i = 0; i < TEMP_CHART_READINGS - 1; i++)
     {

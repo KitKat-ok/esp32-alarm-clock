@@ -106,14 +106,28 @@ void ringAlarm(void *parameter)
 {
   unsigned long startTime = millis() + 180000;
   unsigned long currentTime = millis();
+  unsigned long previousMillisBrightness1 = 0; // Variable to store the last time brightness 1 was adjusted
+  unsigned long previousMillisBrightness2 = 0; // Variable to store the last time brightness 2 was adjusted
+  const long intervalBrightness1 = 3000;       // Interval for brightness 1 adjustment in milliseconds (5 seconds)
+  const long intervalBrightness2 = 6000;       // Interval for brightness 2 adjustment in milliseconds (3 seconds)
   sendOnPostRequest();
   while (true)
   {
+    display.ssd1306_command(SSD1306_DISPLAYON);
     int currentHour = hour();
     int currentMinute = minute();
-    display.dim(true);
-    LedDisplay.setBrightness(0);
-    LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+    currentTime = millis();
+    if (currentTime - previousMillisBrightness1 >= intervalBrightness1)
+    {
+
+      previousMillisBrightness1 = currentTime;
+
+      display.ssd1306_command(SSD1306_DISPLAYON);
+
+      display.dim(true);
+      LedDisplay.setBrightness(0);
+      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+    }
 
     int alarmMelody[] = {NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7};
     int alarmDurations[] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
@@ -126,6 +140,13 @@ void ringAlarm(void *parameter)
         tone(BUZZER_PIN, alarmMelody[i], 1000 / alarmDurations[i]);
         delay(1000 / alarmDurations[i] * 1.30);
         noTone(BUZZER_PIN);
+
+        if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
+        {
+          vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
+          sendOffPostRequest();
+          vTaskDelete(Alarm);
+        }
       }
       vTaskDelay(100);
       vTaskDelay(1000);
@@ -137,10 +158,24 @@ void ringAlarm(void *parameter)
       sendOffPostRequest();
       vTaskDelete(Alarm);
     }
+    currentTime = millis();
+    if (currentTime - previousMillisBrightness2 >= intervalBrightness2)
+    {
 
-    display.dim(false);
-    LedDisplay.setBrightness(7);
-    LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      previousMillisBrightness2 = currentTime;
+
+      display.dim(false);
+      LedDisplay.setBrightness(7);
+      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+    }
+
+    if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
+    {
+      vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
+      sendOffPostRequest();
+      vTaskDelete(Alarm);
+    }
+
     vTaskDelay(pdMS_TO_TICKS(1));
   }
 }

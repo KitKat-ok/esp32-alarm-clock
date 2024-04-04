@@ -3,6 +3,7 @@
 
 #include "../defines.h"
 
-void showTime();
+
+void createLedDisplayTask();
 
 #endif

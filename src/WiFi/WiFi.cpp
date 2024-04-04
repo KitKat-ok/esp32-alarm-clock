@@ -11,24 +11,26 @@ bool WiFiTaskRunning = false;
 
 bool tasksLaunched = false;
 
-void initWiFiHandle(void *parameter) {
+void initWiFiHandle(void *parameter)
+{
   while (true)
   {
-      vTaskDelete(NULL);
+    vTaskDelete(NULL);
   }
 }
 
 void initWifi()
 {
 
+  Serial.println("Starting Wifi Task");
   xTaskCreatePinnedToCore(
       initWiFiHandle, // Task function
-      "WiFiTask",    // Task name
-      4096,          // Stack size
-      NULL,          // Task parameters
-      1,             // Priority
-      &wifiTask,     // Task handle
-      1);    
+      "WiFiTask",     // Task name
+      4096,           // Stack size
+      NULL,           // Task parameters
+      1,              // Priority
+      &wifiTask,      // Task handle
+      1);
   wifiMulti.addAP(SSID1, PASSWORD1);
   wifiMulti.addAP(SSID2, PASSWORD2);
 }
@@ -40,7 +42,11 @@ void connectToWiFi(void *parameter)
   WiFi.setSleep(WIFI_PS_MAX_MODEM);
   WiFi.setAutoConnect(true);
   WiFi.setAutoReconnect(true);
-  WiFi.onEvent(WiFiEvent);
+
+  if (OTAEnabled == false)
+  {
+    WiFi.onEvent(WiFiEvent);
+  }
 
   Serial.println("Connecting to WiFi");
   initWifi();
@@ -50,6 +56,9 @@ void connectToWiFi(void *parameter)
     delay(1000);
   }
   Serial.println("\nConnected to WiFi");
+  Serial.print("Got ip: ");
+  Serial.println(WiFi.localIP());
+  Serial.println("Mac Address: " + String(WiFi.macAddress()));
 
   WiFiTaskRunning = false;
   vTaskDelete(NULL);
@@ -77,16 +86,6 @@ void turnOffWifi()
     WiFi.mode(WIFI_OFF);
     Serial.println("turning WiFi off");
   }
-  
-  if (tasksLaunched == true)
-  {
-      Serial.println("turning NTP off");
-      WiFi.disconnect(true);
-      WiFi.mode(WIFI_OFF);
-      deleteTimeTask();
-      deleteWeatherTask();
-      tasksLaunched = false;
-  }
 }
 
 void WiFiEvent(WiFiEvent_t event)
@@ -101,12 +100,21 @@ void WiFiEvent(WiFiEvent_t event)
       synchronizeAndSetTime();
       createAlarmTask();
       createTimeTask();
+      int currentHour = hour();
+      int currentMinute = minute();
+      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
       tasksLaunched = true;
     }
     break;
 
   case SYSTEM_EVENT_STA_DISCONNECTED:
     Serial.println("WiFi disconnected");
+        Serial.println("turning NTP off");
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_OFF);
+    deleteTimeTask();
+    deleteWeatherTask();
+    tasksLaunched = false;
     break;
 
   default:

@@ -3,8 +3,12 @@
 float temperatureArray[TEMP_CHART_READINGS];
 float lightArray[TEMP_CHART_READINGS];
 
+const unsigned long interval = 30000; // Interval in milliseconds (30 seconds)
+unsigned long previousMillis = 0;     // Will store last time the function was called
+
 void initTempGraph()
 {
+    previousMillis = 0;
     display.clearDisplay();
     display.setChartCoordinates(0, SCREEN_HEIGHT - 5);
     display.setChartWidthAndHeight(SCREEN_WIDTH, (SCREEN_HEIGHT / 1.5) - 3);
@@ -24,9 +28,6 @@ void initTempGraph()
         display.updateChart(temperatureArray[i]);
     }
 }
-
-const unsigned long interval = 30000; // Interval in milliseconds (30 seconds)
-unsigned long previousMillis = 0;     // Will store last time the function was called
 
 void loopTempGraph()
 {
@@ -51,6 +52,7 @@ void loopTempGraph()
 
 void initLightGraph()
 {
+    previousMillis = 0;
     display.clearDisplay();
     display.setChartCoordinates(0, SCREEN_HEIGHT - 5);
     display.setChartWidthAndHeight(SCREEN_WIDTH, (SCREEN_HEIGHT / 1.5) - 3);
@@ -69,6 +71,7 @@ void initLightGraph()
     {
         display.updateChart(lightArray[i]);
     }
+    display.drawChart();
 }
 
 void loopLightGraph()

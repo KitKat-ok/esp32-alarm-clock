@@ -30,7 +30,7 @@ void createBatteryTask()
       "Battery",     // Task name
       10000,         // Stack size (words)
       NULL,          // Task input parameter
-      1,             // Priority (0 is lowest)
+      2,             // Priority (0 is lowest)
       NULL,          // Task handle
       0              // Core to run the task on (0 or 1)
   );
@@ -77,7 +77,7 @@ void manageBattery(void *parameter)
 
     eTaskState WiFiTaskState = eTaskGetState(wifiTask);
     WiFiTaskState = eTaskGetState(wifiTask);
-    if (standbyState > 3000 || chargingState >1800)
+    if (standbyState > STANDBY_THRESHOLD || chargingState > CHARGING_THRESHOLD)
     {
       charging = true;
       wentToSleep = false;
@@ -97,12 +97,7 @@ void manageBattery(void *parameter)
     else
     {
       charging = false;
-      if (dimmingTaskRunning == true)
-      {
-        vTaskDelete(dimmingTask);
-        dimmingTaskRunning = false;
-      }
-      
+
       turnOffWifi();
       lightMeter.configure(BH1750::CONTINUOUS_LOW_RES_MODE);
       vTaskDelay(pdMS_TO_TICKS(500));
@@ -114,16 +109,21 @@ void manageBattery(void *parameter)
           chargingState = analogRead(CHARGING_PIN);
           standbyState = analogRead(FULLY_CHARGED_PIN);
           vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 1 second
-          if ((standbyState > 3000) || (chargingState >1800))
+          if ((standbyState > STANDBY_THRESHOLD) || (chargingState > CHARGING_THRESHOLD))
           {
             Serial.println("Charger Connected not going to sleep");
             vTaskDelay(pdMS_TO_TICKS(100));
             break; // Break the loop if the condition is met
           }
         }
-        if ((standbyState > 3000) || (chargingState >1800))
+        if ((standbyState > STANDBY_THRESHOLD) || (chargingState > CHARGING_THRESHOLD))
         {
           break; // Break the loop if the condition is met
+        }
+        if (dimmingTaskRunning == true)
+        {
+          vTaskDelete(dimmingTask);
+          dimmingTaskRunning = false;
         }
         Serial.println("Going to sleep");
         vTaskDelay(pdMS_TO_TICKS(200));
@@ -140,6 +140,8 @@ void manageBattery(void *parameter)
         static unsigned long startTime = millis();
         if (millis() - startTime >= TIMER_WAKUP_TIME)
         {
+          LedDisplay.setBrightness(0);
+          LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
           Serial.println("Going to sleep");
           vTaskDelay(pdMS_TO_TICKS(200));
           goToSleep();
@@ -150,6 +152,7 @@ void manageBattery(void *parameter)
       if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD)
       {
         Serial.println("Woke up from touch button");
+        display.ssd1306_command(SSD1306_DISPLAYON);
         display.dim(false);
         LedDisplay.setBrightness(7);
         LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
@@ -175,11 +178,13 @@ void initSleep()
 
   esp_sleep_enable_timer_wakeup(SLEEPING_TIME);
 
-  touchSleepWakeUpEnable(TOUCH_BUTTON_PIN, TOUCH_BUTTON_THRESHOLD);
+  touchSleepWakeUpEnable(TOUCH_BUTTON_PIN, TOUCH_BUTTON_THRESHOLD_ON_BATTERY);
 }
 
 void goToSleep()
 {
+  display.ssd1306_command(SSD1306_DISPLAYOFF);
+
   display.dim(true);
   display.display();
   LedDisplay.setBrightness(0);

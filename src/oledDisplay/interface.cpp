@@ -118,6 +118,7 @@ result disableAlarms(eventMask e, navNode &nav, prompt &item)
   return proceed;
 }
 
+
 MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(Monday)
       , SUBMENU(Tuesday)
@@ -133,8 +134,8 @@ MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
 );
 result showTempChart()
 {
-  initTempGraph();
   sleepMenu();
+  initTempGraph();
   startTime = millis(); 
   menuRunning = true;
   while (digitalRead(BUTTON_EXIT_PIN))
@@ -153,8 +154,8 @@ result showTempChart()
 
 result showLightChart()
 {
-  initLightGraph();
   sleepMenu();
+  initLightGraph();
   startTime = millis(); 
   menuRunning = true;
   while (digitalRead(BUTTON_EXIT_PIN))
@@ -168,7 +169,11 @@ result showLightChart()
   display.clearDisplay();
   display.display();
   refreshMenu();
+      display.clearDisplay();
+    display.display();
   return proceed;
+      display.clearDisplay();
+    display.display();
 }
 
 result showCurrentWeather()
