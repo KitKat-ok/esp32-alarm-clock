@@ -96,10 +96,16 @@ void WiFiEvent(WiFiEvent_t event)
     Serial.println("WiFi connected");
     if (tasksLaunched == false)
     {
+      delay(2500);
+      Serial.println("Launching Tasks");
       createWeatherTask();
+      Serial.println("Created Weather Task");
       synchronizeAndSetTime();
+      Serial.println("Synchronized Time");
       createAlarmTask();
+      Serial.println("Launched Alarm Task");
       createTimeTask();
+      Serial.println("Launched Time Task");
       int currentHour = hour();
       int currentMinute = minute();
       LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
@@ -108,12 +114,16 @@ void WiFiEvent(WiFiEvent_t event)
     break;
 
   case SYSTEM_EVENT_STA_DISCONNECTED:
+   delay(2500);
     Serial.println("WiFi disconnected");
-        Serial.println("turning NTP off");
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
     deleteTimeTask();
+    Serial.println("turned NTP off");
+
     deleteWeatherTask();
+    Serial.println("turned Weather Task off");
+
     tasksLaunched = false;
     break;
 

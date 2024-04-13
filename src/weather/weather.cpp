@@ -33,8 +33,16 @@ void weatherTask(void *parameter)
 {
     while (true)
     {
-        Serial.println("Syncing weather");
-        syncWeather();
+        if (WiFi.status() == WL_CONNECTED)
+        {
+            syncWeather();
+            Serial.println("Syncing weather");
+        }
+        else
+        {
+            // WiFi is not connected, print a message or take appropriate action
+            Serial.println("WiFi not connected. Cannot sync weather.");
+        }
         vTaskDelay(pdMS_TO_TICKS(30 * 60 * 1000));
     }
 }

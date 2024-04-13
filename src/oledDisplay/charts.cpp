@@ -57,9 +57,9 @@ void initLightGraph()
     display.setChartCoordinates(0, SCREEN_HEIGHT - 5);
     display.setChartWidthAndHeight(SCREEN_WIDTH, (SCREEN_HEIGHT / 1.5) - 3);
     display.setXIncrement(2);
-    display.setAxisDivisionsInc(5, 5);
-    display.setYLimits(0.00, 300.00);
-    display.setYLimitLabels("0", "300");
+    display.setAxisDivisionsInc(0.1, 0.1);
+    display.setYLimits(0.00, 80.00);
+    display.setYLimitLabels("0", "80");
     display.setYLabelsVisible(true);
     display.setPointGeometry(POINT_GEOMETRY_NONE);
     display.setPlotMode(SINGLE_PLOT_MODE);

@@ -1,0 +1,10 @@
+      int alarmMelody[] = {NOTE_F5, NOTE_E5, NOTE_D5, NOTE_C5, NOTE_A4, NOTE_AS4};
+    int alarmDurations[] = {4, 5, 5, 4, 3, 5};
+
+
+      for (int i = 0; i < sizeof(alarmMelody) / sizeof(alarmMelody[0]); i++)
+      {
+        tone(BUZZER_PIN, alarmMelody[i], 1000 / alarmDurations[i]);
+        delay(1000 / alarmDurations[i] * 1.30);
+        noTone(BUZZER_PIN);
+}

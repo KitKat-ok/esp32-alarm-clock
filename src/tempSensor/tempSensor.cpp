@@ -29,7 +29,7 @@ void setTemperature(void *pvParameters)
             temperatureArray[TEMP_CHART_READINGS - 1] = temperature; // Replace with your temperature reading function
             previousMillisTemp = currentMillis;
         }
-        vTaskDelay(1000);
+        vTaskDelay(1);
     }
 }
 

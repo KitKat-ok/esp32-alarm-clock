@@ -246,14 +246,81 @@ result showDaysAfterWeather()
   refreshMenu();
   return proceed;
 }
+result showWifiDebugMenu()
+{
+  menuRunning = true;
+  sleepMenu();
+  wifiDebugMenu();
+  startTime = millis(); 
+  delay(100);
+  while(digitalRead(BUTTON_EXIT_PIN)) {
+  if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+  }
+    wifiDebugMenu();
+  }
+  display.stopscroll();
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
+result showCPUDebugMenu()
+{
+  menuRunning = true;
+  sleepMenu();
+  CPUDebugMenu();
+  startTime = millis(); 
+  delay(100);
+  while(digitalRead(BUTTON_EXIT_PIN)) {
+  if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+  }
+    CPUDebugMenu();
+  }
+  display.stopscroll();
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
+result showGeneralDebugMenu()
+{
+  menuRunning = true;
+  sleepMenu();
+  generalDebugMenu();
+  startTime = millis(); 
+  delay(100);
+  while(digitalRead(BUTTON_EXIT_PIN)) {
+  if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+  }
+    generalDebugMenu();
+  }
+  display.stopscroll();
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
 
-MENU(sensors, "Sensor Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
+MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
+     , OP("WiFi", showWifiDebugMenu, enterEvent)
+     , OP("CPU", showCPUDebugMenu, enterEvent)
+     , OP("General", showGeneralDebugMenu, enterEvent)
+     , EXIT("<Back")
+    );
+
+MENU(sensors, "Sensors Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("Temperature", showTempChart, enterEvent)
      , OP("Light", showLightChart, enterEvent)
      , EXIT("<Back")
     );
 
-MENU(weatherMenu, "Weather Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
+MENU(info, "Info Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
+     , SUBMENU(sensors)
+     , SUBMENU(debug)
+     , EXIT("<Back")
+    );
+
+MENU(menus, "Weather Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("Current Weather", showCurrentWeather, enterEvent)
      , OP("Today's cast", showTodaysWeather, enterEvent)
      , OP("Tomorrow's cast", showTomorrowsWeather, enterEvent)
@@ -263,8 +330,8 @@ MENU(weatherMenu, "Weather Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
 
 MENU(mainMenu, "Main Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
   , SUBMENU(alarmMenu)
-  , SUBMENU(weatherMenu)
-  , SUBMENU(sensors)
+  , SUBMENU(menus)
+  , SUBMENU(info)
   ,EXIT("<Back")
 );
 

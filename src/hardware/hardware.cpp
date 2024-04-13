@@ -15,17 +15,25 @@ void initButtons();
 void initTempSensor();
 void LowBattery();
 
+
 void initHardware()
 {
+  setCpuFrequencyMhz(80); // stable 160,80,240
   delay(2000);
   Serial.begin(115200);
   analogReadResolution(12);
   initButtons();
+  delay(100);
   initOledDisplay();
+  delay(100);
   initLedDisplay();
+  delay(100);
   LowBattery();
+  delay(100);
   initBuzzer();
+  delay(100);
   initLightSensor();
+  delay(100);
   initTempSensor();
   setTime(0, 0, 0, 1, 1, 1970);
 }
@@ -107,8 +115,10 @@ void initLedDisplay()
 
 void initLightSensor()
 {
-  lightMeter.begin();
   lightMeter.configure(BH1750::CONTINUOUS_HIGH_RES_MODE);
+  lightMeter.measurementReady(true);
+  lightMeter.setMTreg(69);
+  lightMeter.begin();
   Serial.println("Light sensor initialized");
 }
 

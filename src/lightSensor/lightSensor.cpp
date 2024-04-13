@@ -30,7 +30,7 @@ const unsigned long intervalLight = 60000; // Interval in milliseconds (30 secon
 unsigned long previousMillisLight = 0;     // Will store last time the function was called
 
 unsigned long previousMillisDimming = 0;
-unsigned long intervalDimming = 1000; // Example interval in milliseconds
+unsigned long intervalDimming = 10000; // Example interval in milliseconds
 
 unsigned long lastActionTime = 0;
 unsigned long delayDuration = 15000; // 30 seconds in milliseconds
@@ -66,7 +66,7 @@ void dimmingFunction(void *pvParameters)
 
                 Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
 
-                Serial.println("Reading brightness and dimming displays accordingly");
+                Serial.println("Reading brightness and dimming oled accordingly");
                 previousMillisDimming = currentMillis;
             }
             vTaskDelay(10);
@@ -106,23 +106,31 @@ void dimmingFunction(void *pvParameters)
     }
 }
 
+float previousLightLevel = 0.0;
+
 void dimOledDisplay()
 {
-    if (lightMeter.readLightLevel() == 0.0)
+    int currentHour = hour();
+    int currentMinute = minute();
+    int lightLevel = lightMeter.readLightLevel();
+    Serial.println("light level:" + String(lightLevel));
+    if (lightLevel < 10000)
     {
-        display.dim(true);
-        display.ssd1306_command(SSD1306_DISPLAYOFF);
-        Serial.println("display off");
-    }
-    else if (lightMeter.readLightLevel() > OLED_DIM_THRESHOLD)
-    {
-        display.dim(false);
-        display.ssd1306_command(SSD1306_DISPLAYON);
-    }
-    else
-    {
-        display.ssd1306_command(SSD1306_DISPLAYON);
-        display.dim(true);
+        if (lightLevel <= 1.0 && (currentHour >= 23 || currentHour < 10))
+        {
+            display.ssd1306_command(SSD1306_DISPLAYOFF);
+            Serial.println("display off");
+        }
+        else if (lightLevel > OLED_DIM_THRESHOLD)
+        {
+            display.dim(false);
+            display.ssd1306_command(SSD1306_DISPLAYON);
+        }
+        else
+        {
+            display.ssd1306_command(SSD1306_DISPLAYON);
+            display.dim(true);
+        }
     }
 }
 
@@ -131,20 +139,25 @@ void dimLedDisplay()
     int currentHour = hour();
     int currentMinute = minute();
     int lightLevel = lightMeter.readLightLevel();
-    if (lightLevel == 0.00 && (currentHour >= 23 || currentHour < 10))
+    Serial.println("light level:" + String(lightLevel));
+    if (lightLevel < 10000)
     {
-        LedDisplay.clear();
-        displayON = false;
-    }
-    else if (lightLevel > LED_DIM_THRESHOLD)
-    {
-        displayON = true;
-        LedDisplay.setBrightness(map(constrain(lightLevel, LED_DIM_THRESHOLD, 100), LED_DIM_THRESHOLD, 100, 0, 7));
-        Serial.println("Brightness of Led display " + String(map(constrain(lightLevel, 0, LED_DIM_THRESHOLD), 0, LED_DIM_THRESHOLD, 0, 7)));
-    }
-    else
-    {
-        displayON = true;
-        LedDisplay.setBrightness(0);
+
+        if (lightLevel <= 1.00 && (currentHour >= 23 || currentHour < 10))
+        {
+            LedDisplay.clear();
+            displayON = false;
+        }
+        else if (lightLevel > LED_DIM_THRESHOLD)
+        {
+            displayON = true;
+            LedDisplay.setBrightness(map(constrain(lightLevel, LED_DIM_THRESHOLD, 100), LED_DIM_THRESHOLD, 100, 0, 7));
+            Serial.println("Brightness of Led display " + String(map(constrain(lightLevel, 0, LED_DIM_THRESHOLD), 0, LED_DIM_THRESHOLD, 0, 7)));
+        }
+        else
+        {
+            displayON = true;
+            LedDisplay.setBrightness(0);
+        }
     }
 }

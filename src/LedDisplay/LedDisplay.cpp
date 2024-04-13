@@ -20,8 +20,8 @@ void createLedDisplayTask()
 
 void showTimeTask(void *pvParameters)
 {
-  unsigned long previousMillis = 0; // Variable to store the last time the LED was updated
-  const long interval = 1000;       // Interval at which to blink (in milliseconds)
+  unsigned long previousMillis = 0;
+  const long interval = 10000; // 10 seconds interval
   while (true)
   {
     while (maxBrightness == false)
@@ -31,20 +31,17 @@ void showTimeTask(void *pvParameters)
       int currentMinute = minute();
       if (currentMillis - previousMillis >= interval)
       {
-        if (charging == true)
-        {
-          dimLedDisplay();
-        }
-      }
-      if (currentMinute != previousMinute)
-      {
-        if (displayON == true && (currentHour >= 23 || currentHour < 10))
-        {
-          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-        }
+        previousMillis = currentMillis;
 
-        // Update the previous minute
-        previousMinute = currentMinute;
+        Serial.println("Reading brightness and dimming Led display accordingly");
+
+
+        dimLedDisplay();
+
+        if (displayON)
+        {
+          LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+        }
       }
       vTaskDelay(10);
     }

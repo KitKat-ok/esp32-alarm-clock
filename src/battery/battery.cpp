@@ -81,7 +81,6 @@ void manageBattery(void *parameter)
     {
       charging = true;
       wentToSleep = false;
-      lightMeter.configure(BH1750::CONTINUOUS_HIGH_RES_MODE);
       Serial.println("charging");
       if (!WiFi.isConnected() && WiFiTaskRunning == false)
       {
@@ -99,7 +98,6 @@ void manageBattery(void *parameter)
       charging = false;
 
       turnOffWifi();
-      lightMeter.configure(BH1750::CONTINUOUS_LOW_RES_MODE);
       vTaskDelay(pdMS_TO_TICKS(500));
       while (wentToSleep == false)
       {
