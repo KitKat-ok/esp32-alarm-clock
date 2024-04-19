@@ -101,6 +101,14 @@ void dimmingFunction(void *pvParameters)
             while (millis() - lastActionTime < delayDuration)
             {
                 vTaskDelay(10);
+                if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
+                    digitalRead(BUTTON_UP_PIN) == LOW ||
+                    digitalRead(BUTTON_DOWN_PIN) == LOW ||
+                    digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+                    digitalRead(BUTTON_EXIT_PIN) == LOW)
+                {
+                    lastActionTime = millis();
+                }
             }
         }
     }

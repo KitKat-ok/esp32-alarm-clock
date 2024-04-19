@@ -33,16 +33,16 @@ void setup()
     centerText("IP Address:", 20);
     centerText(WiFi.localIP().toString(), 30);
     display.display();
-  String ipAddress = WiFi.localIP().toString();
+    String ipAddress = WiFi.localIP().toString();
 
-  // Extract the last two digits from the IP address
-  String lastTwoDigits = ipAddress.substring(ipAddress.length() - 2);
+    // Extract the last two digits from the IP address
+    String lastTwoDigits = ipAddress.substring(ipAddress.length() - 2);
 
-  // Convert the last two digits string to an integer
-  int lastTwoDigitsInt = lastTwoDigits.toInt();
+    // Convert the last two digits string to an integer
+    int lastTwoDigitsInt = lastTwoDigits.toInt();
 
-  // Display the last two digits on the TM1637 display
-  LedDisplay.showNumberDec(lastTwoDigitsInt);
+    // Display the last two digits on the TM1637 display
+    LedDisplay.showNumberDec(lastTwoDigitsInt);
 
     while (true)
     {
@@ -60,6 +60,8 @@ void setup()
     readAlarms();
     createTempTask();
     createLedDisplayTask();
+    createTimeTask();
+    createWeatherTask();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
   }
 }

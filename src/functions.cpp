@@ -99,6 +99,29 @@ String resetReasonToString(int reason)
   }
 }
 
+String wifiStatusToString(int status)
+{
+  switch (status)
+  {
+  case WL_IDLE_STATUS:
+    return "Idle";
+  case WL_NO_SSID_AVAIL:
+    return "No SSID Available";
+  case WL_SCAN_COMPLETED:
+    return "Scan Completed";
+  case WL_CONNECTED:
+    return "Connected";
+  case WL_CONNECT_FAILED:
+    return "Connect Failed";
+  case WL_CONNECTION_LOST:
+    return "Connection Lost";
+  case WL_DISCONNECTED:
+    return "Disconnected";
+  default:
+    return "Unknown Status";
+  }
+}
+
 String microsecondsToTimeString(uint64_t microseconds) {
     // Convert microseconds to seconds
     uint64_t total_seconds = microseconds / 1000000;

@@ -2,13 +2,13 @@
 #include <HTTPClient.h>
 
 Day days[] = {
-    {false, 0, 0}, // Sunday
-    {false, 0, 0}, // Monday
-    {false, 0, 0}, // Tuesday
-    {false, 0, 0}, // Wednesday
-    {false, 0, 0}, // Thursday
-    {false, 0, 0}, // Friday
-    {false, 0, 0}  // Saturday
+    {false, 0, 0,true}, // Sunday
+    {false, 0, 0,true}, // Monday
+    {false, 0, 0,true}, // Tuesday
+    {false, 0, 0,true}, // Wednesday
+    {false, 0, 0,true}, // Thursday
+    {false, 0, 0,true}, // Friday
+    {false, 0, 0,true}  // Saturday
 };
 
 bool ringedToday = false;
@@ -108,8 +108,14 @@ void ringAlarm(void *parameter)
   unsigned long currentTime = millis();
   unsigned long previousMillisBrightness1 = 0; // Variable to store the last time brightness 1 was adjusted
   unsigned long previousMillisBrightness2 = 0; // Variable to store the last time brightness 2 was adjusted
-  const long intervalBrightness1 = 3000;       // Interval for brightness 1 adjustment in milliseconds (5 seconds)
+  const long intervalBrightness1 = 6000;       // Interval for brightness 1 adjustment in milliseconds (5 seconds)
   const long intervalBrightness2 = 6000;       // Interval for brightness 2 adjustment in milliseconds (3 seconds)
+  int currentDay = weekday() - 1;
+  bool ringOn = days[currentDay].soundOn;
+  Serial.println("ringON:" + String(ringOn));
+  // unsigned long previousMillisFrequency = 0;   // Variable to store the last time task 1 was performed
+  // long intervalFrequency = 5000;         // Interval for task 1 in milliseconds (3 seconds)
+  // int frequency = 100;
   sendOnPostRequest();
   while (true)
   {
@@ -128,11 +134,25 @@ void ringAlarm(void *parameter)
       LedDisplay.setBrightness(0);
       LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
     }
-
-    int alarmMelody[] = {NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7, NOTE_A7};
-    int alarmDurations[] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
     currentTime = millis();
-    if (currentTime >= startTime || WiFi.SSID() != "dragonn2" || WiFi.status() != WL_CONNECTED)
+
+
+
+    // if (currentTime - previousMillisFrequency >= intervalFrequency)
+    // {
+    //   // Save the last time task 1 was performed
+    //   previousMillisFrequency = currentTime;
+    //   tone(BUZZER_PIN, frequency, 100);
+    //   vTaskDelay(200);
+    //   noTone(BUZZER_PIN);
+
+    //   intervalFrequency = intervalFrequency - 10;
+
+    //   frequency = frequency + 50;
+    // }
+    int alarmMelody[] = {NOTE_A5, NOTE_A5, NOTE_A6, NOTE_A6, NOTE_A6, NOTE_A6, NOTE_A4, NOTE_A4};
+    int alarmDurations[] = {4, 4, 4, 7, 7, 7, 4, 4};
+    if ((currentTime >= startTime || WiFi.SSID() != "dragonn2" || WiFi.status() != WL_CONNECTED) && ringOn == true)
     {
 
       for (int i = 0; i < sizeof(alarmMelody) / sizeof(alarmMelody[0]); i++)
@@ -222,7 +242,7 @@ void sendOffPostRequest()
       http.begin("http://192.168.88.74/gateways/0x1/RGB/command"); // Specify destination for HTTP request
       http.addHeader("Content-Type", "application/json");          // Specify content-type header
 
-      int httpResponseCode = http.POST("{\"state\": \"OFF\", \"transition\": 300}"); // Send the actual POST request
+      int httpResponseCode = http.POST("{\"state\": \"OFF\", \"transition\": 30}"); // Send the actual POST request
 
       if (httpResponseCode > 0)
       {

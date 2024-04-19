@@ -16,4 +16,6 @@ int getChipRevision();
 
 String microsecondsToTimeString(uint64_t microseconds);
 
+String wifiStatusToString(int status);
+
 #endif

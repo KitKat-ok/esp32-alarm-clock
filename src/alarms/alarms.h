@@ -14,6 +14,7 @@ struct Day {
     bool isSet;
     int hours;
     int minutes;
+    bool soundOn;
 };
 
 extern Day days[7];  // Declaration of the array

@@ -48,6 +48,17 @@ void showTimeTask(void *pvParameters)
 
     int currentHour = hour();
     int currentMinute = minute();
+    if (currentHour >= 23 || currentHour < 10)
+    {
+          LedDisplay.setBrightness(2);
+    LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+    while (maxBrightness == true)
+    {
+      vTaskDelay(10);
+    }
+    dimLedDisplay();
+    LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+    } else {
     LedDisplay.setBrightness(7);
     LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
     while (maxBrightness == true)
@@ -56,5 +67,6 @@ void showTimeTask(void *pvParameters)
     }
     dimLedDisplay();
     LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+    }
   }
 }

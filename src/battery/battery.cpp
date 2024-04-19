@@ -36,29 +36,6 @@ void createBatteryTask()
   );
 }
 
-String wifiStatusToString(int status)
-{
-  switch (status)
-  {
-  case WL_IDLE_STATUS:
-    return "Idle";
-  case WL_NO_SSID_AVAIL:
-    return "No SSID Available";
-  case WL_SCAN_COMPLETED:
-    return "Scan Completed";
-  case WL_CONNECTED:
-    return "Connected";
-  case WL_CONNECT_FAILED:
-    return "Connect Failed";
-  case WL_CONNECTION_LOST:
-    return "Connection Lost";
-  case WL_DISCONNECTED:
-    return "Disconnected";
-  default:
-    return "Unknown Status";
-  }
-}
-
 void manageBattery(void *parameter)
 {
   while (true)
@@ -82,6 +59,7 @@ void manageBattery(void *parameter)
       charging = true;
       wentToSleep = false;
       Serial.println("charging");
+      vTaskDelay(pdMS_TO_TICKS(500));
       if (!WiFi.isConnected() && WiFiTaskRunning == false)
       {
         Serial.println("launching WiFi task");
@@ -101,6 +79,7 @@ void manageBattery(void *parameter)
       vTaskDelay(pdMS_TO_TICKS(500));
       while (wentToSleep == false)
       {
+        vTaskDelay(pdMS_TO_TICKS(10));
         Serial.println("Going to sleep in 50 seconds");
         for (int i = 0; i < 50; i++)
         {
@@ -120,6 +99,7 @@ void manageBattery(void *parameter)
         }
         if (dimmingTaskRunning == true)
         {
+          vTaskDelay(pdMS_TO_TICKS(10));
           vTaskDelete(dimmingTask);
           dimmingTaskRunning = false;
         }
@@ -133,13 +113,11 @@ void manageBattery(void *parameter)
       {
         Serial.println("Woke up from Timer");
         display.dim(true);
-        LedDisplay.setBrightness(0);
-        LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+        LedDisplay.clear();
         static unsigned long startTime = millis();
         if (millis() - startTime >= TIMER_WAKUP_TIME)
         {
-          LedDisplay.setBrightness(0);
-          LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+          LedDisplay.clear();
           Serial.println("Going to sleep");
           vTaskDelay(pdMS_TO_TICKS(200));
           goToSleep();
@@ -185,8 +163,7 @@ void goToSleep()
 
   display.dim(true);
   display.display();
-  LedDisplay.setBrightness(0);
-  LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+  LedDisplay.clear();
 
   WiFi.disconnect(true);
   WiFi.mode(WIFI_OFF);
