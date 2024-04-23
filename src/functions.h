@@ -10,6 +10,9 @@ String getWeekdayName(int weekday);
 
 String getNextDayName(int daysAfterToday);
 
+String getCurrentMonthName();
+
+
 String resetReasonToString(int reason);
 
 int getChipRevision();
@@ -17,5 +20,6 @@ int getChipRevision();
 String microsecondsToTimeString(uint64_t microseconds);
 
 String wifiStatusToString(int status);
+
 
 #endif

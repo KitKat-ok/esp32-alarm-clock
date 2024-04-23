@@ -19,7 +19,8 @@ void setup()
     OTAEnabled = true;
     createWifiTask();
     display.clearDisplay();
-    centerText("OTA starting", 30);
+    centerText("Connecting To WiFi", 30);
+    centerText("Starting OTA", 40);
     display.display();
     // Replace "1234" with a secure OTA password
     while (WiFi.status() != WL_CONNECTED)
@@ -29,7 +30,7 @@ void setup()
     Serial.println("Enabled OTA");
     ArduinoOTA.begin();
     display.clearDisplay();
-    centerText("OTA enabled", 10);
+    centerText("OTA:Enabled!", 10);
     centerText("IP Address:", 20);
     centerText(WiFi.localIP().toString(), 30);
     display.display();

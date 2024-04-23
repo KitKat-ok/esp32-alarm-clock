@@ -13,6 +13,15 @@ void centerText(String text, int y, int x)
   display.print(text);
 }
 
+String getCurrentMonthName()
+{
+  const char *months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+  time_t currentTime = now();                 // Get the current time
+  int monthIndex = month(currentTime);        // Get the month (1 = January, 2 = February, etc.)
+  return months[monthIndex - 1];              // Adjust index to match array (0 = January, 1 = February, etc.)
+}
+
+
 String getCurrentWeekdayName()
 {
   const char *weekdays[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
