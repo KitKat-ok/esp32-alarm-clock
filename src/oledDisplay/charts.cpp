@@ -14,8 +14,8 @@ void initTempGraph()
     display.setChartWidthAndHeight(SCREEN_WIDTH, (SCREEN_HEIGHT / 1.5) - 3);
     display.setXIncrement(2);
     display.setAxisDivisionsInc(5, 5);
-    display.setYLimits(0.00, 35.00);
-    display.setYLimitLabels("0", "35");
+    display.setYLimits(0.00, 3000.0);
+    display.setYLimitLabels("0", "30");
     display.setYLabelsVisible(true);
     display.setPointGeometry(POINT_GEOMETRY_NONE);
     display.setPlotMode(SINGLE_PLOT_MODE);
@@ -43,7 +43,7 @@ void loopTempGraph()
         // Draw the updated chart
         for (int i = 0; i < TEMP_CHART_READINGS; i++)
         {
-            display.updateChart(temperatureArray[i]);
+            display.updateChart(temperatureArray[i] * 100);
         }
         previousMillis = currentMillis;
         display.display();

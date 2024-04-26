@@ -122,7 +122,7 @@ void dimOledDisplay()
     int currentMinute = minute();
     int lightLevel = lightMeter.readLightLevel();
     Serial.println("light level:" + String(lightLevel));
-    if (lightLevel < 10000)
+    if (lightLevel < 5000)
     {
         if (lightLevel <= 1.0 && (currentHour >= 23 || currentHour < 10))
         {
@@ -148,7 +148,7 @@ void dimLedDisplay()
     int currentMinute = minute();
     int lightLevel = lightMeter.readLightLevel();
     Serial.println("light level:" + String(lightLevel));
-    if (lightLevel < 10000)
+    if (lightLevel < 5000)
     {
 
         if (lightLevel <= 1.00 && (currentHour >= 23 || currentHour < 10))
