@@ -7,6 +7,8 @@ void createDimmingTask();
 
 void dimLedDisplay();
 
+float smoothLightReading();
+
 extern TaskHandle_t dimmingTask;
 extern bool dimmingTaskRunning;
 extern bool maxBrightness;

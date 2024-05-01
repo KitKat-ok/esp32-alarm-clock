@@ -117,7 +117,6 @@ void initLightSensor()
 {
   lightMeter.configure(BH1750::CONTINUOUS_HIGH_RES_MODE);
   lightMeter.measurementReady(true);
-  lightMeter.setMTreg(69);
   lightMeter.begin();
   Serial.println("Light sensor initialized");
 }

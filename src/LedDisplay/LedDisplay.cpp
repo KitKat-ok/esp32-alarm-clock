@@ -35,8 +35,10 @@ void showTimeTask(void *pvParameters)
 
         Serial.println("Reading brightness and dimming Led display accordingly");
 
-
+        if (charging == true)
+        {
         dimLedDisplay();
+        }
 
         if (displayON)
         {

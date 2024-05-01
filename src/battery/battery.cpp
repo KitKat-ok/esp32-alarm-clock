@@ -130,8 +130,24 @@ void manageBattery(void *parameter)
         Serial.println("Woke up from touch button");
         display.ssd1306_command(SSD1306_DISPLAYON);
         display.dim(false);
-        LedDisplay.setBrightness(7);
-        LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+        int currentHour = hour();
+        int currentMinute = minute();
+        if (currentHour >= 23 || currentHour < 10)
+        {
+          LedDisplay.setBrightness(2);
+          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+          while (maxBrightness == true)
+          {
+            vTaskDelay(10);
+          }
+          dimLedDisplay();
+          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+        }
+        else
+        {
+          LedDisplay.setBrightness(7);
+          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+        }
         static unsigned long startTime = millis();
 
         if (millis() - startTime >= GPIO_WAKUP_TIME)

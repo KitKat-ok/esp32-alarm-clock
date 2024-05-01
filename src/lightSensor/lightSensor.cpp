@@ -59,7 +59,7 @@ void dimmingFunction(void *pvParameters)
                 previousMillisLight = currentMillis;
             }
 
-            if (currentMillis - previousMillisDimming >= intervalDimming)
+            if (currentMillis - previousMillisDimming >= intervalDimming && charging == true)
             {
                 dimOledDisplay();
                 maxBrightness = false;
@@ -120,8 +120,9 @@ void dimOledDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    int lightLevel = lightMeter.readLightLevel();
-    Serial.println("light level:" + String(lightLevel));
+    int lightLevel = smoothLightReading();
+    Serial.println("raw light level: " + String(lightMeter.readLightLevel()));
+    Serial.println("smoothened light level: " + String(lightLevel));
     if (lightLevel < 5000)
     {
         if (lightLevel <= 1.0 && (currentHour >= 23 || currentHour < 10))
@@ -146,8 +147,9 @@ void dimLedDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    int lightLevel = lightMeter.readLightLevel();
-    Serial.println("light level:" + String(lightLevel));
+    int lightLevel = smoothLightReading();
+    Serial.println("raw light level: " + String(lightMeter.readLightLevel()));
+    Serial.println("smoothened light level: " + String(lightLevel));
     if (lightLevel < 5000)
     {
 
@@ -168,4 +170,28 @@ void dimLedDisplay()
             LedDisplay.setBrightness(0);
         }
     }
+}
+
+float lastLightLevel = 0.0;
+
+float smoothLightReading() {
+    delay(100);
+    static float smoothedLightLevel = 0.0; // Initial smoothed light level
+    float currentLightLevel = lightMeter.readLightLevel(); // Read the current light level from BH1750 sensor
+
+    float diff = currentLightLevel - lastLightLevel;
+
+    // Adjust the smoothing factor based on the difference
+    float smoothingFactor = LIGHT_SMOOTHING_FACTOR;
+    if (diff > MAX_INCREASE_OF_LIGHT_LEVEL) {
+        smoothingFactor = 1.0; // Use full weight if the increase exceeds the threshold
+        currentLightLevel = 0.0;
+    }
+
+    // Smooth the light level using exponential moving average with the adjusted smoothing factor
+    smoothedLightLevel = smoothingFactor * currentLightLevel + (1.0 - smoothingFactor) * smoothedLightLevel;
+
+    lastLightLevel = lightMeter.readLightLevel();
+
+    return smoothedLightLevel;
 }
