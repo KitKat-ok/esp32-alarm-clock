@@ -103,6 +103,8 @@ void WiFiEvent(WiFiEvent_t event)
       createAlarmTask();
       Serial.println("Launched Alarm Task");
       synchronizeAndSetTime();
+      delay(1000);
+      createWeatherTask();
       int currentHour = hour();
       int currentMinute = minute();
       LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
@@ -111,7 +113,7 @@ void WiFiEvent(WiFiEvent_t event)
     break;
 
   case SYSTEM_EVENT_STA_DISCONNECTED:
-   delay(4000);
+    delay(4000);
     Serial.println("WiFi disconnected");
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);

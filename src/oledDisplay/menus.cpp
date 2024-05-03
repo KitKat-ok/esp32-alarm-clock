@@ -21,121 +21,53 @@ void currentWeather()
     display.print(weatherForecastData[0]->windSpeed);
     display.print("m/s ");
     display.println(convertWindDirection(weatherForecastData[0]->windDirection));
-    display.setCursor(0, SCREEN_HEIGHT - 1);
+    display.setCursor(0, SCREEN_HEIGHT - 5);
     display.setFont(&Roboto_Black_9);
     display.print(weatherConditionIdToStr(weatherForecastData[0]->weatherConditionId));
     display.print("\t");
     display.print("");
-    display.startscrollleft(0x07, 0x07);
+    display.startscrollleft(0x06, 0x07);
     display.display();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
-void todaysWeather()
+void displayWeatherCast(int dayIndex)
 {
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    displaywidget(weatherForecastData[0][4].weatherConditionId);
+    displaywidget(weatherForecastData[dayIndex][4].weatherConditionId);
     display.setTextSize(1);
-    display.setCursor(54, 20);
-    display.print(getNextDayName(1)); // Prints city name ie: Marmagao in my case
-    display.drawLine(57, 25, 127, 25, WHITE);
+    display.setCursor(55, 10);
+    display.print(getNextDayName(dayIndex)); // Prints city name ie: Marmagao in my case
+    display.drawLine(57, 15, 127, 15, WHITE);
 
     float tmax = -9999;
     float tmin = 9999;
     for (int i = 0; i < 8; i++)
     {
-        if (weatherForecastData[0][i].maxTemp > tmax)
-            tmax = weatherForecastData[0][i].maxTemp;
-        if (weatherForecastData[0][i].minTemp < tmin)
-            tmin = weatherForecastData[0][i].minTemp;
+        if (weatherForecastData[dayIndex][i].maxTemp > tmax)
+            tmax = weatherForecastData[dayIndex][i].maxTemp;
+        if (weatherForecastData[dayIndex][i].minTemp < tmin)
+            tmin = weatherForecastData[dayIndex][i].minTemp;
     }
 
+    display.setCursor(57, 25);
+    display.print("Min " + String(tmin) + "");
     display.setCursor(57, 35);
-    display.print("Min " + String(tmin) + "C");
+    display.print("Max " + String(tmax) + "");
+
     display.setCursor(57, 45);
-    display.print("Max " + String(tmax) + "C");
-    display.setCursor(0, SCREEN_HEIGHT - 1);
-    display.setFont(&Roboto_Black_9);
-    display.print(weatherConditionIdToStr(weatherForecastData[0][4].weatherConditionId));
-    display.print("\t");
-    display.print("");
-    display.startscrollleft(0x07, 0x07);
-    display.display();
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-}
-
-void tommorowsWeather()
-{
-    display.clearDisplay();
-    display.setTextColor(SSD1306_WHITE);
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    displaywidget(weatherForecastData[1][4].weatherConditionId);
-    display.setTextSize(1);
-    display.setCursor(54, 20);
-    display.print(getNextDayName(1)); // Prints city name ie: Marmagao in my case
-    display.drawLine(57, 25, 127, 25, WHITE);
-
-    float tmax = -9999;
-    float tmin = 9999;
-    for (int i = 0; i < 8; i++)
-    {
-        if (weatherForecastData[1][i].maxTemp > tmax)
-            tmax = weatherForecastData[1][i].maxTemp;
-        if (weatherForecastData[1][i].minTemp < tmin)
-            tmin = weatherForecastData[1][i].minTemp;
-    }
-
-    display.setCursor(57, 35);
-    display.print("Min " + String(tmin) + "C");
-    display.setCursor(57, 45);
-    display.print("Max " + String(tmax) + "C");
-    display.setCursor(0, SCREEN_HEIGHT - 1);
-    display.setFont(&Roboto_Black_9);
-    display.print(weatherConditionIdToStr(weatherForecastData[1][4].weatherConditionId));
-    display.print("\t");
-    display.print("");
-    display.startscrollleft(0x07, 0x07);
-    display.display();
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-}
-
-void daysAfterWeather()
-{
-    display.clearDisplay();
-    display.setTextColor(SSD1306_WHITE);
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    displaywidget(weatherForecastData[2][4].weatherConditionId);
-    display.setTextSize(1);
-    display.setCursor(54, 20);
-    display.print(getNextDayName(2)); // Prints city name ie: Marmagao in my case
-    display.drawLine(57, 25, 127, 25, WHITE);
-
-    float tmax = -9999;
-    float tmin = 9999;
-    for (int i = 0; i < 8; i++)
-    {
-        if (weatherForecastData[2][i].maxTemp > tmax)
-            tmax = weatherForecastData[2][i].maxTemp;
-        if (weatherForecastData[2][i].minTemp < tmin)
-            tmin = weatherForecastData[2][i].minTemp;
-    }
-
-    display.setCursor(57, 35);
-    display.print("Min " + String(tmin) + "C");
-    display.setCursor(57, 45);
-    display.print("Max " + String(tmax) + "C");
-    display.setCursor(57, 55);
-    display.print(weatherForecastData[2][4].windSpeed);
+    display.print(weatherForecastData[dayIndex][4].windSpeed);
     display.print("m/s ");
-    display.println(convertWindDirection(weatherForecastData[2][4].windDirection));
-    display.setCursor(0, SCREEN_HEIGHT - 1);
-    display.setFont(&Roboto_Black_9);
-    display.print(weatherConditionIdToStr(weatherForecastData[2][4].weatherConditionId));
-    display.print("\t");
+    display.println(convertWindDirection(weatherForecastData[dayIndex][4].windDirection));
+
+    display.setCursor(0, SCREEN_HEIGHT - 5);
+    display.setFont(&DejaVu_LGC_Sans_Bold_9);
+    display.print(weatherConditionIdToStr(weatherForecastData[dayIndex][4].weatherConditionId));
     display.print("");
-    display.startscrollleft(0x07, 0x07);
+
+    display.startscrollleft(0x06, 0x07);
     display.display();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
@@ -161,7 +93,7 @@ void displaywidget(int code_no)
     else if (code_no == 900)
         display.drawBitmap(0, 0, unknown_prep, 57, 54, BLACK, WHITE);
     else
-        display.fillCircle(30, 30, 20, WHITE); // sunny day
+        display.fillCircle(30, 23, 20, WHITE); // sunny day
 }
 
 String convertWindDirection(uint16_t degrees)
@@ -184,7 +116,7 @@ String convertWindDirection(uint16_t degrees)
     }
     else
     {
-        return "Unknown";
+        return "-";
     }
 }
 
@@ -238,5 +170,46 @@ void generalDebugMenu()
     display.println("Free heap: " + String(esp_get_free_heap_size() / 1024.0, 2) + " KB");
     display.setCursor(0, 65);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    display.display();
+}
+
+void loopCallendar()
+{
+}
+
+void showCallendar(int weekNumber)
+{
+    display.clearDisplay();
+    centerText(getMonthName(weekNumber), 10);
+
+    String days[] = {"Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"};
+
+    int yOffset = (SCREEN_HEIGHT - 16) / 2;
+    int totalWidth = 0;
+
+    for (int i = 0; i < 7; i++)
+    {
+        int16_t x1, y1;
+        uint16_t w, h;
+        display.getTextBounds(days[i], 0, 0, &x1, &y1, &w, &h);
+
+        totalWidth += w;
+    }
+
+    int gap = (SCREEN_WIDTH - totalWidth) / 6;
+    int startX = gap / 2;
+
+    for (int i = 0; i < 7; i++)
+    {
+
+        int16_t x1, y1;
+        uint16_t w, h;
+        display.getTextBounds(days[i], 0, 0, &x1, &y1, &w, &h);
+
+        display.setCursor(startX, yOffset);
+        display.print(days[i]);
+        startX += w + gap;
+    }
+
     display.display();
 }

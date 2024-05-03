@@ -188,10 +188,7 @@ float smoothLightReading() {
         currentLightLevel = 0.0;
     }
 
-    // Smooth the light level using exponential moving average with the adjusted smoothing factor
-    smoothedLightLevel = smoothingFactor * currentLightLevel + (1.0 - smoothingFactor) * smoothedLightLevel;
-
     lastLightLevel = lightMeter.readLightLevel();
 
-    return smoothedLightLevel;
+    return currentLightLevel;
 }

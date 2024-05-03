@@ -62,7 +62,6 @@ void setup()
     createTempTask();
     createLedDisplayTask();
     createTimeTask();
-    createWeatherTask();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
   }
 }

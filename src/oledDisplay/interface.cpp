@@ -240,7 +240,7 @@ result showTodaysWeather()
 {
   menuRunning = true;
   sleepMenu();
-  todaysWeather();
+  displayWeatherCast(0);
   startTime = millis(); 
   delay(100);
   while(digitalRead(BUTTON_EXIT_PIN)) {
@@ -258,7 +258,7 @@ result showTomorrowsWeather()
 {
   menuRunning = true;
   sleepMenu();
-  tommorowsWeather();
+  displayWeatherCast(1);
   startTime = millis(); 
   delay(100);
   while(digitalRead(BUTTON_EXIT_PIN)) {
@@ -276,7 +276,7 @@ result showDaysAfterWeather()
 {
   menuRunning = true;
   sleepMenu();
-  daysAfterWeather();
+  displayWeatherCast(2);
   startTime = millis(); 
   delay(100);
   while(digitalRead(BUTTON_EXIT_PIN)) {
@@ -344,6 +344,27 @@ result showGeneralDebugMenu()
   return proceed;
 }
 
+result showCallendarMenu()
+{
+  time_t currentTime = now();              // Get the current time
+  int weekdayIndex = weekday(currentTime); // Get the day of the week (1 = Sunday, 2 = Monday, etc.)
+  menuRunning = true;
+  sleepMenu();
+  showCallendar(weekdayIndex);
+  startTime = millis(); 
+  delay(100);
+  while(digitalRead(BUTTON_EXIT_PIN)) {
+  if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+  }
+    loopCallendar();
+  }
+  display.stopscroll();
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
+
 MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("WiFi", showWifiDebugMenu, enterEvent)
      , OP("CPU", showCPUDebugMenu, enterEvent)
@@ -358,6 +379,7 @@ MENU(sensors, "Sensors Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
     );
 
 MENU(info, "Info Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
+     , OP("Callendar", showCallendarMenu, enterEvent)
      , SUBMENU(sensors)
      , SUBMENU(debug)
      , EXIT("<Back")

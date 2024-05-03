@@ -13,14 +13,26 @@ void centerText(String text, int y, int x)
   display.print(text);
 }
 
+String getMonthName(int monthNumber)
+{
+  const char *months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+  if (monthNumber >= 1 && monthNumber <= 12)
+  {
+    return String(months[monthNumber - 1]);
+  }
+  else
+  {
+    return "Invalid month number";
+  }
+}
+
 String getCurrentMonthName()
 {
   const char *months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-  time_t currentTime = now();                 // Get the current time
-  int monthIndex = month(currentTime);        // Get the month (1 = January, 2 = February, etc.)
-  return months[monthIndex - 1];              // Adjust index to match array (0 = January, 1 = February, etc.)
+  time_t currentTime = now();          // Get the current time
+  int monthIndex = month(currentTime); // Get the month (1 = January, 2 = February, etc.)
+  return months[monthIndex - 1];       // Adjust index to match array (0 = January, 1 = February, etc.)
 }
-
 
 String getCurrentWeekdayName()
 {
@@ -131,17 +143,18 @@ String wifiStatusToString(int status)
   }
 }
 
-String microsecondsToTimeString(uint64_t microseconds) {
-    // Convert microseconds to seconds
-    uint64_t total_seconds = microseconds / 1000000;
+String microsecondsToTimeString(uint64_t microseconds)
+{
+  // Convert microseconds to seconds
+  uint64_t total_seconds = microseconds / 1000000;
 
-    // Calculate hours, minutes, and seconds
-    uint64_t hours = total_seconds / 3600;
-    uint64_t remaining_seconds = total_seconds % 3600;
-    uint64_t minutes = remaining_seconds / 60;
-    uint64_t seconds = remaining_seconds % 60;
+  // Calculate hours, minutes, and seconds
+  uint64_t hours = total_seconds / 3600;
+  uint64_t remaining_seconds = total_seconds % 3600;
+  uint64_t minutes = remaining_seconds / 60;
+  uint64_t seconds = remaining_seconds % 60;
 
-    // Create the formatted string
-    String formatted_time = String(hours) + ":" + String(minutes) + ":" + String(seconds);
-    return formatted_time;
+  // Create the formatted string
+  String formatted_time = String(hours) + ":" + String(minutes) + ":" + String(seconds);
+  return formatted_time;
 }

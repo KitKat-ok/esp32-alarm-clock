@@ -4,12 +4,13 @@
 #include "defines.h"
 
 void currentWeather();
-void tommorowsWeather();
-void daysAfterWeather();
-void todaysWeather();
+void displayWeatherCast(int dayIndex);
 
 void wifiDebugMenu();
 void CPUDebugMenu();
 void generalDebugMenu();
+
+void showCallendar(int weekNumber);
+void loopCallendar();
 
 #endif

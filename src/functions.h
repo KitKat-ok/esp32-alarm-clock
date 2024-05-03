@@ -11,6 +11,7 @@ String getWeekdayName(int weekday);
 String getNextDayName(int daysAfterToday);
 
 String getCurrentMonthName();
+String getMonthName(int monthNumber);
 
 
 String resetReasonToString(int reason);
