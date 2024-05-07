@@ -7,7 +7,7 @@ void createDimmingTask();
 
 void dimLedDisplay();
 
-float smoothLightReading();
+float removeLightNoise();
 
 extern TaskHandle_t dimmingTask;
 extern bool dimmingTaskRunning;

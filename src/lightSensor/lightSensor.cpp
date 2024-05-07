@@ -55,7 +55,7 @@ void dimmingFunction(void *pvParameters)
                 }
 
                 // Add the new reading to the end of the array
-                lightArray[TEMP_CHART_READINGS - 1] = lightMeter.readLightLevel(); // Replace with your temperature reading function
+                lightArray[TEMP_CHART_READINGS - 1] = removeLightNoise(); // Replace with your temperature reading function
                 previousMillisLight = currentMillis;
             }
 
@@ -120,8 +120,8 @@ void dimOledDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    int lightLevel = smoothLightReading();
-    Serial.println("raw light level: " + String(lightMeter.readLightLevel()));
+    int lightLevel = removeLightNoise();
+    Serial.println("raw light level: " + String(removeLightNoise()));
     Serial.println("smoothened light level: " + String(lightLevel));
     if (lightLevel < 5000)
     {
@@ -147,8 +147,8 @@ void dimLedDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    int lightLevel = smoothLightReading();
-    Serial.println("raw light level: " + String(lightMeter.readLightLevel()));
+    int lightLevel = removeLightNoise();
+    Serial.println("raw light level: " + String(removeLightNoise()));
     Serial.println("smoothened light level: " + String(lightLevel));
     if (lightLevel < 5000)
     {
@@ -174,7 +174,7 @@ void dimLedDisplay()
 
 float lastLightLevel = 0.0;
 
-float smoothLightReading() {
+float removeLightNoise() {
     delay(100);
     static float smoothedLightLevel = 0.0; // Initial smoothed light level
     float currentLightLevel = lightMeter.readLightLevel(); // Read the current light level from BH1750 sensor
@@ -182,9 +182,7 @@ float smoothLightReading() {
     float diff = currentLightLevel - lastLightLevel;
 
     // Adjust the smoothing factor based on the difference
-    float smoothingFactor = LIGHT_SMOOTHING_FACTOR;
     if (diff > MAX_INCREASE_OF_LIGHT_LEVEL) {
-        smoothingFactor = 1.0; // Use full weight if the increase exceeds the threshold
         currentLightLevel = 0.0;
     }
 
