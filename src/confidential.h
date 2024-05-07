@@ -3,7 +3,7 @@
 
 // Wifi
 #define SSID1 ""
-#define PASSWORD1 ""
+#define PASSWORD1 "test"
 #define SSID2 ""
 #define PASSWORD2 ""
 
