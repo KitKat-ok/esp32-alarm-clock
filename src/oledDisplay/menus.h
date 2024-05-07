@@ -10,7 +10,7 @@ void wifiDebugMenu();
 void CPUDebugMenu();
 void generalDebugMenu();
 
-void showCallendar(int weekNumber);
+void showCalendar(int monthNumber, int yearNumber);
 void loopCallendar();
 
 #endif

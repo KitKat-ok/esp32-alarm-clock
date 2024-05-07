@@ -10,13 +10,13 @@ void ringAlarm(void *parameter);
 void disableAllAlarms();
 void enableAllAlarms();  // <-- Added semicolon here
 
-struct Day {
+struct Alarm {
     bool isSet;
     int hours;
     int minutes;
     bool soundOn;
 };
 
-extern Day days[7];  // Declaration of the array
+extern Alarm alarms[7];  // Declaration of the array
 
 #endif

@@ -16,12 +16,12 @@ const colorDef<uint16_t> colors[6] MEMMODE={
   {{1,1},{1,0,0}},//titleColor
 };
 
-TOGGLE(days[1].isSet,mondayToggle,"Monday:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(alarms[1].isSet,mondayToggle,"Monday:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("On",true,doNothing,noEvent)
   ,VALUE("Off",false,doNothing,noEvent)
 );
 
-TOGGLE(days[1].soundOn,mondayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(alarms[1].soundOn,mondayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("True",true,doNothing,noEvent)
   ,VALUE("False",false,doNothing,noEvent)
 );
@@ -29,17 +29,17 @@ TOGGLE(days[1].soundOn,mondayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle/
 MENU(Monday, "Monday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
      , SUBMENU(mondayToggle)
       , SUBMENU(mondayToggleRing)
-     , FIELD(days[1].hours,"Hours:","",0,24,1,0,doNothing,noEvent,noStyle)
-     , FIELD(days[1].minutes,"Minutes:","",0,60,10,1,doNothing,noEvent,noStyle)
+     , FIELD(alarms[1].hours,"Hours:","",0,24,1,0,doNothing,noEvent,noStyle)
+     , FIELD(alarms[1].minutes,"Minutes:","",0,60,10,1,doNothing,noEvent,noStyle)
      , EXIT("<Back")
     );
 
-TOGGLE(days[2].isSet, tuesdayToggle, "Tuesday:", doNothing, noEvent, noStyle
+TOGGLE(alarms[2].isSet, tuesdayToggle, "Tuesday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
-TOGGLE(days[2].soundOn,tuesdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(alarms[2].soundOn,tuesdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("True",true,doNothing,noEvent)
   ,VALUE("False",false,doNothing,noEvent)
 );
@@ -47,17 +47,17 @@ TOGGLE(days[2].soundOn,tuesdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle
 MENU(Tuesday, "Tuesday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(tuesdayToggle)
       , SUBMENU(tuesdayToggleRing)
-      , FIELD(days[2].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[2].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(alarms[2].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(alarms[2].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(days[3].isSet, wednesdayToggle, "Wednesday:", doNothing, noEvent, noStyle
+TOGGLE(alarms[3].isSet, wednesdayToggle, "Wednesday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
-TOGGLE(days[3].soundOn, wednsedayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(alarms[3].soundOn, wednsedayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("True",true,doNothing,noEvent)
   ,VALUE("False",false,doNothing,noEvent)
 );
@@ -65,17 +65,17 @@ TOGGLE(days[3].soundOn, wednsedayToggleRing,"Ring alarm:",doNothing,noEvent,noSt
 MENU(Wednesday, "Wednesday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(wednesdayToggle)
       , SUBMENU(wednsedayToggleRing)
-      , FIELD(days[3].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[3].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(alarms[3].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(alarms[3].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(days[4].isSet, thursdayToggle, "Thursday:", doNothing, noEvent, noStyle
+TOGGLE(alarms[4].isSet, thursdayToggle, "Thursday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
-TOGGLE(days[4].soundOn, thursdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(alarms[4].soundOn, thursdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("True",true,doNothing,noEvent)
   ,VALUE("False",false,doNothing,noEvent)
 );
@@ -83,18 +83,18 @@ TOGGLE(days[4].soundOn, thursdayToggleRing,"Ring alarm:",doNothing,noEvent,noSty
 MENU(Thursday, "Thursday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(thursdayToggle)
       , SUBMENU(thursdayToggleRing)
-      , FIELD(days[4].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[4].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(alarms[4].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(alarms[4].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
 
-TOGGLE(days[5].isSet, fridayToggle, "Friday:", doNothing, noEvent, noStyle
+TOGGLE(alarms[5].isSet, fridayToggle, "Friday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
-TOGGLE(days[5].soundOn, fridayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(alarms[5].soundOn, fridayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("True",true,doNothing,noEvent)
   ,VALUE("False",false,doNothing,noEvent)
 );
@@ -102,17 +102,17 @@ TOGGLE(days[5].soundOn, fridayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle
 MENU(Friday, "Friday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(fridayToggle)
       , SUBMENU(fridayToggleRing)
-      , FIELD(days[5].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[5].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(alarms[5].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(alarms[5].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(days[6].isSet, saturdayToggle, "Saturday:", doNothing, noEvent, noStyle
+TOGGLE(alarms[6].isSet, saturdayToggle, "Saturday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
-TOGGLE(days[6].soundOn, saturdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(alarms[6].soundOn, saturdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("True",true,doNothing,noEvent)
   ,VALUE("False",false,doNothing,noEvent)
 );
@@ -120,17 +120,17 @@ TOGGLE(days[6].soundOn, saturdayToggleRing,"Ring alarm:",doNothing,noEvent,noSty
 MENU(Saturday, "Saturday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(saturdayToggle)
       , SUBMENU(saturdayToggleRing)
-      , FIELD(days[6].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[6].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(alarms[6].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(alarms[6].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
-TOGGLE(days[0].isSet, sundayToggle, "Sunday:", doNothing, noEvent, noStyle
+TOGGLE(alarms[0].isSet, sundayToggle, "Sunday:", doNothing, noEvent, noStyle
   , VALUE("On", true, doNothing, noEvent)
   , VALUE("Off", false, doNothing, noEvent)
 );
 
-TOGGLE(days[0].soundOn, sundayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
+TOGGLE(alarms[0].soundOn, sundayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
   ,VALUE("True",true,doNothing,noEvent)
   ,VALUE("False",false,doNothing,noEvent)
 );
@@ -138,8 +138,8 @@ TOGGLE(days[0].soundOn, sundayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle
 MENU(Sunday, "Sunday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
       , SUBMENU(sundayToggle)
       , SUBMENU(sundayToggleRing)
-      , FIELD(days[0].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(days[0].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
+      , FIELD(alarms[0].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
+      , FIELD(alarms[0].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
       , EXIT("<Back")
 );
 
@@ -350,7 +350,7 @@ result showCallendarMenu()
   int weekdayIndex = weekday(currentTime); // Get the day of the week (1 = Sunday, 2 = Monday, etc.)
   menuRunning = true;
   sleepMenu();
-  showCallendar(weekdayIndex);
+  showCalendar(weekdayIndex,2024);
   startTime = millis(); 
   delay(100);
   while(digitalRead(BUTTON_EXIT_PIN)) {

@@ -47,7 +47,18 @@ void setup()
 
     while (true)
     {
+      display.clearDisplay();
+      centerText("OTA:Enabled!", 10);
+      centerText("IP Address:", 20);
+      centerText(WiFi.localIP().toString(), 30);
+      centerText("Running", 40);
+      display.display();
       ArduinoOTA.handle();
+      display.clearDisplay();
+      centerText("OTA:Enabled!", 10);
+      centerText("IP Address:", 20);
+      centerText(WiFi.localIP().toString(), 30);
+      display.display();
     }
   }
 

@@ -1,14 +1,14 @@
 #include "alarms.h"
 #include <HTTPClient.h>
 
-Day days[] = {
-    {false, 0, 0,true}, // Sunday
-    {false, 0, 0,true}, // Monday
-    {false, 0, 0,true}, // Tuesday
-    {false, 0, 0,true}, // Wednesday
-    {false, 0, 0,true}, // Thursday
-    {false, 0, 0,true}, // Friday
-    {false, 0, 0,true}  // Saturday
+Alarm alarms[] = {
+    {false, 0, 0, true}, // Sunday
+    {false, 0, 0, true}, // Monday
+    {false, 0, 0, true}, // Tuesday
+    {false, 0, 0, true}, // Wednesday
+    {false, 0, 0, true}, // Thursday
+    {false, 0, 0, true}, // Friday
+    {false, 0, 0, true}  // Saturday
 };
 
 bool ringedToday = false;
@@ -41,10 +41,10 @@ void checkAllAlarms(void *pvParameters)
   {
     int currentDay = weekday() - 1; // Adjust to 0-based index
 
-    if (days[currentDay].isSet == true && ringedToday == false)
+    if (alarms[currentDay].isSet == true && ringedToday == false)
     {
       Serial.println("checking alarm");
-      checkAlarm(days[currentDay].hours, days[currentDay].minutes);
+      checkAlarm(alarms[currentDay].hours, alarms[currentDay].minutes);
     }
 
     if (hour() == 0 && minute() == 0 && second() == 0)
@@ -60,7 +60,7 @@ void disableAllAlarms()
 {
   for (int i = 0; i < 7; i++)
   {
-    days[i].isSet = false;
+    alarms[i].isSet = false;
   }
 }
 
@@ -68,7 +68,10 @@ void enableAllAlarms()
 {
   for (int i = 0; i < 7; i++)
   {
-    days[i].isSet = true;
+    if (alarms[i].hours != 0 && alarms[i].minutes != 0)
+    {
+      alarms[i].isSet = true;
+    }
   }
 }
 
@@ -111,7 +114,7 @@ void ringAlarm(void *parameter)
   const long intervalBrightness1 = 6000;       // Interval for brightness 1 adjustment in milliseconds (5 seconds)
   const long intervalBrightness2 = 6000;       // Interval for brightness 2 adjustment in milliseconds (3 seconds)
   int currentDay = weekday() - 1;
-  bool ringOn = days[currentDay].soundOn;
+  bool ringOn = alarms[currentDay].soundOn;
   Serial.println("ringON:" + String(ringOn));
   // unsigned long previousMillisFrequency = 0;   // Variable to store the last time task 1 was performed
   // long intervalFrequency = 5000;         // Interval for task 1 in milliseconds (3 seconds)
@@ -135,8 +138,6 @@ void ringAlarm(void *parameter)
       LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
     }
     currentTime = millis();
-
-
 
     // if (currentTime - previousMillisFrequency >= intervalFrequency)
     // {
