@@ -9,6 +9,8 @@ void dimLedDisplay();
 
 float removeLightNoise();
 
+bool checkForInput();
+
 extern TaskHandle_t dimmingTask;
 extern bool dimmingTaskRunning;
 extern bool maxBrightness;

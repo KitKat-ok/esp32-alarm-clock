@@ -70,16 +70,11 @@ void dimmingFunction(void *pvParameters)
                 previousMillisDimming = currentMillis;
             }
             vTaskDelay(10);
-            if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
-                digitalRead(BUTTON_UP_PIN) == LOW ||
-                digitalRead(BUTTON_DOWN_PIN) == LOW ||
-                digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-                digitalRead(BUTTON_EXIT_PIN) == LOW)
+            if (checkForInput() == true)
             {
                 break;
             }
         }
-
         Serial.println("Button pressed");
         Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
 
@@ -89,11 +84,7 @@ void dimmingFunction(void *pvParameters)
         maxBrightness = true;
         lastActionTime = millis();
 
-        while (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
-               digitalRead(BUTTON_UP_PIN) == LOW ||
-               digitalRead(BUTTON_DOWN_PIN) == LOW ||
-               digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-               digitalRead(BUTTON_EXIT_PIN) == LOW)
+        while (checkForInput() == true)
         {
             lastActionTime = millis();
             vTaskDelay(10);
@@ -101,11 +92,7 @@ void dimmingFunction(void *pvParameters)
             while (millis() - lastActionTime < delayDuration)
             {
                 vTaskDelay(10);
-                if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
-                    digitalRead(BUTTON_UP_PIN) == LOW ||
-                    digitalRead(BUTTON_DOWN_PIN) == LOW ||
-                    digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-                    digitalRead(BUTTON_EXIT_PIN) == LOW)
+                if (checkForInput() == true)
                 {
                     lastActionTime = millis();
                 }
@@ -174,19 +161,48 @@ void dimLedDisplay()
 
 float lastLightLevel = 0.0;
 
-float removeLightNoise() {
+float removeLightNoise()
+{
     delay(100);
-    static float smoothedLightLevel = 0.0; // Initial smoothed light level
+    static float smoothedLightLevel = 0.0;                 // Initial smoothed light level
     float currentLightLevel = lightMeter.readLightLevel(); // Read the current light level from BH1750 sensor
 
     float diff = currentLightLevel - lastLightLevel;
 
     // Adjust the smoothing factor based on the difference
-    if (diff > MAX_INCREASE_OF_LIGHT_LEVEL) {
+    if (diff > MAX_INCREASE_OF_LIGHT_LEVEL)
+    {
         currentLightLevel = 0.0;
     }
 
     lastLightLevel = lightMeter.readLightLevel();
 
     return currentLightLevel;
+}
+
+bool checkForInput()
+{
+    if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
+        digitalRead(BUTTON_UP_PIN) == LOW ||
+        digitalRead(BUTTON_DOWN_PIN) == LOW ||
+        digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+        digitalRead(BUTTON_EXIT_PIN) == LOW)
+    {
+        delay(50);
+        if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
+            digitalRead(BUTTON_UP_PIN) == LOW ||
+            digitalRead(BUTTON_DOWN_PIN) == LOW ||
+            digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+            digitalRead(BUTTON_EXIT_PIN) == LOW)
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
 }
