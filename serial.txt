@@ -37393,3 +37393,23 @@ Reading brightness and dimming Led display accordingly
 raw light level: 59.17
 smoothened light level: 58
 Brightness of Led display 7
+checking alarm
+Battery voltage: 4.20
+Charging State: 1384
+Standby State: 4095
+WiFi status Connected
+charging
+checking alarm
+checking alarm
+Battery voltage: 4.20
+Charging State: 1393
+Standby State: 4095
+WiFi status Connected
+charging
+checking alarm
+Battery voltage: 4.20
+Charging State: 1385
+Standby State: 4095
+WiFi status Connected
+charging
+checking alarm
