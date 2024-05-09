@@ -10,6 +10,7 @@ void dimLedDisplay();
 float removeLightNoise();
 
 bool checkForInput();
+bool checkForNight();
 
 extern TaskHandle_t dimmingTask;
 extern bool dimmingTaskRunning;

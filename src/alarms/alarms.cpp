@@ -101,7 +101,7 @@ void createRiningingTask()
       NULL,        // Parameter to pass
       2,           // Priority
       &Alarm,      // Task handle
-      0            // Core to run the task on (Core 1)
+      0            // Core to run the task on (Core 0)
   );
 }
 

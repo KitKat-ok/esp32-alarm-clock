@@ -112,7 +112,7 @@ void dimOledDisplay()
     Serial.println("smoothened light level: " + String(lightLevel));
     if (lightLevel < 5000)
     {
-        if (lightLevel <= 1.0 && (currentHour >= 23 || currentHour < 10))
+        if (lightLevel <= 1.0 && (checkForNight() == true))
         {
             display.ssd1306_command(SSD1306_DISPLAYOFF);
             Serial.println("display off");
@@ -140,7 +140,7 @@ void dimLedDisplay()
     if (lightLevel < 5000)
     {
 
-        if (lightLevel <= 1.00 && (currentHour >= 23 || currentHour < 10))
+        if (lightLevel <= 1.00 && (checkForNight() == true))
         {
             LedDisplay.clear();
             displayON = false;
@@ -197,12 +197,41 @@ bool checkForInput()
         {
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
     else
     {
         return false;
+    }
+}
+
+bool checkForNight()
+{
+    time_t currentTime = now();
+    int weekdayIndex = weekday(currentTime) - 1;
+
+    int currentHour = hour();
+
+    if ((alarms[weekdayIndex].hours == 0 && alarms[weekdayIndex].minutes == 0) && alarms[weekdayIndex].isSet == true)
+    {
+        if (currentHour >= 23 || currentHour < 10)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        if (currentHour >= 23 || currentHour < alarms[weekdayIndex].hours)
+        {
+            return true;
+        }
+        else return false;
     }
 }
