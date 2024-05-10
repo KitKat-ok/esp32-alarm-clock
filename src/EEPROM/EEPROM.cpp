@@ -11,7 +11,6 @@ void saveAlarms() {
         preferences.putInt(("minutes" + String(i)).c_str(), alarms[i].minutes);
         preferences.putBool(("soundOn" + String(i)).c_str(), alarms[i].soundOn); // Adding soundOn
     }
-
     preferences.end();
 }
 

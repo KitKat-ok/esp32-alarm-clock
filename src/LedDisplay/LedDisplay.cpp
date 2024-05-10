@@ -37,10 +37,10 @@ void showTimeTask(void *pvParameters)
 
         if (charging == true)
         {
-        dimLedDisplay();
+          dimLedDisplay();
         }
 
-        if (displayON)
+        if (displayON == true)
         {
           LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
         }
@@ -52,23 +52,25 @@ void showTimeTask(void *pvParameters)
     int currentMinute = minute();
     if (currentHour >= 23 || currentHour < 10)
     {
-          LedDisplay.setBrightness(2);
-    LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-    while (maxBrightness == true)
-    {
-      vTaskDelay(10);
+      LedDisplay.setBrightness(2);
+      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      while (maxBrightness == true)
+      {
+        vTaskDelay(10);
+      }
+      dimLedDisplay();
+      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
     }
-    dimLedDisplay();
-    LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-    } else {
-    LedDisplay.setBrightness(7);
-    LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-    while (maxBrightness == true)
+    else
     {
-      vTaskDelay(10);
-    }
-    dimLedDisplay();
-    LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      LedDisplay.setBrightness(7);
+      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      while (maxBrightness == true)
+      {
+        vTaskDelay(10);
+      }
+      dimLedDisplay();
+      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
     }
   }
 }

@@ -7,6 +7,8 @@ int getBatteryPercentage();
 void createBatteryTask();
 void initBattery();
 
+void goToSleep();
+
 extern int batteryPercentage;
 extern float charging;
 

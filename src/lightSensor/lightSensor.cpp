@@ -222,9 +222,7 @@ bool checkForNight()
             return true;
         }
         else
-        {
             return false;
-        }
     }
     else
     {
@@ -232,6 +230,7 @@ bool checkForNight()
         {
             return true;
         }
-        else return false;
+        else
+            return false;
     }
 }

@@ -14,7 +14,7 @@ String getCurrentMonthName();
 String getMonthName(int monthNumber);
 
 
-String resetReasonToString(int reason);
+String resetReasonToString(esp_reset_reason_t reason);
 
 int getChipRevision();
 
