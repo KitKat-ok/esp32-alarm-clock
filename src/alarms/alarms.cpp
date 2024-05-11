@@ -105,31 +105,47 @@ void createRiningingTask()
   );
 }
 
+void touchStopAlarm(int hour, bool ringOn)
+{
+  if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
+  {
+    if (!(currentHour >= 11 && currentHour <= 21) || ringOn == false)
+    {
+      vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
+      sendOffPostRequest();
+    }
+    vTaskDelete(Alarm);
+  }
+}
+
 void ringAlarm(void *parameter)
 {
   unsigned long startTime = millis() + 180000;
   unsigned long currentTime = millis();
-  unsigned long previousMillisBrightness1 = 0; // Variable to store the last time brightness 1 was adjusted
-  unsigned long previousMillisBrightness2 = 0; // Variable to store the last time brightness 2 was adjusted
-  const long intervalBrightness1 = 6000;       // Interval for brightness 1 adjustment in milliseconds (5 seconds)
-  const long intervalBrightness2 = 6000;       // Interval for brightness 2 adjustment in milliseconds (3 seconds)
-  int currentDay = weekday() - 1;
-  bool ringOn = alarms[currentDay].soundOn;
-  Serial.println("ringON:" + String(ringOn));
-  // unsigned long previousMillisFrequency = 0;   // Variable to store the last time task 1 was performed
-  // long intervalFrequency = 5000;         // Interval for task 1 in milliseconds (3 seconds)
-  // int frequency = 100;
-  sendOnPostRequest();
+
+  unsigned long previousMillisBrightness = 0;
+  const long intervalBrightness = 6000;
+
+  bool ringOn = alarms[weekday() - 1].soundOn;
+
+  int currentHour = hour();
+  int currentMinute = minute();
+
+  int alarmMelody[] = {NOTE_A5, NOTE_A5, NOTE_A6, NOTE_A6, NOTE_A6, NOTE_A6, NOTE_A4, NOTE_A4};
+  int alarmDurations[] = {4, 4, 4, 7, 7, 7, 4, 4};
+
+  if (!(currentHour >= 11 && currentHour <= 21) || ringOn == false)
+  {
+    sendOnPostRequest();
+  }
   while (true)
   {
     display.ssd1306_command(SSD1306_DISPLAYON);
-    int currentHour = hour();
-    int currentMinute = minute();
     currentTime = millis();
-    if (currentTime - previousMillisBrightness1 >= intervalBrightness1)
+    if (currentTime - previousMillisBrightness >= intervalBrightness)
     {
 
-      previousMillisBrightness1 = currentTime;
+      previousMillisBrightness = currentTime;
 
       display.ssd1306_command(SSD1306_DISPLAYON);
 
@@ -139,21 +155,7 @@ void ringAlarm(void *parameter)
     }
     currentTime = millis();
 
-    // if (currentTime - previousMillisFrequency >= intervalFrequency)
-    // {
-    //   // Save the last time task 1 was performed
-    //   previousMillisFrequency = currentTime;
-    //   tone(BUZZER_PIN, frequency, 100);
-    //   vTaskDelay(200);
-    //   noTone(BUZZER_PIN);
-
-    //   intervalFrequency = intervalFrequency - 10;
-
-    //   frequency = frequency + 50;
-    // }
-    int alarmMelody[] = {NOTE_A5, NOTE_A5, NOTE_A6, NOTE_A6, NOTE_A6, NOTE_A6, NOTE_A4, NOTE_A4};
-    int alarmDurations[] = {4, 4, 4, 7, 7, 7, 4, 4};
-    if ((currentTime >= startTime || WiFi.SSID() != "dragonn2" || WiFi.status() != WL_CONNECTED) && ringOn == true)
+    if ((currentTime >= startTime || WiFi.SSID() != "dragonn2" || WiFi.status() != WL_CONNECTED || !(currentHour >= 11 && currentHour <= 21)) && ringOn == true)
     {
 
       for (int i = 0; i < sizeof(alarmMelody) / sizeof(alarmMelody[0]); i++)
@@ -162,40 +164,24 @@ void ringAlarm(void *parameter)
         delay(1000 / alarmDurations[i] * 1.30);
         noTone(BUZZER_PIN);
 
-        if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
-        {
-          vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
-          sendOffPostRequest();
-          vTaskDelete(Alarm);
-        }
+        touchStopAlarm(currentHour, ringOn);
       }
       vTaskDelay(100);
       vTaskDelay(1000);
     }
 
-    if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
-    {
-      vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
-      sendOffPostRequest();
-      vTaskDelete(Alarm);
-    }
     currentTime = millis();
-    if (currentTime - previousMillisBrightness2 >= intervalBrightness2)
+    if (currentTime - previousMillisBrightness >= intervalBrightness2)
     {
 
-      previousMillisBrightness2 = currentTime;
+      previousMillisBrightness = currentTime;
 
       display.dim(false);
       LedDisplay.setBrightness(7);
       LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
     }
 
-    if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
-    {
-      vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
-      sendOffPostRequest();
-      vTaskDelete(Alarm);
-    }
+    touchStopAlarm(currentHour, ringOn);
 
     vTaskDelay(pdMS_TO_TICKS(1));
   }
