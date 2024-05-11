@@ -155,7 +155,7 @@ void ringAlarm(void *parameter)
     }
     currentTime = millis();
 
-    if ((currentTime >= startTime || WiFi.SSID() != "dragonn2" || WiFi.status() != WL_CONNECTED || !(currentHour >= 11 && currentHour <= 21)) && ringOn == true)
+    if ((currentTime >= startTime || WiFi.SSID() != "dragonn2" || WiFi.status() != WL_CONNECTED || (currentHour >= 11 && currentHour <= 21)) && ringOn == true)
     {
 
       for (int i = 0; i < sizeof(alarmMelody) / sizeof(alarmMelody[0]); i++)
