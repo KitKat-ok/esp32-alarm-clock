@@ -109,7 +109,7 @@ void touchStopAlarm(int hour, bool ringOn)
 {
   if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
   {
-    if (!(currentHour >= 11 && currentHour <= 21) || ringOn == false)
+    if (!(hour >= 11 && hour <= 21) || ringOn == false)
     {
       vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
       sendOffPostRequest();
@@ -171,7 +171,7 @@ void ringAlarm(void *parameter)
     }
 
     currentTime = millis();
-    if (currentTime - previousMillisBrightness >= intervalBrightness2)
+    if (currentTime - previousMillisBrightness >= intervalBrightness)
     {
 
       previousMillisBrightness = currentTime;
