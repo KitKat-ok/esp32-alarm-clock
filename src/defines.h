@@ -51,7 +51,7 @@ extern bool OTAEnabled;
 #define BUTTON_EXIT_PIN    GPIO_NUM_15
 
 #define TOUCH_BUTTON_PIN 4
-#define TOUCH_BUTTON_THRESHOLD 24
+#define TOUCH_BUTTON_THRESHOLD 28
 #define TOUCH_BUTTON_THRESHOLD_ON_BATTERY 40
 
 
@@ -112,7 +112,7 @@ extern bool OTAEnabled;
 #include "oledDisplay/mainPage.h"
 #include "oledDisplay/charts.h"
 #include "oledDisplay/menus.h"
-#include "EEPROM/EEPROM.h"
+#include "Flash/Flash.h"
 #include "alarms/alarms.h"
 #include "battery/battery.h"
 #include "tempSensor/tempSensor.h"

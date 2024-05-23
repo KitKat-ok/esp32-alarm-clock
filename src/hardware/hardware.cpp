@@ -15,7 +15,6 @@ void initButtons();
 void initTempSensor();
 void LowBattery();
 
-
 void initHardware()
 {
   setCpuFrequencyMhz(80); // stable 160,80,240
@@ -99,6 +98,7 @@ void initOledDisplay()
   display.setCursor(0, 0);
   display.dim(true);
   display.setTextColor(SSD1306_WHITE);
+  display.display();
 
   centerText("Oled Initialized", SCREEN_HEIGHT / 2);
 

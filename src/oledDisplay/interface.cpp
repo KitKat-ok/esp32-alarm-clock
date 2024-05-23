@@ -365,10 +365,19 @@ result showCallendarMenu()
   return proceed;
 }
 
+
+result startOTA()
+{
+  saveOtaValue(true);
+  ESP.restart();
+  return proceed;
+}
+
 MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("WiFi", showWifiDebugMenu, enterEvent)
      , OP("CPU", showCPUDebugMenu, enterEvent)
      , OP("General", showGeneralDebugMenu, enterEvent)
+     , OP("Start OTA", startOTA, enterEvent)
      , EXIT("<Back")
     );
 

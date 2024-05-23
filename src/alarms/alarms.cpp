@@ -107,7 +107,7 @@ void createRiningingTask()
 
 void touchStopAlarm(int hour, bool ringOn)
 {
-  if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
+  if (checkForInput() == true)
   {
     if (!(hour >= 11 && hour <= 21) || ringOn == false)
     {
@@ -123,8 +123,9 @@ void ringAlarm(void *parameter)
   unsigned long startTime = millis() + 180000;
   unsigned long currentTime = millis();
 
-  unsigned long previousMillisBrightness = 0;
-  const long intervalBrightness = 6000;
+  unsigned long previousMillisLowBrightness = 0;
+  unsigned long previousMillisMaxBrightness = 0;
+  const long intervalBrightness = 3000;
 
   bool ringOn = alarms[weekday() - 1].soundOn;
 
@@ -142,10 +143,10 @@ void ringAlarm(void *parameter)
   {
     display.ssd1306_command(SSD1306_DISPLAYON);
     currentTime = millis();
-    if (currentTime - previousMillisBrightness >= intervalBrightness)
+    if (currentTime - previousMillisLowBrightness >= intervalBrightness)
     {
 
-      previousMillisBrightness = currentTime;
+      previousMillisLowBrightness = currentTime;
 
       display.ssd1306_command(SSD1306_DISPLAYON);
 
@@ -167,14 +168,13 @@ void ringAlarm(void *parameter)
         touchStopAlarm(currentHour, ringOn);
       }
       vTaskDelay(100);
-      vTaskDelay(1000);
     }
 
     currentTime = millis();
-    if (currentTime - previousMillisBrightness >= intervalBrightness)
+    if (currentTime - previousMillisMaxBrightness >= intervalBrightness)
     {
 
-      previousMillisBrightness = currentTime;
+      previousMillisMaxBrightness = currentTime;
 
       display.dim(false);
       LedDisplay.setBrightness(7);

@@ -129,10 +129,10 @@ void wifiDebugMenu()
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
     display.setCursor(0, 24);
     display.println("WiFi SSID: " + String(WiFi.SSID()));
-    centerText("IP address:", 34);
-    centerText(WiFi.localIP().toString(), 44);
-    centerText("Mac address: ", 54);
-    centerText(String(WiFi.macAddress()), 64);
+    centerText("IP address:", 33);
+    centerText(WiFi.localIP().toString(), 43);
+    centerText("Mac address: ", 53);
+    centerText(String(WiFi.macAddress()), 63);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     display.display();
 }

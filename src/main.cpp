@@ -9,12 +9,14 @@ void setup()
 
   initHardware();
   initWifi();
+  readOtaValue();
 
   // Check if both buttons are pressed to enable OTA
   int confirmButtonState = digitalRead(BUTTON_CONFIRM_PIN);
   int exitButtonState = digitalRead(BUTTON_EXIT_PIN);
-  if (confirmButtonState == LOW && exitButtonState == LOW)
+  if (confirmButtonState == LOW && exitButtonState == LOW || OTAEnabled == true)
   {
+    setCpuFrequencyMhz(240); // stable 160,80,240
     Serial.println("Both buttons are pressed, enabling OTA");
     OTAEnabled = true;
     createWifiTask();
@@ -44,6 +46,8 @@ void setup()
 
     // Display the last two digits on the TM1637 display
     LedDisplay.showNumberDec(lastTwoDigitsInt);
+
+    saveOtaValue(false);
 
     while (true)
     {
