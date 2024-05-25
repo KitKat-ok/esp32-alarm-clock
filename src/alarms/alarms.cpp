@@ -141,6 +141,9 @@ void ringAlarm(void *parameter)
   }
   while (true)
   {
+
+    currentHour = hour();
+    currentMinute = minute();
     display.ssd1306_command(SSD1306_DISPLAYON);
     currentTime = millis();
     if (currentTime - previousMillisLowBrightness >= intervalBrightness)
