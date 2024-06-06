@@ -69,13 +69,13 @@ void setup()
   // Proceed with regular initialization if OTA is not enabled
   if (!OTAEnabled)
   {
-    initBattery();
+    createLedDisplayTask();
     createDimmingTask();
+    initBattery();
     createBatteryTask();
     initMenus();
     readAlarms();
     createTempTask();
-    createLedDisplayTask();
     createTimeTask();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
   }

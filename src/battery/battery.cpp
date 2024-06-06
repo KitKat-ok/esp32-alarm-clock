@@ -65,11 +65,6 @@ void manageBattery(void *parameter)
         Serial.println("launching WiFi task");
         createWifiTask();
       }
-      if (dimmingTaskRunning == false)
-      {
-        createDimmingTask();
-        vTaskDelay(5000);
-      }
     }
     else
     {
@@ -97,12 +92,7 @@ void manageBattery(void *parameter)
         {
           break; // Break the loop if the condition is met
         }
-        if (dimmingTaskRunning == true)
-        {
-          vTaskDelay(pdMS_TO_TICKS(10));
-          vTaskDelete(dimmingTask);
-          dimmingTaskRunning = false;
-        }
+
         Serial.println("Going to sleep");
         vTaskDelay(pdMS_TO_TICKS(200));
         wentToSleep = true;
@@ -114,7 +104,17 @@ void manageBattery(void *parameter)
         Serial.println("Woke up from Timer");
         display.dim(true);
         LedDisplay.clear();
+        int currentHour = hour();
+        int currentMinute = minute();
         static unsigned long startTime = millis();
+        if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
+        {
+          display.ssd1306_command(SSD1306_DISPLAYON);
+          display.dim(false);
+          LedDisplay.setBrightness(7);
+          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+        }
+
         if (millis() - startTime >= TIMER_WAKUP_TIME)
         {
           LedDisplay.clear();
@@ -125,6 +125,10 @@ void manageBattery(void *parameter)
         }
       }
 
+      unsigned long delayDuration = 15000; // 30 seconds in milliseconds
+
+      unsigned long lastActionTime = 0;
+
       if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD)
       {
         Serial.println("Woke up from touch button");
@@ -132,36 +136,38 @@ void manageBattery(void *parameter)
         display.dim(false);
         int currentHour = hour();
         int currentMinute = minute();
-        if (currentHour >= 23 || currentHour < 10)
+
+        LedDisplay.setBrightness(7);
+        LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+
+        while (checkForInput(TOUCH_BUTTON_THRESHOLD_ON_BATTERY) == true)
         {
-          LedDisplay.setBrightness(2);
-          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-          while (maxBrightness == true)
+          lastActionTime = millis();
+          vTaskDelay(10);
+
+          while (millis() - lastActionTime < delayDuration)
           {
             vTaskDelay(10);
+            if (checkForInput(TOUCH_BUTTON_THRESHOLD_ON_BATTERY) == true)
+            {
+              lastActionTime = millis();
+            }
           }
-          dimLedDisplay();
-          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-        }
-        else
-        {
-          LedDisplay.setBrightness(7);
-          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-        }
-        static unsigned long startTime = millis();
-
-        if (millis() - startTime >= GPIO_WAKUP_TIME)
-        {
-          Serial.println("Going to sleep");
-          vTaskDelay(pdMS_TO_TICKS(200));
-          goToSleep();
-          startTime = millis();
         }
       }
-      Serial.println("Not charging");
+      static unsigned long startTime = millis();
+
+      if (millis() - startTime >= GPIO_WAKUP_TIME)
+      {
+        Serial.println("Going to sleep");
+        vTaskDelay(pdMS_TO_TICKS(200));
+        goToSleep();
+        startTime = millis();
+      }
     }
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    Serial.println("Not charging");
   }
+  vTaskDelay(pdMS_TO_TICKS(1000));
 }
 
 void initSleep()

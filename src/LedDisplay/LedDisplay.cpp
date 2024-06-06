@@ -4,16 +4,22 @@ int previousMinute = -1;
 
 void showTimeTask(void *pvParameters);
 
+bool LedTaskRunning = false;
+
+TaskHandle_t LedTask;
+
 void createLedDisplayTask()
 {
-  Serial.print("creating dimmingTask");
+
+  Serial.print("creating Led display task");
+
   xTaskCreatePinnedToCore(
       showTimeTask, /* Task function. */
       "DimTask",    /* String with name of task. */
       10000,        /* Stack size in words. */
       NULL,         /* Parameter passed as input of the task */
       1,            /* Priority of the task. */
-      NULL,         /* Task handle. */
+      &LedTask,     /* Task handle. */
       0             /* Core where the task should run. */
   );
 }
@@ -24,53 +30,59 @@ void showTimeTask(void *pvParameters)
   const long interval = 10000; // 10 seconds interval
   while (true)
   {
-    while (maxBrightness == false)
+    if (charging == true)
     {
-      unsigned long currentMillis = millis(); // Get the current time
+      while (maxBrightness == false)
+      {
+        bool LedTaskRunning = true;
+        unsigned long currentMillis = millis(); // Get the current time
+        int currentHour = hour();
+        int currentMinute = minute();
+        if (currentMillis - previousMillis >= interval)
+        {
+          previousMillis = currentMillis;
+
+          Serial.println("Reading brightness and dimming Led display accordingly");
+
+          if (charging == true)
+          {
+            dimLedDisplay();
+          }
+
+          if (displayON == true && charging == true)
+          {
+            LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+          }
+        }
+        vTaskDelay(10);
+      }
+
       int currentHour = hour();
       int currentMinute = minute();
-      if (currentMillis - previousMillis >= interval)
+      if (currentHour >= 23 || currentHour < 10)
       {
-        previousMillis = currentMillis;
-
-        Serial.println("Reading brightness and dimming Led display accordingly");
-
-        if (charging == true)
+        LedDisplay.setBrightness(2);
+        LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+        while (maxBrightness == true)
         {
-          dimLedDisplay();
+          vTaskDelay(10);
         }
-
-        if (displayON == true)
+        dimLedDisplay();
+        LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      }
+      else
+      {
+        LedDisplay.setBrightness(7);
+        LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+        while (maxBrightness == true)
         {
-          LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+          vTaskDelay(10);
         }
+        dimLedDisplay();
+        LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
       }
-      vTaskDelay(10);
-    }
-
-    int currentHour = hour();
-    int currentMinute = minute();
-    if (currentHour >= 23 || currentHour < 10)
-    {
-      LedDisplay.setBrightness(2);
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-      while (maxBrightness == true)
-      {
-        vTaskDelay(10);
-      }
-      dimLedDisplay();
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-    }
-    else
-    {
-      LedDisplay.setBrightness(7);
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-      while (maxBrightness == true)
-      {
-        vTaskDelay(10);
-      }
-      dimLedDisplay();
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+    } else {
+      vTaskDelay(10000);
     }
   }
 }

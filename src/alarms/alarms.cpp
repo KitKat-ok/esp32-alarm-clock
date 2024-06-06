@@ -107,7 +107,7 @@ void createRiningingTask()
 
 void touchStopAlarm(int hour, bool ringOn)
 {
-  if (checkForInput() == true)
+  if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
   {
     if (!(hour >= 11 && hour <= 21) || ringOn == false)
     {

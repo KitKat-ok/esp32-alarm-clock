@@ -3,6 +3,9 @@
 
 #include "../defines.h"
 
+extern bool LedTaskRunning;
+
+extern TaskHandle_t LedTask;
 
 void createLedDisplayTask();
 

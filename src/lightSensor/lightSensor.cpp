@@ -26,7 +26,11 @@ void createDimmingTask()
     );
 }
 
-const unsigned long intervalLight = 60000; // Interval in milliseconds (30 seconds)
+
+
+void dimmingFunction(void *pvParameters)
+{
+    const unsigned long intervalLight = 60000; // Interval in milliseconds (30 seconds)
 unsigned long previousMillisLight = 0;     // Will store last time the function was called
 
 unsigned long previousMillisDimming = 0;
@@ -34,9 +38,6 @@ unsigned long intervalDimming = 10000; // Example interval in milliseconds
 
 unsigned long lastActionTime = 0;
 unsigned long delayDuration = 15000; // 30 seconds in milliseconds
-
-void dimmingFunction(void *pvParameters)
-{
     while (true)
     {
         dimmingTaskRunning = true;
@@ -70,7 +71,7 @@ void dimmingFunction(void *pvParameters)
                 previousMillisDimming = currentMillis;
             }
             vTaskDelay(10);
-            if (checkForInput() == true)
+            if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
             {
                 break;
             }
@@ -84,7 +85,7 @@ void dimmingFunction(void *pvParameters)
         maxBrightness = true;
         lastActionTime = millis();
 
-        while (checkForInput() == true)
+        while (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
         {
             lastActionTime = millis();
             vTaskDelay(10);
@@ -92,7 +93,7 @@ void dimmingFunction(void *pvParameters)
             while (millis() - lastActionTime < delayDuration)
             {
                 vTaskDelay(10);
-                if (checkForInput() == true)
+                if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
                 {
                     lastActionTime = millis();
                 }
@@ -180,16 +181,16 @@ float removeLightNoise()
     return currentLightLevel;
 }
 
-bool checkForInput()
+bool checkForInput(int thresold)
 {
-    if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
+    if (touchRead(TOUCH_BUTTON_PIN) < thresold ||
         digitalRead(BUTTON_UP_PIN) == LOW ||
         digitalRead(BUTTON_DOWN_PIN) == LOW ||
         digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
         digitalRead(BUTTON_EXIT_PIN) == LOW)
     {
         delay(50);
-        if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD ||
+        if (touchRead(TOUCH_BUTTON_PIN) < thresold ||
             digitalRead(BUTTON_UP_PIN) == LOW ||
             digitalRead(BUTTON_DOWN_PIN) == LOW ||
             digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
@@ -215,7 +216,7 @@ bool checkForNight()
 
     int currentHour = hour();
 
-    if ((alarms[weekdayIndex].hours == 0 && alarms[weekdayIndex].minutes == 0) && alarms[weekdayIndex].isSet == true)
+    if ((alarms[weekdayIndex].hours == 0 && alarms[weekdayIndex].minutes == 0) && alarms[weekdayIndex].isSet == false)
     {
         if (currentHour >= 23 || currentHour < 10)
         {
