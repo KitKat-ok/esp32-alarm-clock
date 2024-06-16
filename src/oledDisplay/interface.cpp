@@ -439,6 +439,12 @@ void initMenus() {
 void handleMenus() {
   nav.poll();
 
+
+  if (!nav.sleepTask) {
+    turnOffScreensaver();
+  }
+  
+
   if (nav.sleepTask) {
     showMainPage();
   }

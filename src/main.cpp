@@ -78,6 +78,7 @@ void setup()
     createTempTask();
     createTimeTask();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    setupScreensaver();
   }
 }
 

@@ -22,7 +22,7 @@ void createDimmingTask()
         NULL,            /* Parameter passed as input of the task */
         1,               /* Priority of the task. */
         &dimmingTask,    /* Task handle. */
-        0                /* Core where the task should run. */
+        1                /* Core where the task should run. */
     );
 }
 
@@ -82,6 +82,7 @@ unsigned long delayDuration = 15000; // 30 seconds in milliseconds
         Serial.println("setting max brightness");
         display.ssd1306_command(SSD1306_DISPLAYON);
         display.dim(false);
+        turnOffScreensaver();
         maxBrightness = true;
         lastActionTime = millis();
 
@@ -120,12 +121,10 @@ void dimOledDisplay()
         }
         else if (lightLevel > OLED_DIM_THRESHOLD)
         {
-            display.dim(false);
-            display.ssd1306_command(SSD1306_DISPLAYON);
+            display.dim(true);
         }
         else
         {
-            display.ssd1306_command(SSD1306_DISPLAYON);
             display.dim(true);
         }
     }
