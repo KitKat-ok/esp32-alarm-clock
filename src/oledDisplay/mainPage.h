@@ -8,4 +8,5 @@ void showScreensaver();
 void setupScreensaver();
 extern bool showMainPageFlag;
 extern void turnOffScreensaver();
+
 #endif

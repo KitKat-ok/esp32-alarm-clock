@@ -58,10 +58,8 @@ extern bool OTAEnabled;
 #define TOTAL_NAV_BUTTONS 4
 #define MAX_DEPTH 20
 
-#define MAIN_PAGE_DURATION 50000
-#define SCREENSAVER_DURATION 120000
-
-
+#define MAIN_PAGE_DURATION 60000
+#define SCREENSAVER_DURATION 30000
 
 #define fontX 6
 //5
@@ -81,9 +79,9 @@ extern bool OTAEnabled;
 // Battery
 #define MIN_VOLTAGE 3.40  // Minimum voltage of LiPo battery
 #define MAX_VOLTAGE 4.20  // Maximum voltage of LiPo battery
-#define NUM_SAMPLES 10   // How many samples to read to smooth the voltage out
+#define NUM_SAMPLES 15   // How many samples to read to smooth the voltage out
 
-#define VOLTAGE_DIVIDER_PIN 34  // Change this to the actual pin number you've connected the voltage divider to
+#define VOLTAGE_DIVIDER_PIN 34 
 
 #define FULLY_CHARGED_PIN 32
 #define CHARGING_PIN 33

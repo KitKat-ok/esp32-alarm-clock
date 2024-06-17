@@ -32,7 +32,7 @@ void createBatteryTask()
       NULL,          // Task input parameter
       2,             // Priority (0 is lowest)
       NULL,          // Task handle
-      0              // Core to run the task on (0 or 1)
+      1              // Core to run the task on (0 or 1)
   );
 }
 
@@ -110,7 +110,6 @@ void manageBattery(void *parameter)
         if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
         {
           display.ssd1306_command(SSD1306_DISPLAYON);
-          display.dim(false);
           LedDisplay.setBrightness(7);
           LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
         }
@@ -133,7 +132,6 @@ void manageBattery(void *parameter)
       {
         Serial.println("Woke up from touch button");
         display.ssd1306_command(SSD1306_DISPLAYON);
-        display.dim(false);
         int currentHour = hour();
         int currentMinute = minute();
 
@@ -183,7 +181,6 @@ void goToSleep()
 {
   display.ssd1306_command(SSD1306_DISPLAYOFF);
 
-  display.dim(true);
   display.display();
   LedDisplay.clear();
 

@@ -1,7 +1,6 @@
 #include "menus.h"
 
-void displaywidget(int code_no);
-String convertWindDirection(uint16_t degrees);
+
 
 void currentWeather()
 {

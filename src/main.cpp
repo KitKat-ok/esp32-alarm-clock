@@ -80,12 +80,14 @@ void setup()
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     setupScreensaver();
   }
+  display.ssd1306_command(SSD1306_DISPLAYON);
 }
 
 bool initialMenuRunning = false;
 
 void loop()
 {
+
   if (menuRunning != initialMenuRunning)
   {
     Serial.println("Menu state has changed.");
@@ -101,6 +103,5 @@ void loop()
   if (menuRunning == false)
   {
     handleMenus();
-    display.display();
   }
 }

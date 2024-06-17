@@ -436,16 +436,25 @@ void initMenus() {
   joystickBtns.begin();
 }
 
+bool sleeping = false;
+
 void handleMenus() {
-  nav.poll();
+    nav.poll();
+    if (sleeping == false)
+    {
+      display.display();
+    }
+    
 
 
   if (!nav.sleepTask) {
+    sleeping = false;
     turnOffScreensaver();
   }
   
 
   if (nav.sleepTask) {
+    sleeping = true;
     showMainPage();
   }
 }

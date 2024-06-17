@@ -26,18 +26,64 @@ void createDimmingTask()
     );
 }
 
+bool dimmed = false;
+bool fading = false;
 
+void oledFadeout()
+{
+    if (fading == false)
+    {
+        fading = true;
+        display.ssd1306_command(SSD1306_DISPLAYON);
+        for (int dim = 150; dim >= 0; dim -= 10)
+        {
+            display.ssd1306_command(0x81);
+            display.ssd1306_command(dim); // max 157
+            delay(50);
+        }
+
+        for (int dim2 = 34; dim2 >= 0; dim2 -= 17)
+        {
+            display.ssd1306_command(0xD9);
+            display.ssd1306_command(dim2); // max 34
+            delay(100);
+        }
+        fading = false;
+    }
+}
+
+void oledFadein()
+{
+    if (fading == false)
+    {
+        fading = true;
+        for (int dim = 0; dim <= 160; dim += 10)
+        {
+            display.ssd1306_command(0x81);
+            display.ssd1306_command(dim); // max 160
+            delay(50);
+        }
+
+        for (int dim2 = 0; dim2 <= 34; dim2 += 17)
+        {
+            display.ssd1306_command(0xD9);
+            display.ssd1306_command(dim2); // max 34
+            delay(100);
+        }
+        fading = false;
+    }
+}
 
 void dimmingFunction(void *pvParameters)
 {
-    const unsigned long intervalLight = 60000; // Interval in milliseconds (30 seconds)
-unsigned long previousMillisLight = 0;     // Will store last time the function was called
+    const unsigned long intervalLight = 60000;
+    unsigned long previousMillisLight = 0;
 
-unsigned long previousMillisDimming = 0;
-unsigned long intervalDimming = 10000; // Example interval in milliseconds
+    unsigned long previousMillisDimming = 0;
+    unsigned long intervalDimming = 10000;
 
-unsigned long lastActionTime = 0;
-unsigned long delayDuration = 15000; // 30 seconds in milliseconds
+    unsigned long lastActionTime = 0;
+    unsigned long delayDuration = 40000;
     while (true)
     {
         dimmingTaskRunning = true;
@@ -81,23 +127,21 @@ unsigned long delayDuration = 15000; // 30 seconds in milliseconds
 
         Serial.println("setting max brightness");
         display.ssd1306_command(SSD1306_DISPLAYON);
-        display.dim(false);
+        if (dimmed == true && fading == false)
+        {
+            oledFadein();
+            dimmed = false;
+        }
         turnOffScreensaver();
         maxBrightness = true;
         lastActionTime = millis();
 
-        while (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
+        while (millis() - lastActionTime < delayDuration)
         {
-            lastActionTime = millis();
             vTaskDelay(10);
-
-            while (millis() - lastActionTime < delayDuration)
+            if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
             {
-                vTaskDelay(10);
-                if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
-                {
-                    lastActionTime = millis();
-                }
+                lastActionTime = millis();
             }
         }
     }
@@ -121,11 +165,22 @@ void dimOledDisplay()
         }
         else if (lightLevel > OLED_DIM_THRESHOLD)
         {
-            display.dim(true);
+            if (dimmed == false && fading == false)
+            {
+                oledFadeout();
+            }
+            display.ssd1306_command(SSD1306_DISPLAYON);
+            dimmed = true;
         }
         else
         {
-            display.dim(true);
+            if (dimmed == false && fading == false)
+            {
+                oledFadeout();
+            }
+            display.ssd1306_command(SSD1306_DISPLAYON);
+
+            dimmed = true;
         }
     }
 }

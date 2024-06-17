@@ -25,65 +25,85 @@ const uint8_t *const mask[] PROGMEM = {
 const uint8_t *const img[] PROGMEM = {
     toaster0, toaster1, toaster2, toaster1, toast};
 
-unsigned long lastExecutionTime = 0; // Variable to store the last execution time
-bool showMainPageFlag = true;        // Flag to determine which screen to show
+unsigned long lastExecutionTime = 0;
+int PageNumberToShow = 1;
+int LastPageShown = 1;
+bool displayedWeather = false;
+
 void showMainPage()
 {
-    unsigned long currentTime = millis(); // Get the current time
-    if (showMainPageFlag)
+    unsigned long currentTime = millis();
+    if (PageNumberToShow == 1 || PageNumberToShow == 2)
     {
-        // Check if MAIN_PAGE_DURATION milliseconds have passed since the last execution
         if (currentTime - lastExecutionTime >= MAIN_PAGE_DURATION)
         {
-            // Update the last execution time
             lastExecutionTime = currentTime;
-            // Switch to screensaver after showing the main page
-            showMainPageFlag = false;
+            PageNumberToShow = 0;
+            displayedWeather = false;
+            display.stopscroll();
         }
         else
         {
-            // Your existing code for showMainPage() here
-            display.clearDisplay();
-            display.drawRect(0, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH, 2, SSD1306_WHITE);
-            display.setTextSize(1);
-            display.setFont(&DejaVu_Sans_Bold_14);
-            centerText(String(day()) + "." + String(month()) + "." + String(year()), SCREEN_HEIGHT / 2);
-            display.setTextSize(1);
-            display.setFont(&DejaVu_LGC_Sans_Bold_10);
-            if (charging == true)
+            if (PageNumberToShow == 1)
             {
-                display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
-                display.println(String(batteryPercentage) + "%");
-                display.fillCircle((SCREEN_WIDTH - 42), (SCREEN_HEIGHT / 3 - 5) / 2, 2, SSD1306_WHITE);
+                LastPageShown = 1;
+                display.clearDisplay();
+                display.drawRect(0, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH, 2, SSD1306_WHITE);
+                display.setTextSize(1);
+                display.setFont(&DejaVu_Sans_Bold_14);
+                centerText(String(day()) + "." + String(month()) + "." + String(year()), SCREEN_HEIGHT / 2);
+                display.setTextSize(1);
+                display.setFont(&DejaVu_LGC_Sans_Bold_10);
+                if (charging == true)
+                {
+                    display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
+                    display.println(String(batteryPercentage) + "%");
+                    display.fillCircle((SCREEN_WIDTH - 42), (SCREEN_HEIGHT / 3 - 5) / 2, 2, SSD1306_WHITE);
+                }
+                else
+                {
+                    display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
+                    display.println(String(batteryPercentage) + "%");
+                }
+                display.drawLine(SCREEN_WIDTH - 47, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH - 47, 0, SSD1306_WHITE);
+                centerText(getCurrentWeekdayName() + "/" + getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
+                centerText("Temp: " + String(temperature) + " C", SCREEN_HEIGHT / 2 + 23);
+                display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
+                int bars = map(batteryPercentage, 0, 100, 0, 8); // Map battery percentage to bars
+                for (int i = 0; i < bars; i++)
+                {
+                    display.fillRect(i * 10, (SCREEN_HEIGHT / 3 - 12) - 4, 8, 8, SSD1306_WHITE); // Draw bars
+                }
+                display.display();
             }
             else
             {
-                display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
-                display.println(String(batteryPercentage) + "%");
+                if (PageNumberToShow == 2 && displayedWeather == false)
+                {
+                    displayedWeather = true;
+                    LastPageShown = 2;
+                    currentWeather();
+                    display.display();
+                }
             }
-            display.drawLine(SCREEN_WIDTH - 47, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH - 47, 0, SSD1306_WHITE);
-            centerText(getCurrentWeekdayName() + "/" + getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
-            centerText("Temp: " + String(temperature) + " C", SCREEN_HEIGHT / 2 + 23);
-            display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
-            int bars = map(batteryPercentage, 0, 100, 0, 8); // Map battery percentage to bars
-            for (int i = 0; i < bars; i++)
-            {
-                display.fillRect(i * 10, (SCREEN_HEIGHT / 3 - 12) - 4, 8, 8, SSD1306_WHITE); // Draw bars
-            }
-            display.display();
         }
     }
     else
     {
-        // Check if SCREENSAVER_DURATION milliseconds have passed since the last execution
         if (currentTime - lastExecutionTime >= SCREENSAVER_DURATION)
         {
-            // Update the last execution time
             lastExecutionTime = currentTime;
-            // Switch back to main page after showing the screensaver
-            display.ssd1306_command(SSD1306_DISPLAYOFF);
-
-            showMainPageFlag = true;
+            if (LastPageShown == 1)
+            {
+                PageNumberToShow = 2;
+            }
+            else
+            {
+                if (LastPageShown == 2)
+                {
+                    PageNumberToShow = 1;
+                }
+            }
         }
         else
         {
@@ -94,18 +114,17 @@ void showMainPage()
 
 void turnOffScreensaver()
 {
-    showMainPageFlag = true; // Set screensaver active flag to true to turn off screensaver
+    PageNumberToShow = 1;
     lastExecutionTime = millis();
-    // Optionally, reset timing variables or perform other actions
 }
 
-#define N_FLYERS 5 // Number of flying things
+#define N_FLYERS 5
 
 struct Flyer
-{                  // Array of flying things
-    int16_t x, y;  // Top-left position * 16 (for subpixel pos updates)
-    int8_t depth;  // Stacking order is also speed, 12-24 subpixels/frame
-    uint8_t frame; // Animation frame; Toasters cycle 0-3, Toast=255
+{
+    int16_t x, y;
+    int8_t depth;
+    uint8_t frame;
 } flyer[N_FLYERS];
 
 static int compare(const void *a, const void *b)
@@ -115,16 +134,16 @@ static int compare(const void *a, const void *b)
 
 void setupScreensaver()
 {
-    randomSeed(analogRead(2)); // Seed random from unused analog input
+    randomSeed(analogRead(2));
     display.clearDisplay();
     for (uint8_t i = 0; i < N_FLYERS; i++)
-    { // Randomize initial flyer states
+    {
         flyer[i].x = (-32 + random(160)) * 16;
         flyer[i].y = (-32 + random(96)) * 16;
-        flyer[i].frame = random(3) ? random(4) : 255; // 66% toaster, else toast
-        flyer[i].depth = 10 + random(16);             // Speed / stacking order
+        flyer[i].frame = random(3) ? random(4) : 255;
+        flyer[i].depth = 10 + random(16);
     }
-    qsort(flyer, N_FLYERS, sizeof(struct Flyer), compare); // Sort depths
+    qsort(flyer, N_FLYERS, sizeof(struct Flyer), compare);
 }
 
 void showScreensaver()
@@ -136,7 +155,7 @@ void showScreensaver()
     display.display();
     display.clearDisplay();
 
-    for (i = 0; i < N_FLYERS; i++ && showMainPageFlag == false)
+    for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
     {
         f = (flyer[i].frame == 255) ? 4 : (flyer[i].frame++ & 3);
         x = flyer[i].x / 16;

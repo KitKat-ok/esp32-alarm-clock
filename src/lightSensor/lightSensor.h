@@ -12,6 +12,9 @@ float removeLightNoise();
 bool checkForInput(int thresold);
 bool checkForNight();
 
+void oledFadein();
+void oledFadeout();
+
 extern TaskHandle_t dimmingTask;
 extern bool dimmingTaskRunning;
 extern bool maxBrightness;
