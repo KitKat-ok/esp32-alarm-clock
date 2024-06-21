@@ -12,7 +12,9 @@ extern BH1750 lightMeter;
 extern OneWire oneWire;
 extern DallasTemperature tempSensor;
 
+extern bool waitingToDisplay;
 
+void oledDisplay();
 void initHardware();
 void LowBattery();
 

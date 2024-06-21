@@ -39,15 +39,16 @@ void oledFadeout()
         {
             display.ssd1306_command(0x81);
             display.ssd1306_command(dim); // max 157
-            delay(50);
+            delay(10);
         }
 
         for (int dim2 = 34; dim2 >= 0; dim2 -= 17)
         {
             display.ssd1306_command(0xD9);
             display.ssd1306_command(dim2); // max 34
-            delay(100);
+            delay(20);
         }
+        delay(20);
         fading = false;
     }
 }
@@ -61,15 +62,16 @@ void oledFadein()
         {
             display.ssd1306_command(0x81);
             display.ssd1306_command(dim); // max 160
-            delay(50);
+            delay(10);
         }
 
         for (int dim2 = 0; dim2 <= 34; dim2 += 17)
         {
             display.ssd1306_command(0xD9);
             display.ssd1306_command(dim2); // max 34
-            delay(100);
+            delay(20);
         }
+        delay(20);
         fading = false;
     }
 }
@@ -80,10 +82,10 @@ void dimmingFunction(void *pvParameters)
     unsigned long previousMillisLight = 0;
 
     unsigned long previousMillisDimming = 0;
-    unsigned long intervalDimming = 10000;
+    unsigned long intervalDimming = 1000;
 
     unsigned long lastActionTime = 0;
-    unsigned long delayDuration = 40000;
+    unsigned long delayDuration = 20000;
     while (true)
     {
         dimmingTaskRunning = true;
@@ -129,7 +131,9 @@ void dimmingFunction(void *pvParameters)
         display.ssd1306_command(SSD1306_DISPLAYON);
         if (dimmed == true && fading == false)
         {
+            display.startWrite();
             oledFadein();
+            display.endWrite();
             dimmed = false;
         }
         turnOffScreensaver();
@@ -143,6 +147,14 @@ void dimmingFunction(void *pvParameters)
             {
                 lastActionTime = millis();
             }
+        }
+
+        if (dimmed == false && fading == false)
+        {
+            display.startWrite();
+            oledFadeout();
+            display.endWrite();
+            dimmed = true;
         }
     }
 }
@@ -158,28 +170,20 @@ void dimOledDisplay()
     Serial.println("smoothened light level: " + String(lightLevel));
     if (lightLevel < 5000)
     {
-        if (lightLevel <= 1.0 && (checkForNight() == true))
+        if (lightLevel <= OLED_DISABLE_THRESHOLD)
         {
             display.ssd1306_command(SSD1306_DISPLAYOFF);
             Serial.println("display off");
-        }
-        else if (lightLevel > OLED_DIM_THRESHOLD)
-        {
-            if (dimmed == false && fading == false)
-            {
-                oledFadeout();
-            }
-            display.ssd1306_command(SSD1306_DISPLAYON);
-            dimmed = true;
         }
         else
         {
             if (dimmed == false && fading == false)
             {
+                display.startWrite();
                 oledFadeout();
+                display.endWrite();
             }
             display.ssd1306_command(SSD1306_DISPLAYON);
-
             dimmed = true;
         }
     }
@@ -195,7 +199,7 @@ void dimLedDisplay()
     if (lightLevel < 5000)
     {
 
-        if (lightLevel <= 1.00 && (checkForNight() == true))
+        if (lightLevel <= LED_DISABLE_THRESHOLD && (checkForNight() == true))
         {
             LedDisplay.clear();
             displayON = false;

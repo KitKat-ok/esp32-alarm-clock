@@ -54,7 +54,7 @@ void LowBattery() // Prevents battery voltage from going too low by hybernating 
   if (rawVoltage < 3.40 & charging == false)
   {
     esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
-    Serial.print("Battery too low! going to sleep to prevent restarting");
+    Serial.print("what where is my battery or is it too low?! Im going to sleep I dont know what is happening byeee and Im going to scream while doing soo");
 
     pinMode(BUZZER_PIN, OUTPUT);
     ledcSetup(0, 2000, 8);
@@ -62,7 +62,8 @@ void LowBattery() // Prevents battery voltage from going too low by hybernating 
 
     LedDisplay.clear();
     display.clearDisplay();
-    display.display();
+    oledDisplay();
+    display.ssd1306_command(SSD1306_DISPLAYOFF);
 
     for (size_t i = 0; i < 10; i++)
     {
@@ -96,14 +97,33 @@ void initOledDisplay()
   display.clearDisplay();
   display.setTextSize(1);
   display.setCursor(0, 0);
-  display.dim(true);
   display.setTextColor(SSD1306_WHITE);
-  display.display();
+  oledDisplay();
 
   centerText("Oled Initialized", SCREEN_HEIGHT / 2);
 
-  display.display();
+  oledDisplay();
   Serial.println("OLed display initialized");
+}
+
+bool displaying = false;
+bool waitingToDisplay = false;
+
+
+void oledDisplay()
+{
+  delay(5);
+  if (fading == false && displaying == false)
+  {
+    waitingToDisplay = false;
+    displaying = true;
+    display.startWrite();
+    display.display();
+    display.endWrite();
+    displaying = false;
+  } else {
+    waitingToDisplay = true;
+  }
 }
 
 void initLedDisplay()

@@ -190,7 +190,7 @@ result showTempChart()
   }
   
   display.clearDisplay();
-  display.display();
+  oledDisplay();
   refreshMenu();
   return proceed;
 }
@@ -210,13 +210,13 @@ result showLightChart()
   }
   
   display.clearDisplay();
-  display.display();
+  oledDisplay();
   refreshMenu();
       display.clearDisplay();
-    display.display();
+    oledDisplay();
   return proceed;
       display.clearDisplay();
-    display.display();
+    oledDisplay();
 }
 
 result showCurrentWeather()
@@ -439,22 +439,23 @@ void initMenus() {
 bool sleeping = false;
 
 void handleMenus() {
-    nav.poll();
-    if (sleeping == false)
-    {
-      display.display();
-    }
-    
+  nav.poll();
 
+  if (nav.idleChanged)
+  {
+    display.clearDisplay();
+    oledDisplay();
+  }
+  
 
   if (!nav.sleepTask) {
-    sleeping = false;
+    oledDisplay();    
+    display.stopscroll();
     turnOffScreensaver();
   }
   
 
   if (nav.sleepTask) {
-    sleeping = true;
     showMainPage();
   }
 }
@@ -469,10 +470,10 @@ void refreshMenu() {
 
 void wakeUpMenu() {
   display.clearDisplay();
-  display.display();
+  oledDisplay();
   refreshMenu();
   nav.idleOff();
   refreshMenu();
   display.clearDisplay();
-  display.display();
+  oledDisplay();
 }

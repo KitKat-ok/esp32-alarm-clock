@@ -20,5 +20,7 @@ extern bool dimmingTaskRunning;
 extern bool maxBrightness;
 extern bool displayON;
 
+extern bool fading;
+
 
 #endif

@@ -102,7 +102,6 @@ void manageBattery(void *parameter)
       if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER)
       {
         Serial.println("Woke up from Timer");
-        display.dim(true);
         LedDisplay.clear();
         int currentHour = hour();
         int currentMinute = minute();
@@ -181,7 +180,7 @@ void goToSleep()
 {
   display.ssd1306_command(SSD1306_DISPLAYOFF);
 
-  display.display();
+  oledDisplay();
   LedDisplay.clear();
 
   WiFi.disconnect(true);

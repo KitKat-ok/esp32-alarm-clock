@@ -26,7 +26,7 @@ void currentWeather()
     display.print("\t");
     display.print("");
     display.startscrollleft(0x06, 0x07);
-    display.display();
+    oledDisplay();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
@@ -68,7 +68,7 @@ void displayWeatherCast(int dayIndex)
     display.print("");
 
     display.startscrollleft(0x06, 0x07);
-    display.display();
+    oledDisplay();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
@@ -133,7 +133,7 @@ void wifiDebugMenu()
     centerText("Mac address: ", 53);
     centerText(String(WiFi.macAddress()), 63);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    display.display();
+    oledDisplay();
 }
 
 esp_chip_info_t chip_info;
@@ -153,7 +153,7 @@ void CPUDebugMenu()
     centerText("Chip model:", 44);
     centerText(String(ESP.getChipModel()), 54);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    display.display();
+    oledDisplay();
 }
 
 void generalDebugMenu()
@@ -170,7 +170,7 @@ void generalDebugMenu()
     display.println("Free heap: " + String(esp_get_free_heap_size() / 1024.0, 2) + " KB");
     display.setCursor(0, 65);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    display.display();
+    oledDisplay();
 }
 
 void loopCallendar()
@@ -274,5 +274,5 @@ void showCalendar(int monthNumber, int yearNumber)
         currentDay++;
     }
 
-    display.display();
+    oledDisplay();
 }

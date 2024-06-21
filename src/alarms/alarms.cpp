@@ -153,7 +153,6 @@ void ringAlarm(void *parameter)
 
       display.ssd1306_command(SSD1306_DISPLAYON);
 
-      display.dim(true);
       LedDisplay.setBrightness(0);
       LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
     }
@@ -179,7 +178,6 @@ void ringAlarm(void *parameter)
 
       previousMillisMaxBrightness = currentTime;
 
-      display.dim(false);
       LedDisplay.setBrightness(7);
       LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
     }

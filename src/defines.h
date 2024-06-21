@@ -39,8 +39,9 @@ extern bool OTAEnabled;
 #define TIME_OFFSET_S 3600            // Time offset in seconds, use this as timezones
 
 // Light Sensor
-#define OLED_DIM_THRESHOLD 30.0 
-#define LED_DIM_THRESHOLD 30.0 
+#define OLED_DISABLE_THRESHOLD 30
+#define LED_DIM_THRESHOLD 30
+#define LED_DISABLE_THRESHOLD 1
 
 #define MAX_INCREASE_OF_LIGHT_LEVEL 1000
 

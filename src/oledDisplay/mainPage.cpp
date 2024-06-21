@@ -30,6 +30,9 @@ int PageNumberToShow = 1;
 int LastPageShown = 1;
 bool displayedWeather = false;
 
+unsigned long previousMillisFirstMenu = 0; // Store the last time the display was updated
+const long intervalFirstMenu = 15000;      // Interval at which to run the code (15 seconds)
+
 void showMainPage()
 {
     unsigned long currentTime = millis();
@@ -39,7 +42,9 @@ void showMainPage()
         {
             lastExecutionTime = currentTime;
             PageNumberToShow = 0;
+            previousMillisFirstMenu = millis() - intervalFirstMenu;
             displayedWeather = false;
+            Serial.println("resetting menus");
             display.stopscroll();
         }
         else
@@ -47,43 +52,21 @@ void showMainPage()
             if (PageNumberToShow == 1)
             {
                 LastPageShown = 1;
-                display.clearDisplay();
-                display.drawRect(0, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH, 2, SSD1306_WHITE);
-                display.setTextSize(1);
-                display.setFont(&DejaVu_Sans_Bold_14);
-                centerText(String(day()) + "." + String(month()) + "." + String(year()), SCREEN_HEIGHT / 2);
-                display.setTextSize(1);
-                display.setFont(&DejaVu_LGC_Sans_Bold_10);
-                if (charging == true)
+                if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
                 {
-                    display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
-                    display.println(String(batteryPercentage) + "%");
-                    display.fillCircle((SCREEN_WIDTH - 42), (SCREEN_HEIGHT / 3 - 5) / 2, 2, SSD1306_WHITE);
+                    previousMillisFirstMenu = currentTime;
+                    showFirstPage();
                 }
-                else
-                {
-                    display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
-                    display.println(String(batteryPercentage) + "%");
-                }
-                display.drawLine(SCREEN_WIDTH - 47, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH - 47, 0, SSD1306_WHITE);
-                centerText(getCurrentWeekdayName() + "/" + getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
-                centerText("Temp: " + String(temperature) + " C", SCREEN_HEIGHT / 2 + 23);
-                display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
-                int bars = map(batteryPercentage, 0, 100, 0, 8); // Map battery percentage to bars
-                for (int i = 0; i < bars; i++)
-                {
-                    display.fillRect(i * 10, (SCREEN_HEIGHT / 3 - 12) - 4, 8, 8, SSD1306_WHITE); // Draw bars
-                }
-                display.display();
             }
             else
             {
                 if (PageNumberToShow == 2 && displayedWeather == false)
                 {
+                    Serial.println("displaying second menu");
                     displayedWeather = true;
                     LastPageShown = 2;
                     currentWeather();
-                    display.display();
+                    oledDisplay();
                 }
             }
         }
@@ -112,10 +95,45 @@ void showMainPage()
     }
 }
 
+void showFirstPage()
+{
+    Serial.println("displaying first menu");
+    display.clearDisplay();
+    display.drawRect(0, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH, 2, SSD1306_WHITE);
+    display.setTextSize(1);
+    display.setFont(&DejaVu_Sans_Bold_14);
+    centerText(String(day()) + "." + String(month()) + "." + String(year()), SCREEN_HEIGHT / 2);
+    display.setTextSize(1);
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    if (charging == true)
+    {
+        display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
+        display.println(String(batteryPercentage) + "%");
+        display.fillCircle((SCREEN_WIDTH - 42), (SCREEN_HEIGHT / 3 - 5) / 2, 2, SSD1306_WHITE);
+    }
+    else
+    {
+        display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
+        display.println(String(batteryPercentage) + "%");
+    }
+    display.drawLine(SCREEN_WIDTH - 47, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH - 47, 0, SSD1306_WHITE);
+    centerText(getCurrentWeekdayName() + "/" + getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
+    centerText("Temp: " + String(temperature) + " C", SCREEN_HEIGHT / 2 + 23);
+    display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
+    int bars = map(batteryPercentage, 0, 100, 0, 8); // Map battery percentage to bars
+    for (int i = 0; i < bars; i++)
+    {
+        display.fillRect(i * 10, (SCREEN_HEIGHT / 3 - 12) - 4, 8, 8, SSD1306_WHITE); // Draw bars
+    }
+    oledDisplay();
+}
+
 void turnOffScreensaver()
 {
+    display.stopscroll();
     PageNumberToShow = 1;
     lastExecutionTime = millis();
+    previousMillisFirstMenu = millis() - intervalFirstMenu;
 }
 
 #define N_FLYERS 5
@@ -152,11 +170,17 @@ void showScreensaver()
     int16_t x, y;
     boolean resort = false;
 
-    display.display();
+    oledDisplay();
     display.clearDisplay();
 
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
     {
+        if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true || checkForNight() == true)
+        {
+            turnOffScreensaver();
+            break;
+        }
+
         f = (flyer[i].frame == 255) ? 4 : (flyer[i].frame++ & 3);
         x = flyer[i].x / 16;
         y = flyer[i].y / 16;

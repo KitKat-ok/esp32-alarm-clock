@@ -27,7 +27,7 @@ void createLedDisplayTask()
 void showTimeTask(void *pvParameters)
 {
   unsigned long previousMillis = 0;
-  const long interval = 10000; // 10 seconds interval
+  const long interval = 1000; // 10 seconds interval
   while (true)
   {
     if (charging == true)
