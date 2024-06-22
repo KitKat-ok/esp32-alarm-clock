@@ -23,6 +23,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+extern timeval tv;
 
 extern bool OTAEnabled;
 

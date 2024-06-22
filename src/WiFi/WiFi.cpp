@@ -3,6 +3,7 @@
 WiFiMulti wifiMulti;
 
 TaskHandle_t wifiTask = NULL;
+TaskStatus_t wifiTaskStatus;
 
 void initWifi();
 void WiFiEvent(WiFiEvent_t event);
@@ -10,6 +11,7 @@ void WiFiEvent(WiFiEvent_t event);
 bool WiFiTaskRunning = false;
 
 bool tasksLaunched = false;
+bool WifiOn = false;
 
 void initWiFiHandle(void *parameter)
 {
@@ -37,6 +39,9 @@ void initWifi()
 
 void connectToWiFi(void *parameter)
 {
+  WifiOn = true;
+  while (WifiOn == true)
+  {
   WiFiTaskRunning = true;
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(WIFI_PS_MAX_MODEM);
@@ -50,16 +55,22 @@ void connectToWiFi(void *parameter)
 
   Serial.println("Connecting to WiFi");
   initWifi();
-  while (wifiMulti.run(17000) != WL_CONNECTED)
+  while (wifiMulti.run(17000) != WL_CONNECTED && WifiOn == true)
   {
     Serial.print(".");
-    delay(1000);
+    vTaskDelay(30);
   }
-  Serial.println("\nConnected to WiFi");
-  Serial.print("Got ip: ");
-  Serial.println(WiFi.localIP());
-  Serial.println("Mac Address: " + String(WiFi.macAddress()));
 
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    Serial.println("\nConnected to WiFi");
+    Serial.print("Got ip: ");
+    Serial.println(WiFi.localIP());
+    Serial.println("Mac Address: " + String(WiFi.macAddress()));
+  }
+
+  break;
+  }
   WiFiTaskRunning = false;
   vTaskDelete(NULL);
 }
@@ -76,16 +87,48 @@ void createWifiTask()
       1);            // Core (0 or 1)
 }
 
+bool isWifiTaskCheck()
+{
+  bool tmp = WiFiTaskRunning;
+  return tmp;
+}
+
+void turnOffWifiMinimal()
+{
+  if (WiFi.getMode() != WIFI_OFF)
+  {
+    if (WiFi.disconnect(true) == false)
+    {
+      Serial.println("Failed to disconnect from wifi? turning it off anyway");
+      if (WiFi.mode(WIFI_OFF) == false)
+      {
+        Serial.println("Failed to force set mode of wifi, doing manual esp idf way");
+      }
+    }
+  }
+}
+
 void turnOffWifi()
 {
+  WifiOn = false;
+  Serial.println("Turning wifi off");
   if (WiFi.status() == WL_CONNECTED)
   {
-    WiFi.setAutoConnect(false);
-    WiFi.setAutoReconnect(false);
-    WiFi.disconnect(true);
-    WiFi.mode(WIFI_OFF);
-    Serial.println("turning WiFi off");
+    while (WiFiTaskRunning == true)
+    {
+      vTaskDelay(30);
+      Serial.println("WiFi Task running watiting for it to complete");
+    }
+    
+    while (WiFi.scanComplete() == WIFI_SCAN_RUNNING)
+    {
+      Serial.println("WiFi Scan running watiting for it to complete");
+      vTaskDelay(30);
+    }
+    // vTaskSuspend(wifiTask);
+    // delayTask(1500);
   }
+  turnOffWifiMinimal();
 }
 
 void WiFiEvent(WiFiEvent_t event)

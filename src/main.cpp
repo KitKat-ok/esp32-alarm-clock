@@ -3,6 +3,8 @@
 
 bool OTAEnabled = false;
 
+timeval tv;
+
 void setup()
 {
   Serial.println("Initializing Hardware");
@@ -10,6 +12,9 @@ void setup()
   initHardware();
   initWifi();
   readOtaValue();
+
+  syncTimeLibWithRTC();
+  LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
 
   // Check if both buttons are pressed to enable OTA
   int confirmButtonState = digitalRead(BUTTON_CONFIRM_PIN);
@@ -87,7 +92,7 @@ bool initialMenuRunning = false;
 
 void loop()
 {
-display.setRotation(0);
+  display.setRotation(0);
   if (menuRunning != initialMenuRunning)
   {
     Serial.println("Menu state has changed.");

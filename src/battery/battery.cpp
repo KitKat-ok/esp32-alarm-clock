@@ -178,6 +178,7 @@ void initSleep()
 
 void goToSleep()
 {
+  turnOffWifiMinimal();
   display.ssd1306_command(SSD1306_DISPLAYOFF);
 
   oledDisplay();

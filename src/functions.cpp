@@ -66,6 +66,7 @@ String getNextDayName(int daysAfterToday)
   return dayName;
 }
 
+
 String resetReasonToString(esp_reset_reason_t reason)
 {
  switch (reason) {

@@ -11,5 +11,7 @@ extern TaskHandle_t wifiTask;
 
 extern bool WiFiTaskRunning;
 
+void turnOffWifiMinimal();
+
 
 #endif
