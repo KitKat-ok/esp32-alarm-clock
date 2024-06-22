@@ -10,6 +10,7 @@ void initBattery();
 void goToSleep();
 
 extern int batteryPercentage;
-extern float charging;
+extern bool charging;
+extern float batteryVoltage;
 
 #endif

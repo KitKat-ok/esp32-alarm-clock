@@ -162,13 +162,18 @@ void generalDebugMenu()
     centerText("General debug", 10);
     display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1306_WHITE);
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
-    centerText("Reset reason:", 24);
-    centerText(resetReasonToString(esp_reset_reason()), 34);
-    display.setCursor(0, 45);
+    centerText("Reset reason:", 23);
+    centerText(resetReasonToString(esp_reset_reason()), 33);
+    display.setCursor(0, 43);
     display.println("Uptime: " + microsecondsToTimeString(esp_timer_get_time()));
-    display.setCursor(0, 55);
+    display.setCursor(0, 53);
     display.println("Free heap: " + String(esp_get_free_heap_size() / 1024.0, 2) + " KB");
-    display.setCursor(0, 65);
+    display.setCursor(0, 63);
+    display.println("Battery Vol: " + String(batteryVoltage));
+    if (charging == true)
+    {
+    display.fillCircle((SCREEN_WIDTH - 20),60, 3, SSD1306_WHITE);
+    }
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     oledDisplay();
 }

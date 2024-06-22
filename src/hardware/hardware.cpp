@@ -151,10 +151,10 @@ void initButtons()
 }
 
 int melody[] = {
-    NOTE_C5, NOTE_G5, NOTE_C6};
+    NOTE_C7, NOTE_G7, NOTE_C8};
 
 int noteDurations[] = {
-    5, 5, 5};
+    16, 11, 16};
 
 void initBuzzer()
 {

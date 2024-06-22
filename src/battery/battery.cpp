@@ -5,9 +5,11 @@ int sampleIndex = 0;
 
 int batteryPercentage;
 
-float charging = false;
+bool charging = false;
 
 bool wentToSleep = false;
+
+float batteryVoltage;
 
 void goToSleep();
 void initSleep();
@@ -210,6 +212,7 @@ int getBatteryPercentage()
     smoothedVoltage += voltageSamples[i];
   }
   smoothedVoltage /= NUM_SAMPLES;
+  batteryVoltage = smoothedVoltage;
 
   // Calculate and return the battery percentage
   int percentage = ((smoothedVoltage - MIN_VOLTAGE) / (MAX_VOLTAGE - MIN_VOLTAGE)) * 100.00;

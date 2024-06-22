@@ -143,8 +143,6 @@ void WiFiEvent(WiFiEvent_t event)
       Serial.println("Launching Tasks");
       synchronizeAndSetTime();
       Serial.println("Synchronized Time");
-      createAlarmTask();
-      Serial.println("Launched Alarm Task");
       synchronizeAndSetTime();
       delay(1000);
       createWeatherTask();

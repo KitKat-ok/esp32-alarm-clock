@@ -84,6 +84,7 @@ void setup()
     createTimeTask();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     setupScreensaver();
+    createAlarmTask();
   }
   display.ssd1306_command(SSD1306_DISPLAYON);
 }
