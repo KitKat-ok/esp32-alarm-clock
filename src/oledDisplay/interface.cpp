@@ -373,11 +373,18 @@ result startOTA()
   return proceed;
 }
 
+result softwareReset()
+{
+  ESP.restart();
+  return proceed;
+}
+
 MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("WiFi", showWifiDebugMenu, enterEvent)
      , OP("CPU", showCPUDebugMenu, enterEvent)
      , OP("General", showGeneralDebugMenu, enterEvent)
      , OP("Start OTA", startOTA, enterEvent)
+     , OP("Software Reset", softwareReset, enterEvent)
      , EXIT("<Back")
     );
 

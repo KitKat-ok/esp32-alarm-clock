@@ -107,9 +107,9 @@ void showFirstPage()
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     if (charging == true)
     {
-        display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
+        display.setCursor(SCREEN_WIDTH - 35, (SCREEN_HEIGHT / 3 - 6) - 4);
         display.println(String(batteryPercentage) + "%");
-        display.fillCircle((SCREEN_WIDTH - 42), (SCREEN_HEIGHT / 3 - 5) / 2, 2, SSD1306_WHITE);
+        display.fillCircle((SCREEN_WIDTH - 40), (SCREEN_HEIGHT / 3 - 6) / 2, 2, SSD1306_WHITE);
     }
     else
     {
@@ -123,7 +123,7 @@ void showFirstPage()
     int bars = map(batteryPercentage, 0, 100, 0, 8); // Map battery percentage to bars
     for (int i = 0; i < bars; i++)
     {
-        display.fillRect(i * 10, (SCREEN_HEIGHT / 3 - 12) - 4, 8, 8, SSD1306_WHITE); // Draw bars
+        display.fillRect(i * 10, (SCREEN_HEIGHT / 3 - 13) - 4, 8, 8, SSD1306_WHITE); // Draw bars
     }
     oledDisplay();
 }
