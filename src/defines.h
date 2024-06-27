@@ -23,7 +23,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-extern timeval tv;
 
 extern bool OTAEnabled;
 
@@ -40,7 +39,7 @@ extern bool OTAEnabled;
 #define TIME_OFFSET_S 3600            // Time offset in seconds, use this as timezones
 
 // Light Sensor
-#define OLED_DISABLE_THRESHOLD 30
+#define OLED_DISABLE_THRESHOLD 50
 #define LED_DIM_THRESHOLD 30
 #define LED_DISABLE_THRESHOLD 1
 

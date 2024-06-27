@@ -93,7 +93,6 @@ bool initialMenuRunning = false;
 
 void loop()
 {
-  display.setRotation(0);
   if (menuRunning != initialMenuRunning)
   {
     Serial.println("Menu state has changed.");
