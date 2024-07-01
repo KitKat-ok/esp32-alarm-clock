@@ -139,6 +139,7 @@ void dimmingFunction(void *pvParameters)
         turnOffScreensaver();
         maxBrightness = true;
         lastActionTime = millis();
+        display.ssd1306_command(SSD1306_DISPLAYON);
 
         while (millis() - lastActionTime < delayDuration)
         {
@@ -146,6 +147,11 @@ void dimmingFunction(void *pvParameters)
             if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
             {
                 lastActionTime = millis();
+                turnOffScreensaver();
+                while (checkForInput(TOUCH_BUTTON_THRESHOLD_WHEN_ALREADY_TOUCHED) == true)
+                {
+                    lastActionTime = millis();
+                }
             }
         }
 

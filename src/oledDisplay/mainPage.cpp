@@ -51,6 +51,7 @@ void showMainPage()
         {
             if (PageNumberToShow == 1)
             {
+                display.stopscroll();
                 LastPageShown = 1;
                 if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
                 {
@@ -65,6 +66,9 @@ void showMainPage()
                     Serial.println("displaying second menu");
                     displayedWeather = true;
                     LastPageShown = 2;
+                    display.clearDisplay();
+                    oledDisplay();
+                    vTaskDelay(50);
                     currentWeather();
                     oledDisplay();
                 }
@@ -131,8 +135,19 @@ void showFirstPage()
 void turnOffScreensaver()
 {
     display.stopscroll();
-    PageNumberToShow = 1;
-    lastExecutionTime = millis();
+    if (LastPageShown == 1)
+    {
+        PageNumberToShow = 2;
+    }
+    else
+    {
+        if (LastPageShown == 2)
+        {
+            PageNumberToShow = 1;
+        }
+    }
+    displayedWeather = false;
+
     previousMillisFirstMenu = millis() - intervalFirstMenu;
 }
 
@@ -175,6 +190,7 @@ void showScreensaver()
 
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
     {
+        vTaskDelay(1);
         if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true || checkForNight() == true)
         {
             turnOffScreensaver();

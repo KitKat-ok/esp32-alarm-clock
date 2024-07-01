@@ -98,7 +98,7 @@ void loop()
     Serial.println("Menu state has changed.");
     display.clearDisplay();
     oledDisplay();
-    delay(500);
+    vTaskDelay(100);
     display.clearDisplay();
     oledDisplay();
     wakeUpMenu();

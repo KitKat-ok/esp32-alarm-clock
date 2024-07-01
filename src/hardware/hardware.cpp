@@ -112,7 +112,7 @@ bool waitingToDisplay = false;
 
 void oledDisplay()
 {
-  delay(5);
+  vTaskDelay(10);
   if (fading == false && displaying == false)
   {
     waitingToDisplay = false;
@@ -121,6 +121,7 @@ void oledDisplay()
     display.display();
     display.endWrite();
     displaying = false;
+    Serial.println("wrote to oled");
   } else {
     waitingToDisplay = true;
   }

@@ -9,7 +9,7 @@ float readTemperature()
     return temperatureC;
 }
 
-const unsigned long intervalTemp = 60000; // Interval in milliseconds (30 seconds)
+const unsigned long intervalTemp = 300000; 
 unsigned long previousMillisTemp = 0;     // Will store last time the function was called
 
 void setTemperature(void *pvParameters)
