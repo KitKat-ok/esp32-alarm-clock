@@ -10,6 +10,8 @@ bool dimmingTaskRunning = false;
 
 bool displayON = true;
 
+bool inputDetected = false;
+
 TaskHandle_t dimmingTask;
 
 void createDimmingTask()
@@ -119,8 +121,9 @@ void dimmingFunction(void *pvParameters)
                 previousMillisDimming = currentMillis;
             }
             vTaskDelay(10);
-            if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
+            if (checkForInput() == true)
             {
+                inputDetected = true;
                 break;
             }
         }
@@ -129,6 +132,11 @@ void dimmingFunction(void *pvParameters)
 
         Serial.println("setting max brightness");
         display.ssd1306_command(SSD1306_DISPLAYON);
+        vTaskDelay(pdMS_TO_TICKS(20));
+
+        maxBrightness = true;
+        lastActionTime = millis();
+        vTaskDelay(pdMS_TO_TICKS(350));
         if (dimmed == true && fading == false)
         {
             display.startWrite();
@@ -136,25 +144,26 @@ void dimmingFunction(void *pvParameters)
             display.endWrite();
             dimmed = false;
         }
-        turnOffScreensaver();
-        maxBrightness = true;
-        lastActionTime = millis();
-        display.ssd1306_command(SSD1306_DISPLAYON);
 
         while (millis() - lastActionTime < delayDuration)
         {
             vTaskDelay(10);
-            if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
+            if (checkForInput() == true)
             {
                 lastActionTime = millis();
-                turnOffScreensaver();
-                while (checkForInput(TOUCH_BUTTON_THRESHOLD_WHEN_ALREADY_TOUCHED) == true)
+                if (menuRunning == false)
+                {
+                    turnOffScreensaver();
+                }
+
+                vTaskDelay(10);
+                while (checkForInput() == true)
                 {
                     lastActionTime = millis();
                 }
             }
         }
-
+        inputDetected = false;
         if (dimmed == false && fading == false)
         {
             display.startWrite();
@@ -174,25 +183,16 @@ void dimOledDisplay()
     int lightLevel = removeLightNoise();
     Serial.println("raw light level: " + String(removeLightNoise()));
     Serial.println("smoothened light level: " + String(lightLevel));
-    if (lightLevel < 5000)
+
+    if (dimmed == false && fading == false)
     {
-        if (lightLevel <= OLED_DISABLE_THRESHOLD)
-        {
-            display.ssd1306_command(SSD1306_DISPLAYOFF);
-            Serial.println("display off");
-        }
-        else
-        {
-            if (dimmed == false && fading == false)
-            {
-                display.startWrite();
-                oledFadeout();
-                display.endWrite();
-            }
-            display.ssd1306_command(SSD1306_DISPLAYON);
-            dimmed = true;
-        }
+        display.startWrite();
+        oledFadeout();
+        display.endWrite();
     }
+    dimmed = true;
+    display.ssd1306_command(SSD1306_DISPLAYOFF);
+    Serial.println("display off");
 }
 
 void dimLedDisplay()
@@ -245,16 +245,30 @@ float removeLightNoise()
     return currentLightLevel;
 }
 
-bool checkForInput(int thresold)
+bool checkForInput()
 {
-    if (touchRead(TOUCH_BUTTON_PIN) < thresold ||
+    int threshold;
+    if (charging == false)
+    {
+        threshold = TOUCH_BUTTON_THRESHOLD_ON_BATTERY;
+    }
+    else if (inputDetected == true)
+    {
+        threshold = TOUCH_BUTTON_THRESHOLD_WHEN_ALREADY_TOUCHED;
+    }
+    else
+    {
+        threshold = TOUCH_BUTTON_THRESHOLD;
+    }
+
+    if (touchRead(TOUCH_BUTTON_PIN) < threshold ||
         digitalRead(BUTTON_UP_PIN) == LOW ||
         digitalRead(BUTTON_DOWN_PIN) == LOW ||
         digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
         digitalRead(BUTTON_EXIT_PIN) == LOW)
     {
         delay(50);
-        if (touchRead(TOUCH_BUTTON_PIN) < thresold ||
+        if (touchRead(TOUCH_BUTTON_PIN) < threshold ||
             digitalRead(BUTTON_UP_PIN) == LOW ||
             digitalRead(BUTTON_DOWN_PIN) == LOW ||
             digitalRead(BUTTON_CONFIRM_PIN) == LOW ||

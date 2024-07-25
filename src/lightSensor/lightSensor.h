@@ -9,7 +9,7 @@ void dimLedDisplay();
 
 float removeLightNoise();
 
-bool checkForInput(int thresold);
+bool checkForInput();
 bool checkForNight();
 
 void oledFadein();
@@ -21,6 +21,8 @@ extern bool maxBrightness;
 extern bool displayON;
 
 extern bool fading;
+
+extern bool inputDetected;
 
 
 #endif

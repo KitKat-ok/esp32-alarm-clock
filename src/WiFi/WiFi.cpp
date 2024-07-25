@@ -35,6 +35,7 @@ void initWifi()
       1);
   wifiMulti.addAP(SSID1, PASSWORD1);
   wifiMulti.addAP(SSID2, PASSWORD2);
+  wifiMulti.addAP(SSID3, PASSWORD3);
 }
 
 void connectToWiFi(void *parameter)

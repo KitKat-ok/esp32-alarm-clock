@@ -68,9 +68,7 @@ void showMainPage()
                     LastPageShown = 2;
                     display.clearDisplay();
                     oledDisplay();
-                    vTaskDelay(50);
                     currentWeather();
-                    oledDisplay();
                 }
             }
         }
@@ -151,8 +149,6 @@ void turnOffScreensaver()
     previousMillisFirstMenu = millis() - intervalFirstMenu;
 }
 
-#define N_FLYERS 5
-
 struct Flyer
 {
     int16_t x, y;
@@ -191,7 +187,7 @@ void showScreensaver()
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
     {
         vTaskDelay(1);
-        if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true || checkForNight() == true)
+        if (checkForInput() == true || checkForNight() == true)
         {
             turnOffScreensaver();
             break;

@@ -69,6 +69,7 @@ void setup()
       centerText(WiFi.localIP().toString(), 30);
       oledDisplay();
     }
+    display.ssd1306_command(SSD1306_DISPLAYOFF);
   }
 
   // Proceed with regular initialization if OTA is not enabled
@@ -86,7 +87,7 @@ void setup()
     setupScreensaver();
     createAlarmTask();
   }
-  display.ssd1306_command(SSD1306_DISPLAYON);
+  display.ssd1306_command(SSD1306_DISPLAYOFF);
 }
 
 bool initialMenuRunning = false;

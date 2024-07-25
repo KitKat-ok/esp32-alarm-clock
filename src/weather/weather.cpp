@@ -1,9 +1,8 @@
 #include "weather.h"
 
-OW_Weather ow;
 bool isWeatherAvailable = false;
-OW_forecast *forecast = NULL;
-savedForecastData weatherForecastData[MAX_DAYS][WEATHER_PER_DAY]; // Days / Data for these days
+savedDailyForecastData weatherDailyForecastData[MAX_DAYS]; // Days / Data for these days
+CurrentWeatherData currentWeatherData;
 
 TaskHandle_t WeatherTask;
 
@@ -31,200 +30,122 @@ void deleteWeatherTask()
 
 void weatherTask(void *parameter)
 {
-    while (true)
+    uint32_t lastDailyWeatherSync = 0;
+    uint32_t lastCurrentWeatherSync = 0;
+
+    if (isWeatherAvailable == false)
     {
-        if (WiFi.status() == WL_CONNECTED)
-        {
-            syncWeather();
-            Serial.println("Syncing weather");
-        }
-        else
-        {
-            // WiFi is not connected, print a message or take appropriate action
-            Serial.println("WiFi not connected. Cannot sync weather.");
-        }
-        vTaskDelay(pdMS_TO_TICKS(30 * 60 * 1000));
+        syncDailyWeather();
+        vTaskDelay(pdMS_TO_TICKS(10000));
+        syncCurrentWeather();
     }
-}
 
-void syncWeather()
-{
-    if (OPEN_WEATHER_API_KEY != "" && WEATHER_LONGTIT != "" && WEATHER_LATIT != "")
-    {
-        forecast = new OW_forecast;
+    while (true) {
+        uint32_t currentTime = millis();
 
-        bool status = ow.getForecast(forecast, OPEN_WEATHER_API_KEY, WEATHER_LATIT, WEATHER_LONGTIT, WEATHER_UNIT, WEATHER_LANG, false);
-        if (status == true && forecast)
-        {
-            uint8_t c = 0;
-            for (int i = 0; i < MAX_DAYS; i++)
-            {
-                for (int j = 0; j < WEATHER_PER_DAY; j++)
-                {
-                    weatherForecastData[i][j].dt = forecast->dt[c];
-                    weatherForecastData[i][j].main = forecast->main[c];
-                    weatherForecastData[i][j].icon = forecast->icon[c];
-                    weatherForecastData[i][j].windDirection = forecast->wind_deg[c];
-                    weatherForecastData[i][j].temp = forecast->feels_like[c];
-                    weatherForecastData[i][j].minTemp = forecast->temp_min[c];
-                    weatherForecastData[i][j].maxTemp = forecast->temp_max[c];
-                    weatherForecastData[i][j].pressure = forecast->pressure[c];
-                    weatherForecastData[i][j].humidity = forecast->humidity[c];
-                    weatherForecastData[i][j].weatherConditionId = forecast->id[c];
-                    weatherForecastData[i][j].cloudsPerc = forecast->clouds_all[c];
-                    weatherForecastData[i][j].windSpeed = forecast->wind_speed[c];
-                    weatherForecastData[i][j].windGusts = forecast->wind_gust[c];
-                    weatherForecastData[i][j].visibility = forecast->visibility[c];
-                    weatherForecastData[i][j].pop = forecast->pop[c] * 100;
-                    weatherForecastData[i][j].sunrise = forecast->sunrise;
-                    weatherForecastData[i][j].sunset = forecast->sunset;
-                    c = c + 1;
-                }
+        // Sync daily weather if the interval has passed
+        if (currentTime - lastDailyWeatherSync >= DAILY_WEATHER_INTERVAL) {
+            if (WiFi.status() == WL_CONNECTED) {
+                syncDailyWeather();
+                Serial.println("Daily weather synced.");
+                lastDailyWeatherSync = currentTime;
+            } else {
+                Serial.println("WiFi not connected. Cannot sync daily weather.");
             }
-            isWeatherAvailable = true;
-            delete forecast;
         }
-        else
-        {
-            isWeatherAvailable = false;
+        vTaskDelay(pdMS_TO_TICKS(5000));
+        // Sync current weather if the interval has passed
+        if (currentTime - lastCurrentWeatherSync >= CURRENT_WEATHER_INTERVAL) {
+            if (WiFi.status() == WL_CONNECTED) {
+                syncCurrentWeather();
+                Serial.println("Current weather synced.");
+                lastCurrentWeatherSync = currentTime;
+            } else {
+                Serial.println("WiFi not connected. Cannot sync current weather.");
+            }
         }
-    }
-    else
-    {
-        isWeatherAvailable = false;
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
 
-String weatherConditionIdToStr(int weatherCode)
+void syncDailyWeather()
 {
-    switch (weatherCode)
+    // Dynamically allocate OM_DailyForecast
+    OM_DailyForecast* omdailyForecast = new OM_DailyForecast;
+
+    // Get the daily forecast data
+    getDailyForecast(omdailyForecast, WEATHER_LATIT, WEATHER_LONGTIT);
+
+    // Update weatherDailyForecastData with the retrieved data
+    for (int i = 0; i < MAX_DAYS; i++)
     {
-    // Group 2xx: Thunderstorm
-    case 200:
-        return "Thunderstorm with light rain";
-    case 201:
-        return "Thunderstorm with rain";
-    case 202:
-        return "Thunderstorm with heavy rain";
-    case 210:
-        return "Light thunderstorm";
-    case 211:
-        return "Thunderstorm";
-    case 212:
-        return "Heavy thunderstorm";
-    case 221:
-        return "Ragged thunderstorm";
-    case 230:
-        return "Thunderstorm with light drizzle";
-    case 231:
-        return "Thunderstorm with drizzle";
-    case 232:
-        return "Thunderstorm with heavy drizzle";
+        weatherDailyForecastData[i].dt = omdailyForecast->daily_time[i];
+        weatherDailyForecastData[i].windDirection = omdailyForecast->wind_deg_dominant[i];
+        weatherDailyForecastData[i].temp = (omdailyForecast->apparent_temp_max[i] + omdailyForecast->apparent_temp_min[i]) / 2;
+        weatherDailyForecastData[i].minTemp = omdailyForecast->temp_min[i];
+        weatherDailyForecastData[i].maxTemp = omdailyForecast->temp_max[i];
+        weatherDailyForecastData[i].weatherConditionId = omdailyForecast->weather_code[i];
+        weatherDailyForecastData[i].windSpeed = omdailyForecast->wind_speed_max[i];
+        weatherDailyForecastData[i].windGusts = omdailyForecast->wind_gust_max[i];
+        weatherDailyForecastData[i].pop = omdailyForecast->precipitation_max[i];
+        weatherDailyForecastData[i].sunrise = omdailyForecast->sunrise[i];
+        weatherDailyForecastData[i].sunset = omdailyForecast->sunset[i];
+    }
 
-    // Group 3xx: Drizzle
-    case 300:
-        return "Light intensity drizzle";
-    case 301:
-        return "Drizzle";
-    case 302:
-        return "Heavy intensity drizzle";
-    case 310:
-        return "Light intensity drizzle rain";
-    case 311:
-        return "Drizzle rain";
-    case 312:
-        return "Heavy intensity drizzle rain";
-    case 313:
-        return "Shower rain and drizzle";
-    case 314:
-        return "Heavy shower rain and drizzle";
-    case 321:
-        return "Shower drizzle";
+    // Deallocate the memory to prevent memory leaks
+    delete omdailyForecast;
 
-    // Group 5xx: Rain
-    case 500:
-        return "Light rain";
-    case 501:
-        return "Moderate rain";
-    case 502:
-        return "Heavy intensity rain";
-    case 503:
-        return "Very heavy rain";
-    case 504:
-        return "Extreme rain";
-    case 511:
-        return "Freezing rain";
-    case 520:
-        return "Light intensity shower rain";
-    case 521:
-        return "Shower rain";
-    case 522:
-        return "Heavy intensity shower rain";
-    case 531:
-        return "Ragged shower rain";
+    // Mark the weather data as available
+    isWeatherAvailable = true;
+}
 
-    // Group 6xx: Snow
-    case 600:
-        return "Light snow";
-    case 601:
-        return "Snow";
-    case 602:
-        return "Heavy snow";
-    case 611:
-        return "Sleet";
-    case 612:
-        return "Light shower sleet";
-    case 613:
-        return "Shower sleet";
-    case 615:
-        return "Light rain and snow";
-    case 616:
-        return "Rain and snow";
-    case 620:
-        return "Light shower snow";
-    case 621:
-        return "Shower snow";
-    case 622:
-        return "Heavy shower snow";
 
-    // Group 7xx: Atmosphere
-    case 701:
-        return "Mist";
-    case 711:
-        return "Smoke";
-    case 721:
-        return "Haze";
-    case 731:
-        return "Sand/dust whirls";
-    case 741:
-        return "Fog";
-    case 751:
-        return "Sand";
-    case 761:
-        return "Dust";
-    case 762:
-        return "Volcanic ash";
-    case 771:
-        return "Squalls";
-    case 781:
-        return "Tornado";
 
-    // Group 800: Clear
-    case 800:
-        return "Clear sky";
+void syncCurrentWeather() {
+    // Dynamically allocate OM_CurrentWeather
+    OM_CurrentWeather* omCurrentWeather = new OM_CurrentWeather;
 
-    // Group 80x: Clouds
-    case 801:
-        return "Few clouds: 11-25%";
-    case 802:
-        return "Scattered clouds: 25-50%";
-    case 803:
-        return "Broken clouds: 51-84%";
-    case 804:
-        return "Overcast clouds: 85-100%";
+    // Get the current weather data
+    getCurrentWeather(omCurrentWeather, WEATHER_LATIT, WEATHER_LONGTIT);
 
-    // Default case
-    default:
-        return "Unknown weather code";
+    // Populate the CurrentWeatherData structure
+    currentWeatherData.dt = omCurrentWeather->time;
+    currentWeatherData.main = weatherConditionIdToStr(omCurrentWeather->weather_code);
+    currentWeatherData.windDirection = omCurrentWeather->wind_deg;
+    currentWeatherData.temp = omCurrentWeather->temp;
+    currentWeatherData.pressure = omCurrentWeather->pressure;
+    currentWeatherData.humidity = omCurrentWeather->humidity;
+    currentWeatherData.cloudsPerc = omCurrentWeather->cloud_cover;
+    currentWeatherData.windSpeed = omCurrentWeather->wind_speed;
+    currentWeatherData.windGusts = omCurrentWeather->wind_gust;
+    currentWeatherData.weatherConditionId = omCurrentWeather->weather_code;
+
+    // Deallocate the memory to prevent memory leaks
+    delete omCurrentWeather;
+
+    // Mark the weather data as available
+    isWeatherAvailable = true;
+}
+
+
+
+String weatherConditionIdToStr(int code_no)
+{
+    switch (code_no)
+    {
+        case 0:  return "Clear sky";
+        case 1: case 2: case 3: return "Partly cloudy";
+        case 45: case 48: return "Fog";
+        case 51: case 53: case 55: return "Drizzle";
+        case 56: case 57: return "Freezing drizzle";
+        case 61: case 63: case 65: return "Rain";
+        case 66: case 67: return "Freezing rain";
+        case 71: case 73: case 75: return "Snow";
+        case 77: return "Snow grains";
+        case 80: case 81: case 82: return "Rain showers";
+        case 85: case 86: return "Snow showers";
+        case 95: return "Thunderstorm";
+        case 96: case 99: return "Thunderstorm with hail";
+        default: return "Unknown";
     }
 }

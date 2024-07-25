@@ -162,6 +162,7 @@ void initBuzzer()
   pinMode(BUZZER_PIN, OUTPUT);
   ledcSetup(0, 2000, 8);
   ledcAttachPin(BUZZER_PIN, 0);
+  #ifdef START_SOUND
   Serial.println("Buzzer initialized");
   for (int i = 0; i < sizeof(melody) / sizeof(melody[0]); i++)
   {
@@ -170,6 +171,7 @@ void initBuzzer()
 
     noTone(BUZZER_PIN);
   }
+  #endif
 }
 
 void initTempSensor()

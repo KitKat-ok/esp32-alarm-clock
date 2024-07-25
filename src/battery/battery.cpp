@@ -108,7 +108,7 @@ void manageBattery(void *parameter)
         int currentHour = hour();
         int currentMinute = minute();
         static unsigned long startTime = millis();
-        if (checkForInput(TOUCH_BUTTON_THRESHOLD) == true)
+        if (checkForInput() == true)
         {
           display.ssd1306_command(SSD1306_DISPLAYON);
           LedDisplay.setBrightness(7);
@@ -139,24 +139,10 @@ void manageBattery(void *parameter)
         LedDisplay.setBrightness(7);
         LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
 
-        while (checkForInput(TOUCH_BUTTON_THRESHOLD_ON_BATTERY) == true)
-        {
-          lastActionTime = millis();
-          vTaskDelay(10);
-
-          while (millis() - lastActionTime < delayDuration)
-          {
-            vTaskDelay(10);
-            if (checkForInput(TOUCH_BUTTON_THRESHOLD_ON_BATTERY) == true)
-            {
-              lastActionTime = millis();
-            }
-          }
-        }
       }
       static unsigned long startTime = millis();
 
-      if (millis() - startTime >= GPIO_WAKUP_TIME)
+      if (millis() - startTime >= GPIO_WAKUP_TIME && inputDetected == false)
       {
         Serial.println("Going to sleep");
         vTaskDelay(pdMS_TO_TICKS(200));

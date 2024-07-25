@@ -4,37 +4,57 @@
 
 void currentWeather()
 {
-    display.clearDisplay();
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    displaywidget(weatherForecastData[0]->weatherConditionId);
+    display.clearDisplay(); // Clear the display
+
+    // Use the weather condition ID from CurrentWeatherData to select the appropriate widget
+    displaywidget(currentWeatherData.weatherConditionId);
+
+    // Set text size and font
     display.setTextSize(1);
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+
+    // Display the current day of the week
     display.setCursor(54, 20);
-    display.print(getCurrentWeekdayName()); // Prints city name ie: Marmagao in my case
+    display.print(getCurrentWeekdayName());
+
+    // Draw a separator line
     display.drawLine(58, 25, 127, 25, WHITE);
 
+    // Display the current temperature
     display.setCursor(58, 40);
     display.setFont(&DejaVu_Sans_Bold_16);
-    display.print(String(weatherForecastData[0]->temp) + "C");
+    display.print(String(currentWeatherData.temp, 1) + "C"); // Show temperature with 1 decimal place
+
+    // Display wind speed and direction
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     display.setCursor(58, 48);
-    display.print(weatherForecastData[0]->windSpeed);
-    display.print("m/s ");
-    display.println(convertWindDirection(weatherForecastData[0]->windDirection));
+    display.print(currentWeatherData.windSpeed, 1); // Wind speed with 1 decimal place
+    display.print(" m/s ");
+    display.print(convertWindDirection(currentWeatherData.windDirection));
+
+    // Display the weather condition description
     display.setCursor(0, SCREEN_HEIGHT - 5);
     display.setFont(&Roboto_Black_9);
-    display.print(weatherConditionIdToStr(weatherForecastData[0]->weatherConditionId));
+    display.fillRect(0,SCREEN_HEIGHT - 16,SCREEN_WIDTH,16,SSD1306_BLACK);
+    display.print(currentWeatherData.main); // Print the weather condition description
     display.print("\t");
     display.print("");
+
+    // Scroll the display content
     display.startscrollleft(0x06, 0x07);
     oledDisplay();
+
+    // Restore the font settings
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
+
+
 
 void displayWeatherCast(int dayIndex)
 {
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);
-    displaywidget(weatherForecastData[dayIndex][4].weatherConditionId);
+    displaywidget(weatherDailyForecastData[dayIndex].weatherConditionId);
     display.setTextSize(1);
     display.setCursor(55, 10);
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
@@ -42,29 +62,24 @@ void displayWeatherCast(int dayIndex)
     display.drawLine(57, 15, 127, 15, WHITE);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 
-    float tmax = -9999;
-    float tmin = 9999;
-    for (int i = 0; i < 8; i++)
-    {
-        if (weatherForecastData[dayIndex][i].maxTemp > tmax)
-            tmax = weatherForecastData[dayIndex][i].maxTemp;
-        if (weatherForecastData[dayIndex][i].minTemp < tmin)
-            tmin = weatherForecastData[dayIndex][i].minTemp;
-    }
+    float tmax = weatherDailyForecastData[dayIndex].maxTemp;
+    float tmin = weatherDailyForecastData[dayIndex].minTemp;
 
     display.setCursor(57, 25);
-    display.print("Min " + String(tmin) + "");
+    display.print("Min " + String(tmin) + "C");
     display.setCursor(57, 35);
-    display.print("Max " + String(tmax) + "");
+    display.print("Max " + String(tmax) + "C");
 
     display.setCursor(57, 45);
-    display.print(weatherForecastData[dayIndex][4].windSpeed);
+    display.print(weatherDailyForecastData[dayIndex].windSpeed);
     display.print("m/s ");
-    display.println(convertWindDirection(weatherForecastData[dayIndex][4].windDirection));
+    display.println(convertWindDirection(weatherDailyForecastData[dayIndex].windDirection));
 
     display.setCursor(0, SCREEN_HEIGHT - 5);
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
-    display.print(weatherConditionIdToStr(weatherForecastData[dayIndex][4].weatherConditionId));
+    display.fillRect(0,SCREEN_HEIGHT - 16,SCREEN_WIDTH,16,SSD1306_BLACK);
+
+    display.print(weatherConditionIdToStr(weatherDailyForecastData[dayIndex].weatherConditionId));
     display.print("");
 
     display.startscrollleft(0x06, 0x07);
@@ -72,29 +87,71 @@ void displayWeatherCast(int dayIndex)
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
+
 void displaywidget(int code_no)
 {
-    if (200 <= code_no and code_no <= 202)
-        display.drawBitmap(0, 0, thunderstorm_rain, 57, 56, BLACK, WHITE);
-    else if (230 <= code_no and code_no <= 233)
-        display.drawBitmap(0, 0, thunderstrom_drizzle, 57, 56, BLACK, WHITE);
-    else if (300 <= code_no and code_no <= 302)
-        display.drawBitmap(0, 0, drizzle, 57, 54, BLACK, WHITE);
-    else if (500 <= code_no and code_no <= 522)
-        display.drawBitmap(0, 0, rain, 57, 54, BLACK, WHITE);
-    else if ((600 <= code_no and code_no <= 610) or (621 <= code_no and code_no <= 623))
-        display.drawBitmap(0, 0, snow, 57, 54, BLACK, WHITE);
-    else if (611 <= code_no and code_no <= 612)
-        display.drawBitmap(0, 0, sleet, 57, 54, BLACK, WHITE);
-    else if (700 <= code_no and code_no <= 751)
-        display.drawBitmap(0, 0, mist, 57, 54, BLACK, WHITE);
-    else if (801 <= code_no and code_no <= 804)
-        display.drawBitmap(0, 0, cloudy, 57, 54, BLACK, WHITE);
-    else if (code_no == 900)
-        display.drawBitmap(0, 0, unknown_prep, 57, 54, BLACK, WHITE);
-    else
-        display.fillCircle(30, 23, 20, WHITE); // sunny day
+    switch (code_no)
+    {
+        case 0:
+            display.fillCircle(30, 23, 20, WHITE); // Clear sky
+            break;
+        case 1:
+        case 2:
+        case 3:
+            display.drawBitmap(0, 0, cloudy, 57, 54, BLACK, WHITE); // Mainly clear, partly cloudy, and overcast
+            break;
+        case 45:
+        case 48:
+            display.drawBitmap(0, 0, mist, 57, 54, BLACK, WHITE); // Fog and depositing rime fog
+            break;
+        case 51:
+        case 53:
+        case 55:
+            display.drawBitmap(0, 0, drizzle, 57, 54, BLACK, WHITE); // Drizzle: Light, moderate, and dense intensity
+            break;
+        case 56:
+        case 57:
+            display.drawBitmap(0, 0, sleet, 57, 54, BLACK, WHITE); // Freezing Drizzle: Light and dense intensity
+            break;
+        case 61:
+        case 63:
+        case 65:
+            display.drawBitmap(0, 0, rain, 57, 54, BLACK, WHITE); // Rain: Slight, moderate, and heavy intensity
+            break;
+        case 66:
+        case 67:
+            display.drawBitmap(0, 0, sleet, 57, 54, BLACK, WHITE); // Freezing Rain: Light and heavy intensity
+            break;
+        case 71:
+        case 73:
+        case 75:
+            display.drawBitmap(0, 0, snow, 57, 54, BLACK, WHITE); // Snow fall: Slight, moderate, and heavy intensity
+            break;
+        case 77:
+            display.drawBitmap(0, 0, snow, 57, 54, BLACK, WHITE); // Snow grains
+            break;
+        case 80:
+        case 81:
+        case 82:
+            display.drawBitmap(0, 0, rain, 57, 54, BLACK, WHITE); // Rain showers: Slight, moderate, and violent
+            break;
+        case 85:
+        case 86:
+            display.drawBitmap(0, 0, snow, 57, 54, BLACK, WHITE); // Snow showers slight and heavy
+            break;
+        case 95:
+            display.drawBitmap(0, 0, thunderstorm_rain, 57, 56, BLACK, WHITE); // Thunderstorm: Slight or moderate
+            break;
+        case 96:
+        case 99:
+            display.drawBitmap(0, 0, thunderstorm_rain, 57, 56, BLACK, WHITE); // Thunderstorm with slight and heavy hail
+            break;
+        default:
+            display.drawBitmap(0, 0, unknown_prep, 57, 54, BLACK, WHITE); // Unknown or unhandled weather code
+            break;
+    }
 }
+
 
 String convertWindDirection(uint16_t degrees)
 {

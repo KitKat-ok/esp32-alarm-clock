@@ -19,7 +19,6 @@
 #include <menuIO/keyIn.h>
 #include <menuIO/serialOut.h>
 #include <OLED_SSD1306_Chart.h>
-#include <OpenWeather.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
@@ -38,6 +37,10 @@ extern bool OTAEnabled;
 // NTP
 #define TIME_OFFSET_S 3600            // Time offset in seconds, use this as timezones
 
+// Weather
+#define DAILY_WEATHER_INTERVAL 5 * 60 * 60 * 1000
+#define CURRENT_WEATHER_INTERVAL 30 * 60 * 1000  // 30 minutes
+
 // Light Sensor
 #define OLED_DISABLE_THRESHOLD 50
 #define LED_DIM_THRESHOLD 30
@@ -54,7 +57,7 @@ extern bool OTAEnabled;
 #define TOUCH_BUTTON_PIN 4
 #define TOUCH_BUTTON_THRESHOLD 30
 #define TOUCH_BUTTON_THRESHOLD_WHEN_ALREADY_TOUCHED 40
-#define TOUCH_BUTTON_THRESHOLD_ON_BATTERY 45
+#define TOUCH_BUTTON_THRESHOLD_ON_BATTERY 40
 
 
 #define TOTAL_NAV_BUTTONS 4
@@ -62,6 +65,8 @@ extern bool OTAEnabled;
 
 #define MAIN_PAGE_DURATION 60000
 #define SCREENSAVER_DURATION 30000
+
+#define N_FLYERS 5  // Numver of flyers on screensaver
 
 #define fontX 6
 //5
@@ -76,7 +81,9 @@ extern bool OTAEnabled;
 #define FRIDAY    5
 #define SATURDAY  6
 
+// Buzzer
 #define BUZZER_PIN 27
+//#define START_SOUND false // uncomment to enable start sound
 
 // Battery
 #define MIN_VOLTAGE 3.40  // Minimum voltage of LiPo battery

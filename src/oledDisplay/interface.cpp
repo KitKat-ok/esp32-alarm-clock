@@ -7,174 +7,43 @@ bool menuRunning = false;
 unsigned long startTime;  // Variable to store the start time
 const unsigned long delayTime = 6000;  // 10 minutes in milliseconds
 
-const colorDef<uint16_t> colors[6] MEMMODE={
-  {{0,0},{0,1,1}},//bgColor
-  {{1,1},{1,0,0}},//fgColor
-  {{1,1},{1,0,0}},//valColor
-  {{1,1},{1,0,0}},//unitColor
-  {{0,1},{0,0,1}},//cursorColor
-  {{1,1},{1,0,0}},//titleColor
+// Define color scheme
+const colorDef<uint16_t> colors[6] MEMMODE = {
+  {{0,0},{0,1,1}},  // bgColor
+  {{1,1},{1,0,0}},  // fgColor
+  {{1,1},{1,0,0}},  // valColor
+  {{1,1},{1,0,0}},  // unitColor
+  {{0,1},{0,0,1}},  // cursorColor
+  {{1,1},{1,0,0}}   // titleColor
 };
 
-TOGGLE(alarms[1].isSet,mondayToggle,"Monday:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
-  ,VALUE("On",true,doNothing,noEvent)
-  ,VALUE("Off",false,doNothing,noEvent)
-);
-
-TOGGLE(alarms[1].soundOn,mondayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
-  ,VALUE("True",true,doNothing,noEvent)
-  ,VALUE("False",false,doNothing,noEvent)
-);
-
-MENU(Monday, "Monday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-     , SUBMENU(mondayToggle)
-      , SUBMENU(mondayToggleRing)
-     , FIELD(alarms[1].hours,"Hours:","",0,24,1,0,doNothing,noEvent,noStyle)
-     , FIELD(alarms[1].minutes,"Minutes:","",0,60,10,1,doNothing,noEvent,noStyle)
-     , EXIT("<Back")
-    );
-
-TOGGLE(alarms[2].isSet, tuesdayToggle, "Tuesday:", doNothing, noEvent, noStyle
-  , VALUE("On", true, doNothing, noEvent)
-  , VALUE("Off", false, doNothing, noEvent)
-);
-
-TOGGLE(alarms[2].soundOn,tuesdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
-  ,VALUE("True",true,doNothing,noEvent)
-  ,VALUE("False",false,doNothing,noEvent)
-);
-
-MENU(Tuesday, "Tuesday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-      , SUBMENU(tuesdayToggle)
-      , SUBMENU(tuesdayToggleRing)
-      , FIELD(alarms[2].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(alarms[2].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
-      , EXIT("<Back")
-);
-
-TOGGLE(alarms[3].isSet, wednesdayToggle, "Wednesday:", doNothing, noEvent, noStyle
-  , VALUE("On", true, doNothing, noEvent)
-  , VALUE("Off", false, doNothing, noEvent)
-);
-
-TOGGLE(alarms[3].soundOn, wednsedayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
-  ,VALUE("True",true,doNothing,noEvent)
-  ,VALUE("False",false,doNothing,noEvent)
-);
-
-MENU(Wednesday, "Wednesday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-      , SUBMENU(wednesdayToggle)
-      , SUBMENU(wednsedayToggleRing)
-      , FIELD(alarms[3].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(alarms[3].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
-      , EXIT("<Back")
-);
-
-TOGGLE(alarms[4].isSet, thursdayToggle, "Thursday:", doNothing, noEvent, noStyle
-  , VALUE("On", true, doNothing, noEvent)
-  , VALUE("Off", false, doNothing, noEvent)
-);
-
-TOGGLE(alarms[4].soundOn, thursdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
-  ,VALUE("True",true,doNothing,noEvent)
-  ,VALUE("False",false,doNothing,noEvent)
-);
-
-MENU(Thursday, "Thursday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-      , SUBMENU(thursdayToggle)
-      , SUBMENU(thursdayToggleRing)
-      , FIELD(alarms[4].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(alarms[4].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
-      , EXIT("<Back")
-);
-
-
-TOGGLE(alarms[5].isSet, fridayToggle, "Friday:", doNothing, noEvent, noStyle
-  , VALUE("On", true, doNothing, noEvent)
-  , VALUE("Off", false, doNothing, noEvent)
-);
-
-TOGGLE(alarms[5].soundOn, fridayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
-  ,VALUE("True",true,doNothing,noEvent)
-  ,VALUE("False",false,doNothing,noEvent)
-);
-
-MENU(Friday, "Friday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-      , SUBMENU(fridayToggle)
-      , SUBMENU(fridayToggleRing)
-      , FIELD(alarms[5].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(alarms[5].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
-      , EXIT("<Back")
-);
-
-TOGGLE(alarms[6].isSet, saturdayToggle, "Saturday:", doNothing, noEvent, noStyle
-  , VALUE("On", true, doNothing, noEvent)
-  , VALUE("Off", false, doNothing, noEvent)
-);
-
-TOGGLE(alarms[6].soundOn, saturdayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
-  ,VALUE("True",true,doNothing,noEvent)
-  ,VALUE("False",false,doNothing,noEvent)
-);
-
-MENU(Saturday, "Saturday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-      , SUBMENU(saturdayToggle)
-      , SUBMENU(saturdayToggleRing)
-      , FIELD(alarms[6].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(alarms[6].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
-      , EXIT("<Back")
-);
-
-TOGGLE(alarms[0].isSet, sundayToggle, "Sunday:", doNothing, noEvent, noStyle
-  , VALUE("On", true, doNothing, noEvent)
-  , VALUE("Off", false, doNothing, noEvent)
-);
-
-TOGGLE(alarms[0].soundOn, sundayToggleRing,"Ring alarm:",doNothing,noEvent,noStyle//,doExit,enterEvent,noStyle
-  ,VALUE("True",true,doNothing,noEvent)
-  ,VALUE("False",false,doNothing,noEvent)
-);
-
-MENU(Sunday, "Sunday", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-      , SUBMENU(sundayToggle)
-      , SUBMENU(sundayToggleRing)
-      , FIELD(alarms[0].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle)
-      , FIELD(alarms[0].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle)
-      , EXIT("<Back")
-);
-
-result saveAlarms(eventMask e, navNode &nav, prompt &item)
-{
+// Helper Functions
+result saveAlarms(eventMask e, navNode &nav, prompt &item) {
   saveAlarms();
   return proceed;
 }
 
-result enableAlarms(eventMask e, navNode &nav, prompt &item)
-{
+result enableAlarms(eventMask e, navNode &nav, prompt &item) {
   enableAllAlarms();
   return proceed;
 }
 
-result disableAlarms(eventMask e, navNode &nav, prompt &item)
-{
+result disableAlarms(eventMask e, navNode &nav, prompt &item) {
   disableAllAlarms();
   return proceed;
 }
 
+result startOTA() {
+  saveOtaValue(true);
+  ESP.restart();
+  return proceed;
+}
 
-MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-      , SUBMENU(Monday)
-      , SUBMENU(Tuesday)
-      , SUBMENU(Wednesday)
-      , SUBMENU(Thursday)
-      , SUBMENU(Friday)
-      , SUBMENU(Saturday)
-      , SUBMENU(Sunday)
-      , OP("Save alarms ---------------", saveAlarms, enterEvent)
-      , OP("Disable alarms", disableAlarms, enterEvent)
-      , OP("Enable alarms", enableAlarms, enterEvent)
-      , EXIT("<Back")
-);
+result softwareReset() {
+  ESP.restart();
+  return proceed;
+}
+
 result showTempChart()
 {
   sleepMenu();
@@ -366,18 +235,45 @@ result showCallendarMenu()
 }
 
 
-result startOTA()
-{
-  saveOtaValue(true);
-  ESP.restart();
-  return proceed;
-}
+// Alarm Toggles
+#define DEFINE_ALARM_TOGGLE(day, index) \
+  TOGGLE(alarms[index].isSet, day##Toggle, #day ":", doNothing, noEvent, noStyle, \
+    VALUE("On", true, doNothing, noEvent), \
+    VALUE("Off", false, doNothing, noEvent) \
+  ); \
+  TOGGLE(alarms[index].soundOn, day##ToggleRing, "Ring alarm:", doNothing, noEvent, noStyle, \
+    VALUE("True", true, doNothing, noEvent), \
+    VALUE("False", false, doNothing, noEvent) \
+  ); \
+  MENU(day, #day, Menu::doNothing, Menu::noEvent, Menu::wrapStyle, \
+    SUBMENU(day##Toggle), \
+    SUBMENU(day##ToggleRing), \
+    FIELD(alarms[index].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle), \
+    FIELD(alarms[index].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle), \
+    EXIT("<Back") \
+  )
 
-result softwareReset()
-{
-  ESP.restart();
-  return proceed;
-}
+DEFINE_ALARM_TOGGLE(Monday, 1);
+DEFINE_ALARM_TOGGLE(Tuesday, 2);
+DEFINE_ALARM_TOGGLE(Wednesday, 3);
+DEFINE_ALARM_TOGGLE(Thursday, 4);
+DEFINE_ALARM_TOGGLE(Friday, 5);
+DEFINE_ALARM_TOGGLE(Saturday, 6);
+DEFINE_ALARM_TOGGLE(Sunday, 0);
+
+MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
+      , SUBMENU(Monday)
+      , SUBMENU(Tuesday)
+      , SUBMENU(Wednesday)
+      , SUBMENU(Thursday)
+      , SUBMENU(Friday)
+      , SUBMENU(Saturday)
+      , SUBMENU(Sunday)
+      , OP("Save alarms ---------------", saveAlarms, enterEvent)
+      , OP("Disable alarms", disableAlarms, enterEvent)
+      , OP("Enable alarms", enableAlarms, enterEvent)
+      , EXIT("<Back")
+);
 
 MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("WiFi", showWifiDebugMenu, enterEvent)
@@ -416,27 +312,27 @@ MENU(mainMenu, "Main Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
   ,EXIT("<Back")
 );
 
-
+// Key Mapping and Outputs
 keyMap joystickBtn_map[] = {
-  { -BUTTON_CONFIRM_PIN, defaultNavCodes[enterCmd].ch} ,
-  { -BUTTON_UP_PIN, defaultNavCodes[upCmd].ch} ,
-  { -BUTTON_DOWN_PIN, defaultNavCodes[downCmd].ch}  ,
-  { -BUTTON_EXIT_PIN, defaultNavCodes[escCmd].ch}  ,
+  { -BUTTON_CONFIRM_PIN, defaultNavCodes[enterCmd].ch },
+  { -BUTTON_UP_PIN, defaultNavCodes[upCmd].ch },
+  { -BUTTON_DOWN_PIN, defaultNavCodes[downCmd].ch },
+  { -BUTTON_EXIT_PIN, defaultNavCodes[escCmd].ch }
 };
 keyIn<TOTAL_NAV_BUTTONS> joystickBtns(joystickBtn_map);
 
-MENU_OUTPUTS(out,MAX_DEPTH
-  ,ADAGFX_OUT(display,colors,fontX,fontY,{0,0,SCREEN_WIDTH/fontX,SCREEN_HEIGHT/fontY})
-  ,SERIAL_OUT(Serial)
+MENU_OUTPUTS(out, MAX_DEPTH,
+  ADAGFX_OUT(display, colors, fontX, fontY, {0, 0, SCREEN_WIDTH / fontX, SCREEN_HEIGHT / fontY}),
+  SERIAL_OUT(Serial)
 );
 
 NAVROOT(nav, mainMenu, MAX_DEPTH, joystickBtns, out);
 
+const panel panels[] MEMMODE = { {0, 0, 128 / fontX, 64 / fontY} };
+navNode* nodes[sizeof(panels) / sizeof(panel)];  // navNodes to store navigation status
+panelsList pList(panels, nodes, 1);  // a list of panels and nodes
+idx_t tops[sizeof(panels) / sizeof(panel)];
 
-const panel panels[] MEMMODE = {{0, 0, 128 / fontX, 64 / fontY}};
-navNode* nodes[sizeof(panels) / sizeof(panel)]; //navNodes to store navigation status
-panelsList pList(panels, nodes, 1); //a list of panels and nodes
-idx_t tops[MAX_DEPTH] = {0, 0}; //store cursor positions for each level
 
 void initMenus() {
   nav.timeOut = 30;
