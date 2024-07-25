@@ -197,7 +197,7 @@ void sendOnPostRequest()
 
       HTTPClient http;
 
-      http.begin("http://192.168.88.74/gateways/0x1/RGB/command"); // Specify destination for HTTP request
+      http.begin(LIGHT_IP); // Specify destination for HTTP request
       http.addHeader("Content-Type", "application/json");          // Specify content-type header
 
       int httpResponseCode = http.POST("{\"state\": \"ON\", \"transition\": 300}"); // Send the actual POST request
