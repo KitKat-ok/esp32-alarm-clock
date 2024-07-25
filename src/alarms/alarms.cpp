@@ -192,7 +192,7 @@ void sendOnPostRequest()
 {
   if ((WiFi.status() == WL_CONNECTED))
   { // Check WiFi connection status
-    if (WiFi.SSID() == "dragonn2")
+    if (WiFi.SSID() == SSID1)
     {
 
       HTTPClient http;
