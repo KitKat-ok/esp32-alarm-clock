@@ -145,6 +145,7 @@ void dimmingFunction(void *pvParameters)
             dimmed = false;
         }
 
+        vTaskDelay(pdMS_TO_TICKS(100));
         while (millis() - lastActionTime < delayDuration)
         {
             vTaskDelay(10);
