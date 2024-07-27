@@ -1,6 +1,7 @@
 #include "alarms.h"
 #include <HTTPClient.h>
 
+//initializes the structure
 Alarm alarms[] = {
     {false, 0, 0, true}, // Sunday
     {false, 0, 0, true}, // Monday
