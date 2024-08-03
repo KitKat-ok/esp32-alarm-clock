@@ -88,6 +88,7 @@ void setup()
     createAlarmTask();
   }
   display.ssd1306_command(SSD1306_DISPLAYOFF);
+  sleepMenu();
 }
 
 bool initialMenuRunning = false;
@@ -114,5 +115,12 @@ void loop()
   if (waitingToDisplay == true)
   {
     oledDisplay();
+  } else if (waitingToFadein == true)
+  {
+    oledFadein();
+  } else if (waitingToFadeout == true)
+  {
+    oledFadeout();
   }
+  
 }

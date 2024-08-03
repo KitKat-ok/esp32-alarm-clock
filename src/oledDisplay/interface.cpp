@@ -234,6 +234,11 @@ result showCallendarMenu()
   return proceed;
 }
 
+result syncTime() {
+  synchronizeAndSetTime();
+  return proceed;
+}
+
 
 // Alarm Toggles
 #define DEFINE_ALARM_TOGGLE(day, index) \
@@ -281,6 +286,7 @@ MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("General", showGeneralDebugMenu, enterEvent)
      , OP("Start OTA", startOTA, enterEvent)
      , OP("Software Reset", softwareReset, enterEvent)
+     , OP("Synchronize Time", syncTime, enterEvent)
      , EXIT("<Back")
     );
 

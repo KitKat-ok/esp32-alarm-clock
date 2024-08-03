@@ -166,6 +166,8 @@ void initSleep()
 
 void goToSleep()
 {
+  maxBrightness == false;
+  inputDetected == false;
   turnOffWifiMinimal();
   display.ssd1306_command(SSD1306_DISPLAYOFF);
 

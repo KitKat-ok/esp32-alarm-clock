@@ -31,10 +31,14 @@ void createDimmingTask()
 bool dimmed = false;
 bool fading = false;
 
+bool waitingToFadein = false;
+bool waitingToFadeout = false;
+
 void oledFadeout()
 {
-    if (fading == false)
+    if (fading == false && displaying == false)
     {
+        waitingToFadeout = false;
         fading = true;
         display.ssd1306_command(SSD1306_DISPLAYON);
         for (int dim = 150; dim >= 0; dim -= 10)
@@ -50,15 +54,18 @@ void oledFadeout()
             display.ssd1306_command(dim2); // max 34
             delay(20);
         }
-        delay(20);
+        vTaskDelay(pdMS_TO_TICKS(30));
         fading = false;
+    } else {
+        waitingToFadeout = true;
     }
 }
 
 void oledFadein()
 {
-    if (fading == false)
+    if (fading == false && displaying == false)
     {
+        waitingToFadein = false;
         fading = true;
         for (int dim = 0; dim <= 160; dim += 10)
         {
@@ -73,8 +80,10 @@ void oledFadein()
             display.ssd1306_command(dim2); // max 34
             delay(20);
         }
-        delay(20);
+        vTaskDelay(pdMS_TO_TICKS(30));
         fading = false;
+    } else {
+        waitingToFadein = true;
     }
 }
 
@@ -87,7 +96,7 @@ void dimmingFunction(void *pvParameters)
     unsigned long intervalDimming = 1000;
 
     unsigned long lastActionTime = 0;
-    unsigned long delayDuration = 20000;
+    unsigned long delayDuration = 100000;
     while (true)
     {
         dimmingTaskRunning = true;

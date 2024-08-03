@@ -30,8 +30,6 @@ void showTimeTask(void *pvParameters)
   const long interval = 1000; // 10 seconds interval
   while (true)
   {
-    if (charging == true)
-    {
       while (maxBrightness == false)
       {
         bool LedTaskRunning = true;
@@ -81,8 +79,5 @@ void showTimeTask(void *pvParameters)
         dimLedDisplay();
         LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
       }
-    } else {
-      vTaskDelay(10000);
     }
   }
-}

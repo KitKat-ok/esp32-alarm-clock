@@ -8,5 +8,9 @@ void showScreensaver();
 void setupScreensaver();
 extern bool showMainPageFlag;
 extern void turnOffScreensaver();
+void cyclePages();
+
 void showFirstPage();
+void showForecastPage();
+void showInfoPage();
 #endif

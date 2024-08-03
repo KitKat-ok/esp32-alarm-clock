@@ -13,6 +13,7 @@ extern OneWire oneWire;
 extern DallasTemperature tempSensor;
 
 extern bool waitingToDisplay;
+extern bool displaying;
 
 void oledDisplay();
 void initHardware();

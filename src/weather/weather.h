@@ -3,11 +3,14 @@
 
 #include "defines.h"
 #include "OpenMeteo.h"
+#include "../icons/icons/weather_icons_50x50.h"
+#include "../icons/icons/weather_icons_40x40.h"
 
 struct CurrentWeatherData {
     uint32_t dt; // time, unix
     String main; // Weather condition description
     uint16_t windDirection; // Wind direction in degrees
+    bool isDay; // Temperature in Celsius
     float temp; // Temperature in Celsius
     float pressure; // Pressure in hPa
     uint8_t humidity; // Humidity percentage
@@ -43,7 +46,8 @@ void deleteWeatherTask();
 
 void createWeatherTask();
 
-String weatherConditionIdToStr(int weatherCode);
-
+String weatherConditionIdToStr(int weatherCode = 0);
+void displaywidget(int weatherCode);
+void displaySmallWidget(int weatherCode, int x, int y);
 
 #endif

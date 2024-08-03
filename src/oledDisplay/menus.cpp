@@ -1,7 +1,5 @@
 #include "menus.h"
 
-
-
 void currentWeather()
 {
     display.clearDisplay(); // Clear the display
@@ -35,20 +33,22 @@ void currentWeather()
     // Display the weather condition description
     display.setCursor(0, SCREEN_HEIGHT - 5);
     display.setFont(&Roboto_Black_9);
-    display.fillRect(0,SCREEN_HEIGHT - 16,SCREEN_WIDTH,16,SSD1306_BLACK);
+    display.fillRect(0, SCREEN_HEIGHT - 16, SCREEN_WIDTH, 16, SSD1306_BLACK);
     display.print(currentWeatherData.main); // Print the weather condition description
     display.print("\t");
     display.print("");
 
     // Scroll the display content
     display.startscrollleft(0x06, 0x07);
+    display.setCursor(54, 10);
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+
+    display.println(String(day()) + "." + String(month()) + "." + String(year()));
     oledDisplay();
 
     // Restore the font settings
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
-
-
 
 void displayWeatherCast(int dayIndex)
 {
@@ -66,9 +66,9 @@ void displayWeatherCast(int dayIndex)
     float tmin = weatherDailyForecastData[dayIndex].minTemp;
 
     display.setCursor(57, 25);
-    display.print("Min " + String(tmin) + "C");
+    display.print("Min " + String(tmin));
     display.setCursor(57, 35);
-    display.print("Max " + String(tmax) + "C");
+    display.print("Max " + String(tmax));
 
     display.setCursor(57, 45);
     display.print(weatherDailyForecastData[dayIndex].windSpeed);
@@ -77,7 +77,7 @@ void displayWeatherCast(int dayIndex)
 
     display.setCursor(0, SCREEN_HEIGHT - 5);
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
-    display.fillRect(0,SCREEN_HEIGHT - 16,SCREEN_WIDTH,16,SSD1306_BLACK);
+    display.fillRect(0, SCREEN_HEIGHT - 16, SCREEN_WIDTH, 16, SSD1306_BLACK);
 
     display.print(weatherConditionIdToStr(weatherDailyForecastData[dayIndex].weatherConditionId));
     display.print("");
@@ -86,72 +86,6 @@ void displayWeatherCast(int dayIndex)
     oledDisplay();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
-
-
-void displaywidget(int code_no)
-{
-    switch (code_no)
-    {
-        case 0:
-            display.fillCircle(30, 23, 20, WHITE); // Clear sky
-            break;
-        case 1:
-        case 2:
-        case 3:
-            display.drawBitmap(0, 0, cloudy, 57, 54, BLACK, WHITE); // Mainly clear, partly cloudy, and overcast
-            break;
-        case 45:
-        case 48:
-            display.drawBitmap(0, 0, mist, 57, 54, BLACK, WHITE); // Fog and depositing rime fog
-            break;
-        case 51:
-        case 53:
-        case 55:
-            display.drawBitmap(0, 0, drizzle, 57, 54, BLACK, WHITE); // Drizzle: Light, moderate, and dense intensity
-            break;
-        case 56:
-        case 57:
-            display.drawBitmap(0, 0, sleet, 57, 54, BLACK, WHITE); // Freezing Drizzle: Light and dense intensity
-            break;
-        case 61:
-        case 63:
-        case 65:
-            display.drawBitmap(0, 0, rain, 57, 54, BLACK, WHITE); // Rain: Slight, moderate, and heavy intensity
-            break;
-        case 66:
-        case 67:
-            display.drawBitmap(0, 0, sleet, 57, 54, BLACK, WHITE); // Freezing Rain: Light and heavy intensity
-            break;
-        case 71:
-        case 73:
-        case 75:
-            display.drawBitmap(0, 0, snow, 57, 54, BLACK, WHITE); // Snow fall: Slight, moderate, and heavy intensity
-            break;
-        case 77:
-            display.drawBitmap(0, 0, snow, 57, 54, BLACK, WHITE); // Snow grains
-            break;
-        case 80:
-        case 81:
-        case 82:
-            display.drawBitmap(0, 0, rain, 57, 54, BLACK, WHITE); // Rain showers: Slight, moderate, and violent
-            break;
-        case 85:
-        case 86:
-            display.drawBitmap(0, 0, snow, 57, 54, BLACK, WHITE); // Snow showers slight and heavy
-            break;
-        case 95:
-            display.drawBitmap(0, 0, thunderstorm_rain, 57, 56, BLACK, WHITE); // Thunderstorm: Slight or moderate
-            break;
-        case 96:
-        case 99:
-            display.drawBitmap(0, 0, thunderstorm_rain, 57, 56, BLACK, WHITE); // Thunderstorm with slight and heavy hail
-            break;
-        default:
-            display.drawBitmap(0, 0, unknown_prep, 57, 54, BLACK, WHITE); // Unknown or unhandled weather code
-            break;
-    }
-}
-
 
 String convertWindDirection(uint16_t degrees)
 {
@@ -216,7 +150,7 @@ void CPUDebugMenu()
 void generalDebugMenu()
 {
     display.clearDisplay();
-    centerText("General debug " , 10);
+    centerText("General debug ", 10);
     display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1306_WHITE);
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
     centerText("Reset reason:", 23);
@@ -229,7 +163,7 @@ void generalDebugMenu()
     display.println("Battery Vol: " + String(batteryVoltage));
     if (charging == true)
     {
-    display.fillCircle((SCREEN_WIDTH - 20),60, 3, SSD1306_WHITE);
+        display.fillCircle((SCREEN_WIDTH - 20), 60, 3, SSD1306_WHITE);
     }
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     oledDisplay();

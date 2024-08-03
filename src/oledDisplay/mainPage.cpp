@@ -36,12 +36,14 @@ const long intervalFirstMenu = 15000;      // Interval at which to run the code 
 void showMainPage()
 {
     unsigned long currentTime = millis();
-    if (PageNumberToShow == 1 || PageNumberToShow == 2)
+
+    // Handle display logic for pages 1 through 4
+    if (PageNumberToShow >= 1 && PageNumberToShow <= 4)
     {
         if (currentTime - lastExecutionTime >= MAIN_PAGE_DURATION)
         {
             lastExecutionTime = currentTime;
-            PageNumberToShow = 0;
+            PageNumberToShow = 0; // Reset to 0 to enter screensaver mode
             previousMillisFirstMenu = millis() - intervalFirstMenu;
             displayedWeather = false;
             Serial.println("resetting menus");
@@ -59,9 +61,9 @@ void showMainPage()
                     showFirstPage();
                 }
             }
-            else
+            else if (PageNumberToShow == 2)
             {
-                if (PageNumberToShow == 2 && displayedWeather == false)
+                if (!displayedWeather)
                 {
                     Serial.println("displaying second menu");
                     displayedWeather = true;
@@ -71,24 +73,27 @@ void showMainPage()
                     currentWeather();
                 }
             }
+            else if (PageNumberToShow == 3)
+            {
+                Serial.println("displaying third menu");
+                LastPageShown = 3;
+                showForecastPage();
+            }
+            else if (PageNumberToShow == 4)
+            {
+                Serial.println("displaying fourth menu");
+                LastPageShown = 4;
+                showInfoPage();
+            }
         }
     }
     else
     {
+        // Handle screensaver logic
         if (currentTime - lastExecutionTime >= SCREENSAVER_DURATION)
         {
             lastExecutionTime = currentTime;
-            if (LastPageShown == 1)
-            {
-                PageNumberToShow = 2;
-            }
-            else
-            {
-                if (LastPageShown == 2)
-                {
-                    PageNumberToShow = 1;
-                }
-            }
+            cyclePages(); // Call the function to cycle through pages
         }
         else
         {
@@ -101,49 +106,149 @@ void showFirstPage()
 {
     Serial.println("displaying first menu");
     display.clearDisplay();
-    display.drawRect(0, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH, 2, SSD1306_WHITE);
     display.setTextSize(1);
-    display.setFont(&DejaVu_Sans_Bold_14);
+    display.setFont(&DejaVu_Sans_Bold_16);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), SCREEN_HEIGHT / 2);
     display.setTextSize(1);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    if (charging == true)
-    {
-        display.setCursor(SCREEN_WIDTH - 35, (SCREEN_HEIGHT / 3 - 6) - 4);
-        display.println(String(batteryPercentage) + "%");
-        display.fillCircle((SCREEN_WIDTH - 40), (SCREEN_HEIGHT / 3 - 6) / 2, 2, SSD1306_WHITE);
-    }
-    else
-    {
-        display.setCursor(SCREEN_WIDTH - 37, (SCREEN_HEIGHT / 3 - 5) - 4);
-        display.println(String(batteryPercentage) + "%");
-    }
-    display.drawLine(SCREEN_WIDTH - 47, SCREEN_HEIGHT / 3 - 5, SCREEN_WIDTH - 47, 0, SSD1306_WHITE);
     centerText(getCurrentWeekdayName() + "/" + getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
     centerText("Temp: " + String(temperature) + " C", SCREEN_HEIGHT / 2 + 23);
     display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
-    int bars = map(batteryPercentage, 0, 100, 0, 8); // Map battery percentage to bars
-    for (int i = 0; i < bars; i++)
-    {
-        display.fillRect(i * 10, (SCREEN_HEIGHT / 3 - 13) - 4, 8, 8, SSD1306_WHITE); // Draw bars
-    }
     oledDisplay();
+}
+
+// Function to format the temperature as a string with one decimal place
+auto formatTemperature = [](float minTemp, float maxTemp)
+{
+    char tempStr[6]; // Enough space for "0.0C\0"
+    float avgTemp = (minTemp + maxTemp) / 2.0;
+    dtostrf(avgTemp, 4, 1, tempStr);
+    return String(tempStr) + "C";
+};
+
+void showForecastPage()
+{
+    int y = 20;
+    int x = 5;
+    display.clearDisplay();
+    centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
+    display.setCursor(x + 3, y);
+    display.print(getShortNextDay(0));
+    display.setCursor(x + 44 + 3, y);
+    display.print(getShortNextDay(1));
+    display.setCursor(x + 88 + 3, y);
+    display.print(getShortNextDay(2));
+    displaySmallWidget(weatherDailyForecastData[0].weatherConditionId, x + 0, y);
+    displaySmallWidget(weatherDailyForecastData[1].weatherConditionId, x + 44, y);
+    displaySmallWidget(weatherDailyForecastData[2].weatherConditionId, x + 88, y);
+    display.setFont(&DejaVu_LGC_Sans_Bold_9);
+    display.setCursor(x - 3, y + 3 + 40);
+    display.print(formatTemperature(weatherDailyForecastData[0].minTemp, weatherDailyForecastData[0].maxTemp));
+
+    display.setCursor(x + 44 - 3, y + 3 + 40);
+    display.print(formatTemperature(weatherDailyForecastData[1].minTemp, weatherDailyForecastData[1].maxTemp));
+
+    display.setCursor(x + 88 - 3, y + 3 + 40);
+    display.print(formatTemperature(weatherDailyForecastData[2].minTemp, weatherDailyForecastData[2].maxTemp));
+
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oledDisplay();
+}
+
+#include "../icons/icons/icons_24x24.h"
+#include "../icons/icons/icons_48x48.h"
+
+void displayWiFiSignal(int x, int y)
+{
+    // Get the RSSI (Received Signal Strength Indicator)
+    int32_t rssi = WiFi.RSSI();
+
+    // Select the appropriate icon based on the RSSI value
+    const uint8_t *wifiIcon;
+
+    if (WiFi.status() != WL_CONNECTED)
+    {
+        wifiIcon = wifi_off_svgrepo_com_48x48;
+    }
+    else if (rssi >= -50)
+    {
+        wifiIcon = wifi_4_svgrepo_com_48x48;
+    }
+    else if (rssi >= -60)
+    {
+        wifiIcon = wifi_3_svgrepo_com_48x48;
+    }
+    else if (rssi >= -70)
+    {
+        wifiIcon = wifi_2_svgrepo_com_48x48;
+    }
+    else if (rssi >= -80)
+    {
+        wifiIcon = wifi_1_svgrepo_com_48x48;
+    }
+    else
+    {
+        wifiIcon = wifi_no_signal_svgrepo_com_48x48;
+    }
+
+    // Display the selected icon
+    display.drawBitmap(x, y, wifiIcon, 48, 48, BLACK, WHITE);
+}
+
+void showInfoPage()
+{
+    display.clearDisplay();
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    display.setCursor(5 + 32, 25);
+    display.println(String(batteryPercentage) + "%");
+    display.setCursor(5 + 35 + 50, 25);
+    display.print(String(batteryVoltage) + "V");
+    if (charging == true)
+    {
+        display.drawBitmap(32-24, 8, battery_charging_full_90deg_24x24, 24, 24, BLACK, WHITE);
+    }
+    else
+    {
+        display.drawBitmap(32-24, 8, battery_0_bar_90deg_24x24, 24, 24, BLACK, WHITE);
+    }
+    displayWiFiSignal(0, 25);
+    display.fillRect(5 + 32,26,SCREEN_WIDTH,1,WHITE);
+    display.setCursor(48, 37);
+    display.println("WiFi SSID:");
+
+    display.setCursor(48, 47);
+    display.setFont(&DejaVu_LGC_Sans_Bold_8);
+    display.println(String(WiFi.SSID()));
+    oledDisplay();
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+}
+
+void cyclePages()
+{
+    if (LastPageShown == 1)
+    {
+        PageNumberToShow = 2;
+    }
+    else if (LastPageShown == 2)
+    {
+        PageNumberToShow = 3;
+    }
+    else if (LastPageShown == 3)
+    {
+        PageNumberToShow = 4;
+    }
+    else if (LastPageShown == 4)
+    {
+        PageNumberToShow = 1;
+    }
 }
 
 void turnOffScreensaver()
 {
     display.stopscroll();
-    if (LastPageShown == 1)
-    {
-        PageNumberToShow = 2;
-    }
-    else
-    {
-        if (LastPageShown == 2)
-        {
-            PageNumberToShow = 1;
-        }
-    }
+    cyclePages();
     displayedWeather = false;
 
     previousMillisFirstMenu = millis() - intervalFirstMenu;
@@ -182,6 +287,7 @@ void showScreensaver()
     boolean resort = false;
 
     oledDisplay();
+    display.stopscroll();
     display.clearDisplay();
 
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)

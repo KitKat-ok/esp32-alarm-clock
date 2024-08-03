@@ -4,11 +4,16 @@
 #include "defines.h"
 
 void centerText(String text, int y, int x = -1);
+void leftAlignText(String text, int y,int offset, int x = -1);
+
 String getCurrentWeekdayName();
+String getShortCurrentWeekdayName();
 
 String getWeekdayName(int weekday);
+String getShortWeekdayName(int weekday);
 
 String getNextDayName(int daysAfterToday);
+String getShortNextDay(int days);
 
 String getCurrentMonthName();
 String getMonthName(int monthNumber);

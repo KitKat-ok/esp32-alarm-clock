@@ -13,6 +13,20 @@ void centerText(String text, int y, int x)
   display.print(text);
 }
 
+void leftAlignText(String text, int y,int offset, int x)
+{
+  int16_t x1, y1;
+  uint16_t w, h;
+  display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
+  if (x == -1)
+  {
+    x = ((SCREEN_WIDTH - w) - offset) - 2;
+  }
+  display.setCursor(x, y);
+  display.print(text);
+}
+
+
 String getMonthName(int monthNumber)
 {
   const char *months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
@@ -42,7 +56,22 @@ String getCurrentWeekdayName()
   return weekdays[weekdayIndex - 1];       // Adjust index to match array (0 = Sunday, 1 = Monday, etc.)
 }
 
+String getShortCurrentWeekdayName()
+{
+  const char *weekdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+  time_t currentTime = now();              // Get the current time
+  int weekdayIndex = weekday(currentTime); // Get the day of the week (1 = Sunday, 2 = Monday, etc.)
+  return weekdays[weekdayIndex - 1];       // Adjust index to match array (0 = Sunday, 1 = Monday, etc.)
+}
+
 String getWeekdayName(int weekday)
+{
+  const char *weekdays[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+  int weekdayIndex = weekday;        // Get the day of the week (1 = Sunday, 2 = Monday, etc.)
+  return weekdays[weekdayIndex - 1]; // Adjust index to match array (0 = Sunday, 1 = Monday, etc.)
+}
+
+String getShortWeekdayName(int weekday)
 {
   const char *weekdays[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
   int weekdayIndex = weekday;        // Get the day of the week (1 = Sunday, 2 = Monday, etc.)
@@ -65,6 +94,25 @@ String getNextDayName(int daysAfterToday)
 
   return dayName;
 }
+
+String getShortNextDay(int days)
+{
+  time_t now = time(nullptr);
+  time_t fut = now + (days * 86400);
+  int dow = weekday(fut);
+
+  switch (dow) {
+    case 1: return "Sun";
+    case 2: return "Mon";
+    case 3: return "Tue";
+    case 4: return "Wed";
+    case 5: return "Thu";
+    case 6: return "Fri";
+    case 7: return "Sat";
+    default: return "Err";
+  }
+}
+
 
 
 String resetReasonToString(esp_reset_reason_t reason)

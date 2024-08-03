@@ -34,7 +34,6 @@ void initHardware()
   initLightSensor();
   delay(100);
   initTempSensor();
-  setTime(0, 0, 0, 1, 1, 1970);
 }
 
 void LowBattery() // Prevents battery voltage from going too low by hybernating needs reset after this happens connecting the charger wont wake it up
@@ -112,14 +111,15 @@ bool waitingToDisplay = false;
 
 void oledDisplay()
 {
-  vTaskDelay(10);
   if (fading == false && displaying == false)
   {
     waitingToDisplay = false;
     displaying = true;
+    vTaskDelay(pdMS_TO_TICKS(10));
     display.startWrite();
     display.display();
     display.endWrite();
+    vTaskDelay(pdMS_TO_TICKS(10));
     displaying = false;
     Serial.println("wrote to oled");
   } else {

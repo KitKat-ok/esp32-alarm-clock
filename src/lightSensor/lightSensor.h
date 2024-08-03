@@ -21,6 +21,8 @@ extern bool maxBrightness;
 extern bool displayON;
 
 extern bool fading;
+extern bool waitingToFadein;
+extern bool waitingToFadeout;
 
 extern bool inputDetected;
 
