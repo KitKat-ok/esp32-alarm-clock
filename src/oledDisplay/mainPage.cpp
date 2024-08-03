@@ -36,14 +36,12 @@ const long intervalFirstMenu = 15000;      // Interval at which to run the code 
 void showMainPage()
 {
     unsigned long currentTime = millis();
-
-    // Handle display logic for pages 1 through 4
-    if (PageNumberToShow >= 1 && PageNumberToShow <= 4)
+    if (PageNumberToShow == 1 || PageNumberToShow == 2 || PageNumberToShow == 3 || PageNumberToShow == 4)
     {
         if (currentTime - lastExecutionTime >= MAIN_PAGE_DURATION)
         {
             lastExecutionTime = currentTime;
-            PageNumberToShow = 0; // Reset to 0 to enter screensaver mode
+            PageNumberToShow = 0;
             previousMillisFirstMenu = millis() - intervalFirstMenu;
             displayedWeather = false;
             Serial.println("resetting menus");
@@ -61,21 +59,17 @@ void showMainPage()
                     showFirstPage();
                 }
             }
-            else if (PageNumberToShow == 2)
+            else if (PageNumberToShow == 2 && displayedWeather == false)
             {
-                if (!displayedWeather)
-                {
-                    Serial.println("displaying second menu");
-                    displayedWeather = true;
-                    LastPageShown = 2;
-                    display.clearDisplay();
-                    oledDisplay();
-                    currentWeather();
-                }
+                Serial.println("displaying second menu");
+                displayedWeather = true;
+                LastPageShown = 2;
+                display.clearDisplay();
+                oledDisplay();
+                currentWeather();
             }
             else if (PageNumberToShow == 3)
             {
-                Serial.println("displaying third menu");
                 LastPageShown = 3;
                 showForecastPage();
             }
@@ -89,17 +83,25 @@ void showMainPage()
     }
     else
     {
-        // Handle screensaver logic
         if (currentTime - lastExecutionTime >= SCREENSAVER_DURATION)
         {
             lastExecutionTime = currentTime;
-            cyclePages(); // Call the function to cycle through pages
+            cyclePages();
         }
         else
         {
             showScreensaver();
         }
     }
+}
+
+void turnOffScreensaver()
+{
+    display.stopscroll();
+    cyclePages();
+    displayedWeather = false;
+
+    previousMillisFirstMenu = millis() - intervalFirstMenu;
 }
 
 void showFirstPage()
@@ -207,14 +209,14 @@ void showInfoPage()
     display.print(String(batteryVoltage) + "V");
     if (charging == true)
     {
-        display.drawBitmap(32-24, 8, battery_charging_full_90deg_24x24, 24, 24, BLACK, WHITE);
+        display.drawBitmap(32 - 24, 8, battery_charging_full_90deg_24x24, 24, 24, BLACK, WHITE);
     }
     else
     {
-        display.drawBitmap(32-24, 8, battery_0_bar_90deg_24x24, 24, 24, BLACK, WHITE);
+        display.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, BLACK, WHITE);
     }
     displayWiFiSignal(0, 25);
-    display.fillRect(5 + 32,26,SCREEN_WIDTH,1,WHITE);
+    display.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, WHITE);
     display.setCursor(48, 37);
     display.println("WiFi SSID:");
 
@@ -243,15 +245,6 @@ void cyclePages()
     {
         PageNumberToShow = 1;
     }
-}
-
-void turnOffScreensaver()
-{
-    display.stopscroll();
-    cyclePages();
-    displayedWeather = false;
-
-    previousMillisFirstMenu = millis() - intervalFirstMenu;
 }
 
 struct Flyer
@@ -293,7 +286,7 @@ void showScreensaver()
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
     {
         vTaskDelay(1);
-        if (checkForInput() == true || checkForNight() == true)
+        if (checkForInput() == true)
         {
             turnOffScreensaver();
             break;

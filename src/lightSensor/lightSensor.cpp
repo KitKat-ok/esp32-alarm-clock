@@ -56,7 +56,9 @@ void oledFadeout()
         }
         vTaskDelay(pdMS_TO_TICKS(30));
         fading = false;
-    } else {
+    }
+    else
+    {
         waitingToFadeout = true;
     }
 }
@@ -82,7 +84,9 @@ void oledFadein()
         }
         vTaskDelay(pdMS_TO_TICKS(30));
         fading = false;
-    } else {
+    }
+    else
+    {
         waitingToFadein = true;
     }
 }
@@ -96,7 +100,7 @@ void dimmingFunction(void *pvParameters)
     unsigned long intervalDimming = 1000;
 
     unsigned long lastActionTime = 0;
-    unsigned long delayDuration = 100000;
+    unsigned long delayDuration = 30000;
     while (true)
     {
         dimmingTaskRunning = true;
@@ -133,6 +137,7 @@ void dimmingFunction(void *pvParameters)
             if (checkForInput() == true)
             {
                 inputDetected = true;
+                display.ssd1306_command(SSD1306_DISPLAYON);
                 break;
             }
         }
@@ -140,7 +145,6 @@ void dimmingFunction(void *pvParameters)
         Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
 
         Serial.println("setting max brightness");
-        display.ssd1306_command(SSD1306_DISPLAYON);
         vTaskDelay(pdMS_TO_TICKS(20));
 
         maxBrightness = true;
@@ -164,6 +168,13 @@ void dimmingFunction(void *pvParameters)
                 if (menuRunning == false)
                 {
                     turnOffScreensaver();
+                }
+                if (dimmed == true && fading == false)
+                {
+                    display.startWrite();
+                    oledFadein();
+                    display.endWrite();
+                    dimmed = false;
                 }
 
                 vTaskDelay(10);
@@ -255,6 +266,23 @@ float removeLightNoise()
     return currentLightLevel;
 }
 
+int touchSamples[NUM_TOUCH_SAMPLES];
+int touchSampleIndex = 0;
+
+int smoothTouchRead(int pin)
+{
+    int sum = 0;
+    touchSamples[touchSampleIndex] = touchRead(pin);
+    touchSampleIndex = (touchSampleIndex + 1) % NUM_TOUCH_SAMPLES;
+
+    for (int i = 0; i < NUM_TOUCH_SAMPLES; i++)
+    {
+        sum += touchSamples[i];
+    }
+
+    return sum / NUM_TOUCH_SAMPLES;
+}
+
 bool checkForInput()
 {
     int threshold;
@@ -271,14 +299,14 @@ bool checkForInput()
         threshold = TOUCH_BUTTON_THRESHOLD;
     }
 
-    if (touchRead(TOUCH_BUTTON_PIN) < threshold ||
+    if (smoothTouchRead(TOUCH_BUTTON_PIN) < threshold ||
         digitalRead(BUTTON_UP_PIN) == LOW ||
         digitalRead(BUTTON_DOWN_PIN) == LOW ||
         digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
         digitalRead(BUTTON_EXIT_PIN) == LOW)
     {
         delay(50);
-        if (touchRead(TOUCH_BUTTON_PIN) < threshold ||
+        if (smoothTouchRead(TOUCH_BUTTON_PIN) < threshold ||
             digitalRead(BUTTON_UP_PIN) == LOW ||
             digitalRead(BUTTON_DOWN_PIN) == LOW ||
             digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
@@ -288,7 +316,7 @@ bool checkForInput()
         }
         else
         {
-            return false;
+            return true;
         }
     }
     else

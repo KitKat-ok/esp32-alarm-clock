@@ -87,7 +87,6 @@ void setup()
     setupScreensaver();
     createAlarmTask();
   }
-  display.ssd1306_command(SSD1306_DISPLAYOFF);
   sleepMenu();
 }
 
@@ -111,7 +110,7 @@ void loop()
   {
     handleMenus();
   }
-
+ 
   if (waitingToDisplay == true)
   {
     oledDisplay();
@@ -122,5 +121,4 @@ void loop()
   {
     oledFadeout();
   }
-  
 }

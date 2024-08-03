@@ -62,7 +62,6 @@ void LowBattery() // Prevents battery voltage from going too low by hybernating 
     LedDisplay.clear();
     display.clearDisplay();
     oledDisplay();
-    display.ssd1306_command(SSD1306_DISPLAYOFF);
 
     for (size_t i = 0; i < 10; i++)
     {

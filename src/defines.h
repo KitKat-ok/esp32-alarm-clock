@@ -48,7 +48,7 @@ extern bool OTAEnabled;
 
 #define MAX_INCREASE_OF_LIGHT_LEVEL 1000
 
-// Menu
+// Inputs
 #define BUTTON_UP_PIN      GPIO_NUM_12
 #define BUTTON_DOWN_PIN    GPIO_NUM_13
 #define BUTTON_CONFIRM_PIN GPIO_NUM_14
@@ -59,7 +59,9 @@ extern bool OTAEnabled;
 #define TOUCH_BUTTON_THRESHOLD_WHEN_ALREADY_TOUCHED 40
 #define TOUCH_BUTTON_THRESHOLD_ON_BATTERY 40
 
+#define NUM_TOUCH_SAMPLES 10
 
+// Menus
 #define TOTAL_NAV_BUTTONS 4
 #define MAX_DEPTH 20
 
@@ -114,6 +116,7 @@ extern bool OTAEnabled;
 #include "confidential.h"
 
 #include "hardware/hardware.h"
+#include "oledDisplay/oledManager.h"
 #include "functions.h"
 #include "WiFi/WiFi.h"
 #include "NTP/NTP.h"

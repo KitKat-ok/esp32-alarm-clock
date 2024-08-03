@@ -360,7 +360,6 @@ void handleMenus() {
   if (!nav.sleepTask) {
     oledDisplay();    
     display.stopscroll();
-    turnOffScreensaver();
   }
   
 

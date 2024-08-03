@@ -8,6 +8,7 @@ void createDimmingTask();
 void dimLedDisplay();
 
 float removeLightNoise();
+int smoothTouchRead(int pin);
 
 bool checkForInput();
 bool checkForNight();
