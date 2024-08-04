@@ -285,7 +285,6 @@ void showScreensaver()
 
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
     {
-        vTaskDelay(1);
         if (checkForInput() == true)
         {
             turnOffScreensaver();

@@ -39,12 +39,12 @@ void currentWeather()
     display.print("");
 
     // Scroll the display content
-    display.startscrollleft(0x06, 0x07);
     display.setCursor(54, 10);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 
     display.println(String(day()) + "." + String(month()) + "." + String(year()));
     oledDisplay();
+    display.startscrollleft(0x06, 0x07);
 
     // Restore the font settings
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
@@ -82,8 +82,8 @@ void displayWeatherCast(int dayIndex)
     display.print(weatherConditionIdToStr(weatherDailyForecastData[dayIndex].weatherConditionId));
     display.print("");
 
-    display.startscrollleft(0x06, 0x07);
     oledDisplay();
+    display.startscrollleft(0x06, 0x07);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 

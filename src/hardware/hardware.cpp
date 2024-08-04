@@ -1,6 +1,6 @@
 #include "hardware.h"
 
-OLED_SSD1306_Chart display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1, 300000, 50000);
+OLED_SSD1306_Chart display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1, 200000, 50000);
 TM1637Display LedDisplay = TM1637Display(CLK, DIO);
 BH1750 lightMeter;
 
@@ -84,6 +84,40 @@ void LowBattery() // Prevents battery voltage from going too low by hybernating 
   }
 }
 
+void oledListener(void *pvParameters)
+{
+  while (true)
+  {
+    if (waitingToDisplay)
+    {
+      oledDisplay();
+    }
+    else if (waitingToFadein)
+    {
+      oledFadein();
+    }
+    else if (waitingToFadeout)
+    {
+      oledFadeout();
+    }
+    // Add a small delay to prevent the task from running too fast
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+  }
+}
+
+void startOledListener()
+{
+  xTaskCreatePinnedToCore(
+      oledListener,   // Task function
+      "OledListener", // Name of the task (for debugging)
+      2048,           // Stack size (bytes)
+      NULL,           // Task input parameter
+      1,              // Task priority
+      NULL,           // Task handle (not used here)
+      1               // Core where the task should run (1 or 0)
+  );
+}
+
 void initOledDisplay()
 {
   if (!display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS))
@@ -100,6 +134,7 @@ void initOledDisplay()
 
   centerText("Oled Initialized", SCREEN_HEIGHT / 2);
 
+  startOledListener();
   oledDisplay();
   Serial.println("OLed display initialized");
 }
@@ -120,7 +155,7 @@ void oledDisplay()
 
     display.ssd1306_command(0xD3);
     display.ssd1306_command(0);
-    
+
     display.endWrite();
     vTaskDelay(pdMS_TO_TICKS(10));
     displaying = false;

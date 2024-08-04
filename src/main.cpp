@@ -99,26 +99,16 @@ void loop()
     Serial.println("Menu state has changed.");
     display.clearDisplay();
     oledDisplay();
-    vTaskDelay(100);
     display.clearDisplay();
     oledDisplay();
     wakeUpMenu();
+    display.clearDisplay();
+    oledDisplay();
     menuRunning = false;
     initialMenuRunning = menuRunning;
   }
   if (menuRunning == false)
   {
     handleMenus();
-  }
- 
-  if (waitingToDisplay == true)
-  {
-    oledDisplay();
-  } else if (waitingToFadein == true)
-  {
-    oledFadein();
-  } else if (waitingToFadeout == true)
-  {
-    oledFadeout();
   }
 }

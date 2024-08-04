@@ -100,7 +100,7 @@ void dimmingFunction(void *pvParameters)
     unsigned long intervalDimming = 1000;
 
     unsigned long lastActionTime = 0;
-    unsigned long delayDuration = 120000;
+    unsigned long delayDuration = 60000;
     while (true)
     {
         dimmingTaskRunning = true;
@@ -205,14 +205,22 @@ void dimOledDisplay()
     Serial.println("raw light level: " + String(removeLightNoise()));
     Serial.println("smoothened light level: " + String(lightLevel));
 
-    if (dimmed == false && fading == false)
+    if (OLED_DISABLE_THRESHOLD > lightLevel)
     {
-        display.startWrite();
-        oledFadeout();
-        display.endWrite();
+        display.ssd1306_command(SSD1306_DISPLAYOFF);
     }
-    dimmed = true;
-    display.ssd1306_command(SSD1306_DISPLAYOFF);
+    else
+    {
+        display.ssd1306_command(SSD1306_DISPLAYON);
+        if (dimmed == false && fading == false)
+        {
+            display.startWrite();
+            oledFadeout();
+            display.endWrite();
+            dimmed = true;
+        }
+    }
+
     Serial.println("display off");
 }
 
