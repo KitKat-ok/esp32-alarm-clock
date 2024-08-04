@@ -1,6 +1,6 @@
 #include "hardware.h"
 
-OLED_SSD1306_Chart display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+OLED_SSD1306_Chart display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1, 300000, 50000);
 TM1637Display LedDisplay = TM1637Display(CLK, DIO);
 BH1750 lightMeter;
 
@@ -107,21 +107,27 @@ void initOledDisplay()
 bool displaying = false;
 bool waitingToDisplay = false;
 
-
 void oledDisplay()
 {
   if (fading == false && displaying == false)
   {
     waitingToDisplay = false;
     displaying = true;
-    vTaskDelay(pdMS_TO_TICKS(10));
+    vTaskDelay(pdMS_TO_TICKS(1));
     display.startWrite();
     display.display();
+    vTaskDelay(pdMS_TO_TICKS(1));
+
+    display.ssd1306_command(0xD3);
+    display.ssd1306_command(0);
+    
     display.endWrite();
     vTaskDelay(pdMS_TO_TICKS(10));
     displaying = false;
     Serial.println("wrote to oled");
-  } else {
+  }
+  else
+  {
     waitingToDisplay = true;
   }
 }
@@ -161,7 +167,7 @@ void initBuzzer()
   pinMode(BUZZER_PIN, OUTPUT);
   ledcSetup(0, 2000, 8);
   ledcAttachPin(BUZZER_PIN, 0);
-  #ifdef START_SOUND
+#ifdef START_SOUND
   Serial.println("Buzzer initialized");
   for (int i = 0; i < sizeof(melody) / sizeof(melody[0]); i++)
   {
@@ -170,7 +176,7 @@ void initBuzzer()
 
     noTone(BUZZER_PIN);
   }
-  #endif
+#endif
 }
 
 void initTempSensor()

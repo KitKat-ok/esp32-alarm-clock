@@ -116,7 +116,6 @@ extern bool OTAEnabled;
 #include "confidential.h"
 
 #include "hardware/hardware.h"
-#include "oledDisplay/oledManager.h"
 #include "functions.h"
 #include "WiFi/WiFi.h"
 #include "NTP/NTP.h"

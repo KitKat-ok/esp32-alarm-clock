@@ -100,7 +100,7 @@ void dimmingFunction(void *pvParameters)
     unsigned long intervalDimming = 1000;
 
     unsigned long lastActionTime = 0;
-    unsigned long delayDuration = 30000;
+    unsigned long delayDuration = 120000;
     while (true)
     {
         dimmingTaskRunning = true;
@@ -158,7 +158,7 @@ void dimmingFunction(void *pvParameters)
             dimmed = false;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(100));
+        vTaskDelay(pdMS_TO_TICKS(10));
         while (millis() - lastActionTime < delayDuration)
         {
             vTaskDelay(10);
