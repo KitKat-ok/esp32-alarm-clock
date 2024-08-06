@@ -26,6 +26,7 @@ int getChipRevision();
 String microsecondsToTimeString(uint64_t microseconds);
 
 String wifiStatusToString(int status);
+String getSignalQuality(int32_t rssi);
 
 
 #endif

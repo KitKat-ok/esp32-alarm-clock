@@ -239,6 +239,11 @@ result syncTime() {
   return proceed;
 }
 
+result fixDisplay() {
+oledDisable();
+  return proceed;
+}
+
 
 // Alarm Toggles
 #define DEFINE_ALARM_TOGGLE(day, index) \
@@ -281,6 +286,7 @@ MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
 );
 
 MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
+     , OP("Fix Display...", fixDisplay, enterEvent)
      , OP("WiFi", showWifiDebugMenu, enterEvent)
      , OP("CPU", showCPUDebugMenu, enterEvent)
      , OP("General", showGeneralDebugMenu, enterEvent)

@@ -113,6 +113,18 @@ String getShortNextDay(int days)
   }
 }
 
+String getSignalQuality(int32_t rssi) {
+  if (rssi >= -50) {
+    return "Great";
+  } else if (rssi >= -60) {
+    return "Good";
+  } else if (rssi >= -70) {
+    return "Fair";
+  } else {
+    return "Weak";
+  }
+}
+
 
 
 String resetReasonToString(esp_reset_reason_t reason)

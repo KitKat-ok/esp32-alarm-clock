@@ -69,7 +69,7 @@ void setup()
       centerText(WiFi.localIP().toString(), 30);
       oledDisplay();
     }
-    display.ssd1306_command(SSD1306_DISPLAYOFF);
+    oledDisable();
   }
 
   // Proceed with regular initialization if OTA is not enabled

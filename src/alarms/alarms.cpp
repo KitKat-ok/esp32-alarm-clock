@@ -145,14 +145,14 @@ void ringAlarm(void *parameter)
 
     currentHour = hour();
     currentMinute = minute();
-    display.ssd1306_command(SSD1306_DISPLAYON);
+    oledEnable();
     currentTime = millis();
     if (currentTime - previousMillisLowBrightness >= intervalBrightness)
     {
 
       previousMillisLowBrightness = currentTime;
 
-      display.ssd1306_command(SSD1306_DISPLAYON);
+      oledEnable();
 
       LedDisplay.setBrightness(0);
       LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);

@@ -98,9 +98,13 @@ void showMainPage()
 void turnOffScreensaver()
 {
     display.stopscroll();
-    cyclePages();
+    cyclePages(); 
     displayedWeather = false;
-
+    if (LastPageShown != 1)
+    {
+        display.stopscroll();
+    }
+    
     previousMillisFirstMenu = millis() - intervalFirstMenu;
 }
 
@@ -202,11 +206,7 @@ void showInfoPage()
     display.clearDisplay();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    display.setCursor(5 + 32, 25);
-    display.println(String(batteryPercentage) + "%");
-    display.setCursor(5 + 35 + 50, 25);
-    display.print(String(batteryVoltage) + "V");
+    displayWiFiSignal(0, 24);
     if (charging == true)
     {
         display.drawBitmap(32 - 24, 8, battery_charging_full_90deg_24x24, 24, 24, BLACK, WHITE);
@@ -215,14 +215,23 @@ void showInfoPage()
     {
         display.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, BLACK, WHITE);
     }
-    displayWiFiSignal(0, 25);
     display.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, WHITE);
     display.setCursor(48, 37);
     display.println("WiFi SSID:");
-
-    display.setCursor(48, 47);
+    display.setCursor(48, 45);
     display.setFont(&DejaVu_LGC_Sans_Bold_8);
     display.println(String(WiFi.SSID()));
+    display.setCursor(48, 55);
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    String signalQuality = getSignalQuality(WiFi.RSSI());
+    display.print("Sig:" + signalQuality);
+    display.setCursor(48, 64);
+    display.print("Channel: " + String(WiFi.channel()));
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    display.setCursor(5 + 32, 25);
+    display.println(String(batteryPercentage) + "%");
+    display.setCursor(5 + 35 + 50, 25);
+    display.print(String(batteryVoltage) + "V");
     oledDisplay();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }

@@ -55,9 +55,9 @@ extern bool OTAEnabled;
 #define BUTTON_EXIT_PIN    GPIO_NUM_15
 
 #define TOUCH_BUTTON_PIN 4
-#define TOUCH_BUTTON_THRESHOLD 30
-#define TOUCH_BUTTON_THRESHOLD_WHEN_ALREADY_TOUCHED 40
-#define TOUCH_BUTTON_THRESHOLD_ON_BATTERY 40
+#define TOUCH_BUTTON_THRESHOLD 8
+#define TOUCH_BUTTON_THRESHOLD_WHEN_ALREADY_TOUCHED 8
+#define TOUCH_BUTTON_THRESHOLD_ON_BATTERY 9
 
 #define NUM_TOUCH_SAMPLES 10
 
@@ -108,13 +108,14 @@ extern bool OTAEnabled;
 #define TEMP_SENS_PIN 5
 #define TEMP_CHART_READINGS 55 // Number of readings to keep
 
-#define TEMP_OFFSET 1.76
+#define TEMP_OFFSET 2.77
 
 
 #include "hardware/pitches.h"
 
 #include "confidential.h"
 
+#include "oledDisplay/oledManager.h"
 #include "hardware/hardware.h"
 #include "functions.h"
 #include "WiFi/WiFi.h"

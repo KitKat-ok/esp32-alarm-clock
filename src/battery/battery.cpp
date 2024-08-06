@@ -110,8 +110,7 @@ void manageBattery(void *parameter)
         static unsigned long startTime = millis();
         if (checkForInput() == true)
         {
-          display.ssd1306_command(SSD1306_DISPLAYON);
-          LedDisplay.setBrightness(7);
+  oledEnable();          LedDisplay.setBrightness(7);
           LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
         }
 
@@ -132,8 +131,7 @@ void manageBattery(void *parameter)
       if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD)
       {
         Serial.println("Woke up from touch button");
-        display.ssd1306_command(SSD1306_DISPLAYON);
-        int currentHour = hour();
+oledEnable();        int currentHour = hour();
         int currentMinute = minute();
 
         LedDisplay.setBrightness(7);
@@ -169,7 +167,7 @@ void goToSleep()
   maxBrightness == false;
   inputDetected == false;
   turnOffWifiMinimal();
-  display.ssd1306_command(SSD1306_DISPLAYOFF);
+  oledDisable();
 
   oledDisplay();
   LedDisplay.clear();

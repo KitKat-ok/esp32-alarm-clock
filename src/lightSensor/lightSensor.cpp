@@ -29,67 +29,6 @@ void createDimmingTask()
 }
 
 bool dimmed = false;
-bool fading = false;
-
-bool waitingToFadein = false;
-bool waitingToFadeout = false;
-
-void oledFadeout()
-{
-    if (fading == false && displaying == false)
-    {
-        waitingToFadeout = false;
-        fading = true;
-        display.ssd1306_command(SSD1306_DISPLAYON);
-        for (int dim = 150; dim >= 0; dim -= 10)
-        {
-            display.ssd1306_command(0x81);
-            display.ssd1306_command(dim); // max 157
-            delay(10);
-        }
-
-        for (int dim2 = 34; dim2 >= 0; dim2 -= 17)
-        {
-            display.ssd1306_command(0xD9);
-            display.ssd1306_command(dim2); // max 34
-            delay(20);
-        }
-        vTaskDelay(pdMS_TO_TICKS(30));
-        fading = false;
-    }
-    else
-    {
-        waitingToFadeout = true;
-    }
-}
-
-void oledFadein()
-{
-    if (fading == false && displaying == false)
-    {
-        waitingToFadein = false;
-        fading = true;
-        for (int dim = 0; dim <= 160; dim += 10)
-        {
-            display.ssd1306_command(0x81);
-            display.ssd1306_command(dim); // max 160
-            delay(10);
-        }
-
-        for (int dim2 = 0; dim2 <= 34; dim2 += 17)
-        {
-            display.ssd1306_command(0xD9);
-            display.ssd1306_command(dim2); // max 34
-            delay(20);
-        }
-        vTaskDelay(pdMS_TO_TICKS(30));
-        fading = false;
-    }
-    else
-    {
-        waitingToFadein = true;
-    }
-}
 
 void dimmingFunction(void *pvParameters)
 {
@@ -137,7 +76,8 @@ void dimmingFunction(void *pvParameters)
             if (checkForInput() == true)
             {
                 inputDetected = true;
-                display.ssd1306_command(SSD1306_DISPLAYON);
+                oledEnable();
+                delay(50);
                 break;
             }
         }
@@ -150,7 +90,7 @@ void dimmingFunction(void *pvParameters)
         maxBrightness = true;
         lastActionTime = millis();
         vTaskDelay(pdMS_TO_TICKS(350));
-        if (dimmed == true && fading == false)
+        if (dimmed == true)
         {
             display.startWrite();
             oledFadein();
@@ -169,11 +109,9 @@ void dimmingFunction(void *pvParameters)
                 {
                     turnOffScreensaver();
                 }
-                if (dimmed == true && fading == false)
+                if (dimmed == true)
                 {
-                    display.startWrite();
                     oledFadein();
-                    display.endWrite();
                     dimmed = false;
                 }
 
@@ -185,13 +123,6 @@ void dimmingFunction(void *pvParameters)
             }
         }
         inputDetected = false;
-        if (dimmed == false && fading == false)
-        {
-            display.startWrite();
-            oledFadeout();
-            display.endWrite();
-            dimmed = true;
-        }
     }
 }
 
@@ -207,16 +138,21 @@ void dimOledDisplay()
 
     if (OLED_DISABLE_THRESHOLD > lightLevel)
     {
-        display.ssd1306_command(SSD1306_DISPLAYOFF);
+        if (dimmed == false)
+        {
+            oledFadeout();
+            dimmed = true;
+            delay(50);
+            oledDisable();
+        }
+        delay(50);
     }
     else
     {
-        display.ssd1306_command(SSD1306_DISPLAYON);
-        if (dimmed == false && fading == false)
+        if (dimmed == false)
         {
-            display.startWrite();
+            oledEnable();
             oledFadeout();
-            display.endWrite();
             dimmed = true;
         }
     }
