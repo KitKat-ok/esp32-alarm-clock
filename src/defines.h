@@ -18,17 +18,11 @@
 #include <menuIO/adafruitGfxOut.h>
 #include <menuIO/keyIn.h>
 #include <menuIO/serialOut.h>
-#include <OLED_SSD1306_Chart.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-
+#include <oledManager.h>
 
 extern bool OTAEnabled;
-
-// Oled display
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define SSD1306_I2C_ADDRESS 0x3C
 
 // Led Display
 #define CLK  19 // The ESP32 pin GPIO22 connected to CLK
@@ -115,7 +109,6 @@ extern bool OTAEnabled;
 
 #include "confidential.h"
 
-#include "oledDisplay/oledManager.h"
 #include "hardware/hardware.h"
 #include "functions.h"
 #include "WiFi/WiFi.h"

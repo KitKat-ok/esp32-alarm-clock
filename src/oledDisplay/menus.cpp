@@ -43,8 +43,8 @@ void currentWeather()
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 
     display.println(String(day()) + "." + String(month()) + "." + String(year()));
-    oledDisplay();
-    startScrollingLeft(0x06, 0x07);
+    manager.oledDisplay();
+    manager.startScrollingLeft(0x06, 0x07, 2);
 
     // Restore the font settings
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
@@ -79,11 +79,21 @@ void displayWeatherCast(int dayIndex)
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
     display.fillRect(0, SCREEN_HEIGHT - 16, SCREEN_WIDTH, 16, SSD1306_BLACK);
 
-    display.print(weatherConditionIdToStr(weatherDailyForecastData[dayIndex].weatherConditionId));
-    display.print("");
+    if (isWeatherAvailable == true)
+    {
+        display.setCursor(0, SCREEN_HEIGHT - 5);
+        display.print(weatherConditionIdToStr(weatherDailyForecastData[dayIndex].weatherConditionId));
+        display.print("");
+    }
+    else
+    {
+        display.setCursor(0, SCREEN_HEIGHT - 5);
+        display.print("N/A                     ");
+        display.print("");
+    }
 
-    oledDisplay();
-    startScrollingLeft(0x06, 0x07);
+    manager.oledDisplay();
+    manager.startScrollingLeft(0x06, 0x07, 128);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
@@ -110,6 +120,62 @@ String convertWindDirection(uint16_t degrees)
         return "-";
     }
 }
+void fpsCalc() {
+   unsigned long startTime, endTime;
+  int numFrames = 100; // Number of frames to measure
+
+  // Measure FPS for drawing lines
+  startTime = millis();
+  for (int i = 0; i < numFrames; i++) {
+    display.clearDisplay();
+    for (int x = 0; x < SCREEN_WIDTH; x += 2) {
+      display.drawLine(x, 0, SCREEN_WIDTH - x, SCREEN_HEIGHT - 1, SSD1306_WHITE); // Draw line
+    }
+    for (int y = 0; y < SCREEN_HEIGHT; y += 2) {
+      display.drawLine(0, y, SCREEN_WIDTH - 1, SCREEN_HEIGHT - y, SSD1306_WHITE); // Draw line
+    }
+    manager.oledDisplay(); // Refresh display
+  }
+  endTime = millis();
+  float elapsedTime = (endTime - startTime) / 1000.0; // Convert to seconds
+  float fps = numFrames / elapsedTime;
+  
+  // Display FPS for line drawing on OLED
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.print("Line Drawing FPS: ");
+  display.print(fps, 1); // Display FPS with one decimal place
+  manager.oledDisplay();
+  delay(5000); // Show FPS for 5 seconds
+
+  // Measure FPS for drawing text
+  startTime = millis();
+  for (int i = 0; i < numFrames; i++) {
+    display.clearDisplay();
+    for (int y = 0; y < SCREEN_HEIGHT; y += 8) {
+      display.setCursor(0, y);
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.print("FPS Test");
+    }
+    manager.oledDisplay(); // Refresh display
+  }
+  endTime = millis();
+  elapsedTime = (endTime - startTime) / 1000.0; // Convert to seconds
+  fps = numFrames / elapsedTime;
+  
+  // Display FPS for text drawing on OLED
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.print("Text Drawing FPS: ");
+  display.print(fps, 1); // Display FPS with one decimal place
+  manager.oledDisplay();
+  delay(5000); // Show FPS for 5 seconds
+}
 
 void wifiDebugMenu()
 {
@@ -124,7 +190,7 @@ void wifiDebugMenu()
     centerText("Mac address: ", 53);
     centerText(String(WiFi.macAddress()), 63);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    oledDisplay();
+    manager.oledDisplay();
 }
 
 esp_chip_info_t chip_info;
@@ -144,7 +210,7 @@ void CPUDebugMenu()
     centerText("Chip model:", 44);
     centerText(String(ESP.getChipModel()), 54);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    oledDisplay();
+    manager.oledDisplay();
 }
 
 void generalDebugMenu()
@@ -166,7 +232,7 @@ void generalDebugMenu()
         display.fillCircle((SCREEN_WIDTH - 20), 60, 3, SSD1306_WHITE);
     }
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    oledDisplay();
+    manager.oledDisplay();
 }
 
 void loopCallendar()
@@ -270,5 +336,5 @@ void showCalendar(int monthNumber, int yearNumber)
         currentDay++;
     }
 
-    oledDisplay();
+    manager.oledDisplay();
 }

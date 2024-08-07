@@ -110,7 +110,7 @@ void manageBattery(void *parameter)
         static unsigned long startTime = millis();
         if (checkForInput() == true)
         {
-  oledEnable();          LedDisplay.setBrightness(7);
+  manager.oledEnable();          LedDisplay.setBrightness(7);
           LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
         }
 
@@ -131,7 +131,7 @@ void manageBattery(void *parameter)
       if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD)
       {
         Serial.println("Woke up from touch button");
-oledEnable();        int currentHour = hour();
+manager.oledEnable();        int currentHour = hour();
         int currentMinute = minute();
 
         LedDisplay.setBrightness(7);
@@ -167,9 +167,9 @@ void goToSleep()
   maxBrightness == false;
   inputDetected == false;
   turnOffWifiMinimal();
-  oledDisable();
+  manager.oledDisable();
 
-  oledDisplay();
+  manager.oledDisplay();
   LedDisplay.clear();
 
   WiFi.disconnect(true);

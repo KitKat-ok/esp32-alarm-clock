@@ -76,7 +76,7 @@ void dimmingFunction(void *pvParameters)
             if (checkForInput() == true)
             {
                 inputDetected = true;
-                oledEnable();
+                manager.oledEnable();
                 delay(50);
                 break;
             }
@@ -92,9 +92,7 @@ void dimmingFunction(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(350));
         if (dimmed == true)
         {
-            display.startWrite();
-            oledFadein();
-            display.endWrite();
+            manager.oledFadeIn();
             dimmed = false;
         }
 
@@ -111,7 +109,7 @@ void dimmingFunction(void *pvParameters)
                 }
                 if (dimmed == true)
                 {
-                    oledFadein();
+                    manager.oledFadeIn();
                     dimmed = false;
                 }
 
@@ -140,10 +138,10 @@ void dimOledDisplay()
     {
         if (dimmed == false)
         {
-            oledFadeout();
+            manager.oledFadeOut();
             dimmed = true;
             delay(50);
-            oledDisable();
+            manager.oledDisable();
         }
         delay(50);
     }
@@ -151,8 +149,8 @@ void dimOledDisplay()
     {
         if (dimmed == false)
         {
-            oledEnable();
-            oledFadeout();
+            manager.oledEnable();
+            manager.oledFadeOut();
             dimmed = true;
         }
     }

@@ -45,13 +45,13 @@ void showMainPage()
             previousMillisFirstMenu = millis() - intervalFirstMenu;
             displayedWeather = false;
             Serial.println("resetting menus");
-            display.stopscroll();
+            manager.stopScrolling();
         }
         else
         {
             if (PageNumberToShow == 1)
             {
-                display.stopscroll();
+                manager.stopScrolling();
                 LastPageShown = 1;
                 if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
                 {
@@ -65,7 +65,7 @@ void showMainPage()
                 displayedWeather = true;
                 LastPageShown = 2;
                 display.clearDisplay();
-                oledDisplay();
+                manager.oledDisplay();
                 currentWeather();
             }
             else if (PageNumberToShow == 3)
@@ -97,12 +97,11 @@ void showMainPage()
 
 void turnOffScreensaver()
 {
-    display.stopscroll();
     cyclePages(); 
     displayedWeather = false;
     if (LastPageShown != 1)
     {
-        display.stopscroll();
+        manager.stopScrolling();
     }
     
     previousMillisFirstMenu = millis() - intervalFirstMenu;
@@ -120,7 +119,7 @@ void showFirstPage()
     centerText(getCurrentWeekdayName() + "/" + getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
     centerText("Temp: " + String(temperature) + " C", SCREEN_HEIGHT / 2 + 23);
     display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
-    oledDisplay();
+    manager.oledDisplay();
 }
 
 // Function to format the temperature as a string with one decimal place
@@ -158,7 +157,7 @@ void showForecastPage()
     display.print(formatTemperature(weatherDailyForecastData[2].minTemp, weatherDailyForecastData[2].maxTemp));
 
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    oledDisplay();
+    manager.oledDisplay();
 }
 
 #include "../icons/icons/icons_24x24.h"
@@ -232,7 +231,7 @@ void showInfoPage()
     display.println(String(batteryPercentage) + "%");
     display.setCursor(5 + 35 + 50, 25);
     display.print(String(batteryVoltage) + "V");
-    oledDisplay();
+    manager.oledDisplay();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
@@ -288,8 +287,8 @@ void showScreensaver()
     int16_t x, y;
     boolean resort = false;
 
-    oledDisplay();
-    display.stopscroll();
+    manager.oledDisplay();
+    manager.stopScrolling();
     display.clearDisplay();
 
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)

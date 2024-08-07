@@ -59,7 +59,7 @@ result showTempChart()
   }
   
   display.clearDisplay();
-  oledDisplay();
+  manager.oledDisplay();
   refreshMenu();
   return proceed;
 }
@@ -79,13 +79,13 @@ result showLightChart()
   }
   
   display.clearDisplay();
-  oledDisplay();
+  manager.oledDisplay();
   refreshMenu();
       display.clearDisplay();
-    oledDisplay();
+    manager.oledDisplay();
   return proceed;
       display.clearDisplay();
-    oledDisplay();
+    manager.oledDisplay();
 }
 
 result showCurrentWeather()
@@ -99,7 +99,7 @@ result showCurrentWeather()
         if (millis() - startTime >= 1 * 60 * 1000) {
       break;
   }}
-  display.stopscroll();
+  manager.stopScrolling();
   display.clearDisplay();
   refreshMenu();
   return proceed;
@@ -117,7 +117,7 @@ result showTodaysWeather()
       break;
   }
   }
-  display.stopscroll();
+  manager.stopScrolling();
   display.clearDisplay();
   refreshMenu();
   return proceed;
@@ -135,7 +135,7 @@ result showTomorrowsWeather()
       break;
   }
   }
-  display.stopscroll();
+  manager.stopScrolling();
   display.clearDisplay();
   refreshMenu();
   return proceed;
@@ -153,7 +153,7 @@ result showDaysAfterWeather()
       break;
   }
   }
-  display.stopscroll();
+  manager.stopScrolling();
   display.clearDisplay();
   refreshMenu();
   return proceed;
@@ -171,7 +171,7 @@ result showWifiDebugMenu()
   }
     wifiDebugMenu();
   }
-  display.stopscroll();
+  manager.stopScrolling();
   display.clearDisplay();
   refreshMenu();
   return proceed;
@@ -189,7 +189,7 @@ result showCPUDebugMenu()
   }
     CPUDebugMenu();
   }
-  display.stopscroll();
+  manager.stopScrolling();
   display.clearDisplay();
   refreshMenu();
   return proceed;
@@ -207,7 +207,26 @@ result showGeneralDebugMenu()
   }
     generalDebugMenu();
   }
-  display.stopscroll();
+  manager.stopScrolling();
+  display.clearDisplay();
+  refreshMenu();
+  return proceed;
+}
+
+result showFpsMenu()
+{
+  menuRunning = true;
+  sleepMenu();
+  fpsCalc();
+  startTime = millis(); 
+  delay(100);
+  while(digitalRead(BUTTON_EXIT_PIN)) {
+  if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+  }
+    fpsCalc();
+  }
+  manager.stopScrolling();
   display.clearDisplay();
   refreshMenu();
   return proceed;
@@ -228,7 +247,7 @@ result showCallendarMenu()
   }
     loopCallendar();
   }
-  display.stopscroll();
+  manager.stopScrolling();
   display.clearDisplay();
   refreshMenu();
   return proceed;
@@ -240,8 +259,9 @@ result syncTime() {
 }
 
 result fixDisplay() {
-oledDisable();
-  return proceed;
+manager.sendCustomCommand(0xD3);
+manager.sendCustomCommand(0);
+ return proceed;
 }
 
 
@@ -290,6 +310,7 @@ MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("WiFi", showWifiDebugMenu, enterEvent)
      , OP("CPU", showCPUDebugMenu, enterEvent)
      , OP("General", showGeneralDebugMenu, enterEvent)
+     , OP("Fps calc", showFpsMenu, enterEvent)
      , OP("Start OTA", startOTA, enterEvent)
      , OP("Software Reset", softwareReset, enterEvent)
      , OP("Synchronize Time", syncTime, enterEvent)
@@ -359,13 +380,13 @@ void handleMenus() {
   if (nav.idleChanged)
   {
     display.clearDisplay();
-    oledDisplay();
+    manager.oledDisplay();
   }
   
 
   if (!nav.sleepTask) {
-    oledDisplay();    
-    display.stopscroll();
+    manager.oledDisplay();    
+    manager.stopScrolling();
   }
   
 
@@ -384,10 +405,10 @@ void refreshMenu() {
 
 void wakeUpMenu() {
   display.clearDisplay();
-  oledDisplay();
+  manager.oledDisplay();
   refreshMenu();
   nav.idleOff();
   refreshMenu();
   display.clearDisplay();
-  oledDisplay();
+  manager.oledDisplay();
 }

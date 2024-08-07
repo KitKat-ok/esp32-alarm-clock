@@ -28,7 +28,7 @@ void setup()
     display.clearDisplay();
     centerText("Connecting To WiFi", 30);
     centerText("Starting OTA", 40);
-    oledDisplay();
+    manager.oledDisplay();
     // Replace "1234" with a secure OTA password
     while (WiFi.status() != WL_CONNECTED)
     {
@@ -40,7 +40,7 @@ void setup()
     centerText("OTA:Enabled!", 10);
     centerText("IP Address:", 20);
     centerText(WiFi.localIP().toString(), 30);
-    oledDisplay();
+    manager.oledDisplay();
     String ipAddress = WiFi.localIP().toString();
 
     // Extract the last two digits from the IP address
@@ -61,15 +61,15 @@ void setup()
       centerText("IP Address:", 20);
       centerText(WiFi.localIP().toString(), 30);
       centerText("Running", 40);
-      oledDisplay();
+      manager.oledDisplay();
       ArduinoOTA.handle();
       display.clearDisplay();
       centerText("OTA:Enabled!", 10);
       centerText("IP Address:", 20);
       centerText(WiFi.localIP().toString(), 30);
-      oledDisplay();
+      manager.oledDisplay();
     }
-    oledDisable();
+    manager.oledDisable();
   }
 
   // Proceed with regular initialization if OTA is not enabled
@@ -98,12 +98,12 @@ void loop()
   {
     Serial.println("Menu state has changed.");
     display.clearDisplay();
-    oledDisplay();
+    manager.oledDisplay();
     display.clearDisplay();
-    oledDisplay();
+    manager.oledDisplay();
     wakeUpMenu();
     display.clearDisplay();
-    oledDisplay();
+    manager.oledDisplay();
     menuRunning = false;
     initialMenuRunning = menuRunning;
   }

@@ -145,14 +145,14 @@ void ringAlarm(void *parameter)
 
     currentHour = hour();
     currentMinute = minute();
-    oledEnable();
+    manager.oledEnable();
     currentTime = millis();
     if (currentTime - previousMillisLowBrightness >= intervalBrightness)
     {
 
       previousMillisLowBrightness = currentTime;
 
-      oledEnable();
+      manager.oledEnable();
 
       LedDisplay.setBrightness(0);
       LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);

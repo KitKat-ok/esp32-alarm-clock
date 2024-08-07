@@ -11,6 +11,7 @@ String convertWindDirection(uint16_t degrees);
 void wifiDebugMenu();
 void CPUDebugMenu();
 void generalDebugMenu();
+void fpsCalc();
 
 void showCalendar(int monthNumber, int yearNumber);
 void loopCallendar();

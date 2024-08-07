@@ -1,6 +1,5 @@
 #include "hardware.h"
 
-OLED_SSD1306_Chart display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1, 200000);
 TM1637Display LedDisplay = TM1637Display(CLK, DIO);
 BH1750 lightMeter;
 
@@ -62,7 +61,7 @@ void LowBattery() // Prevents battery voltage from going too low by hybernating 
 
     LedDisplay.clear();
     display.clearDisplay();
-    oledDisplay();
+    manager.oledDisplay();
 
     for (size_t i = 0; i < 10; i++)
     {
@@ -80,6 +79,10 @@ void LowBattery() // Prevents battery voltage from going too low by hybernating 
         delay(5);
       }
     }
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_OFF);
     esp_sleep_enable_timer_wakeup(30 * 60 * 1000000);
     esp_deep_sleep_start();
   }
@@ -87,26 +90,18 @@ void LowBattery() // Prevents battery voltage from going too low by hybernating 
 
 void initOledDisplay()
 {
-  if (!display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS))
-  {
-    Serial.println(F("SSD1306 allocation failed"));
-    for (;;)
-      ; // Don't proceed, loop forever
-  }
-  createOledManagerTask();
+  manager.createTask();
   display.clearDisplay();
   display.setTextSize(1);
   display.setCursor(0, 0);
   display.setTextColor(SSD1306_WHITE);
-  oledDisplay();
+  manager.oledDisplay();
 
   centerText("Oled Initialized", SCREEN_HEIGHT / 2);
 
-  oledDisplay();
+  manager.oledDisplay();
   Serial.println("OLed display initialized");
 }
-
-
 
 void initLedDisplay()
 {
