@@ -136,20 +136,22 @@ void dimOledDisplay()
 
     if (OLED_DISABLE_THRESHOLD > lightLevel)
     {
+        manager.oledDisable();
+        
         if (dimmed == false)
         {
             manager.oledFadeOut();
             dimmed = true;
             delay(50);
-            manager.oledDisable();
         }
         delay(50);
     }
     else
     {
+        manager.oledEnable();
+
         if (dimmed == false)
         {
-            manager.oledEnable();
             manager.oledFadeOut();
             dimmed = true;
         }
