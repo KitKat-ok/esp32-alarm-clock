@@ -194,21 +194,32 @@ float lastLightLevel = 0.0;
 float removeLightNoise()
 {
     delay(100);
-    static float smoothedLightLevel = 0.0;                 // Initial smoothed light level
+    static float smoothedLightLevel = 0.0; // Initial smoothed light level
+    #define numReadings 20 // Number of readings to average
+    static float readings[numReadings]; // Array to store recent readings
+    static int index = 0; // Current index in the readings array
+    static float total = 0.0; // Sum of all readings
+    
     float currentLightLevel = lightMeter.readLightLevel(); // Read the current light level from BH1750 sensor
 
-    float diff = currentLightLevel - lastLightLevel;
+    // Subtract the oldest reading from the total
+    total -= readings[index];
 
-    // Adjust the smoothing factor based on the difference
-    if (diff > MAX_INCREASE_OF_LIGHT_LEVEL)
-    {
-        currentLightLevel = 0.0;
-    }
+    // Store the new reading in the array
+    readings[index] = currentLightLevel;
 
-    lastLightLevel = lightMeter.readLightLevel();
+    // Add the new reading to the total
+    total += currentLightLevel;
 
-    return currentLightLevel;
+    // Move to the next index, wrapping around if necessary
+    index = (index + 1) % numReadings;
+
+    // Calculate the average of the readings
+    smoothedLightLevel = lightMeter.readLightLevel();
+
+    return smoothedLightLevel;
 }
+
 
 int touchSamples[NUM_TOUCH_SAMPLES];
 int touchSampleIndex = 0;

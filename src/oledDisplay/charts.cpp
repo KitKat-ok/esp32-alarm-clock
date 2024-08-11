@@ -35,6 +35,7 @@ void loopTempGraph()
     unsigned long currentMillis = millis(); // Get the current time
     display.fillRect(20, 0, SCREEN_WIDTH, 20, SSD1306_BLACK);
     centerText("Temp: " + String(temperature), (SCREEN_HEIGHT / 3) - 5);
+    delay(10);
     manager.oledDisplay();
     if (currentMillis - previousMillis >= interval)
     {
@@ -47,9 +48,7 @@ void loopTempGraph()
             display.updateChart(temperatureArray[i] * 100);
         }
         previousMillis = currentMillis;
-        display.fillRect(20, 0, SCREEN_WIDTH, 20, SSD1306_BLACK);
-        centerText("lux: " + String(removeLightNoise()), (SCREEN_HEIGHT / 3) - 5);
-        manager.oledDisplay();
+        delay(10);
     }
 }
 
@@ -81,20 +80,23 @@ void loopLightGraph()
 {
     unsigned long currentMillis = millis(); // Get the current time
     display.fillRect(20, 0, SCREEN_WIDTH, 20, SSD1306_BLACK);
-    centerText("lux: " + String(removeLightNoise()), (SCREEN_HEIGHT / 3) - 5);
+    delay(10);
+    float light = removeLightNoise();
+    display.setCursor(SCREEN_WIDTH / 3,(SCREEN_HEIGHT / 3) - 5);
+    display.print("lux: " + String(light));
+
+    delay(10);
     manager.oledDisplay();
     if (currentMillis - previousMillis >= interval)
     {
         display.clearDisplay();
+        centerText("lux: " + String(removeLightNoise()), (SCREEN_HEIGHT / 3) - 5);
         display.drawChart();
         // Draw the updated chart
         for (int i = 0; i < TEMP_CHART_READINGS; i++)
         {
-            display.updateChart(lightArray[i]);
+            display.updateChart(lightArray[i] * 100);
         }
         previousMillis = currentMillis;
-        display.fillRect(20, 0, SCREEN_WIDTH, 20, SSD1306_BLACK);
-        centerText("lux: " + String(removeLightNoise()), (SCREEN_HEIGHT / 3) - 5);
-        manager.oledDisplay();
     }
 }
