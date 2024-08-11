@@ -46,6 +46,7 @@ void showMainPage()
             displayedWeather = false;
             Serial.println("resetting menus");
             manager.stopScrolling();
+            setupScreensaver();
         }
         else
         {
@@ -71,13 +72,21 @@ void showMainPage()
             else if (PageNumberToShow == 3)
             {
                 LastPageShown = 3;
-                showForecastPage();
+                if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
+                {
+                    previousMillisFirstMenu = currentTime;
+                    showForecastPage();
+                }
             }
             else if (PageNumberToShow == 4)
             {
                 Serial.println("displaying fourth menu");
                 LastPageShown = 4;
-                showInfoPage();
+                if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
+                {
+                    previousMillisFirstMenu = currentTime;
+                    showInfoPage();
+                }
             }
         }
     }
@@ -97,13 +106,13 @@ void showMainPage()
 
 void turnOffScreensaver()
 {
-    cyclePages(); 
+    cyclePages();
     displayedWeather = false;
     if (LastPageShown != 1)
     {
         manager.stopScrolling();
     }
-    
+
     previousMillisFirstMenu = millis() - intervalFirstMenu;
 }
 
@@ -157,6 +166,7 @@ void showForecastPage()
     display.print(formatTemperature(weatherDailyForecastData[2].minTemp, weatherDailyForecastData[2].maxTemp));
 
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    delay(10);
     manager.oledDisplay();
 }
 
@@ -231,6 +241,7 @@ void showInfoPage()
     display.println(String(batteryPercentage) + "%");
     display.setCursor(5 + 35 + 50, 25);
     display.print(String(batteryVoltage) + "V");
+    delay(10);
     manager.oledDisplay();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
@@ -269,7 +280,6 @@ static int compare(const void *a, const void *b)
 
 void setupScreensaver()
 {
-    randomSeed(analogRead(2));
     display.clearDisplay();
     for (uint8_t i = 0; i < N_FLYERS; i++)
     {

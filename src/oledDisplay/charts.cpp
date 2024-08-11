@@ -27,6 +27,7 @@ void initTempGraph()
     {
         display.updateChart(temperatureArray[i]);
     }
+    manager.oledDisplay();
 }
 
 void loopTempGraph()
@@ -46,6 +47,8 @@ void loopTempGraph()
             display.updateChart(temperatureArray[i] * 100);
         }
         previousMillis = currentMillis;
+        display.fillRect(20, 0, SCREEN_WIDTH, 20, SSD1306_BLACK);
+        centerText("lux: " + String(removeLightNoise()), (SCREEN_HEIGHT / 3) - 5);
         manager.oledDisplay();
     }
 }
@@ -83,7 +86,6 @@ void loopLightGraph()
     if (currentMillis - previousMillis >= interval)
     {
         display.clearDisplay();
-        centerText("lux: " + String(removeLightNoise()), (SCREEN_HEIGHT / 3) - 5);
         display.drawChart();
         // Draw the updated chart
         for (int i = 0; i < TEMP_CHART_READINGS; i++)
@@ -91,6 +93,8 @@ void loopLightGraph()
             display.updateChart(lightArray[i]);
         }
         previousMillis = currentMillis;
+        display.fillRect(20, 0, SCREEN_WIDTH, 20, SSD1306_BLACK);
+        centerText("lux: " + String(removeLightNoise()), (SCREEN_HEIGHT / 3) - 5);
         manager.oledDisplay();
     }
 }

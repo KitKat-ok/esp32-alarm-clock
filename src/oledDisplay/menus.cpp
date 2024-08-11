@@ -43,6 +43,7 @@ void currentWeather()
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 
     display.println(String(day()) + "." + String(month()) + "." + String(year()));
+    delay(10);
     manager.oledDisplay();
     manager.startScrollingLeft(0x06, 0x07, 2);
 
