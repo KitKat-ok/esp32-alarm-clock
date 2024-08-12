@@ -31,7 +31,7 @@ int LastPageShown = 1;
 bool displayedWeather = false;
 
 unsigned long previousMillisFirstMenu = 0; // Store the last time the display was updated
-const long intervalFirstMenu = 15000;      // Interval at which to run the code (15 seconds)
+const long intervalFirstMenu = 1000;       // Interval at which to run the code (15 seconds)
 
 void showMainPage()
 {
@@ -145,6 +145,8 @@ void showForecastPage()
     int y = 20;
     int x = 5;
     display.clearDisplay();
+    delay(10);
+
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     display.setCursor(x + 3, y);
     display.print(getShortNextDay(0));
@@ -213,6 +215,7 @@ void displayWiFiSignal(int x, int y)
 void showInfoPage()
 {
     display.clearDisplay();
+    delay(10);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     displayWiFiSignal(0, 24);
