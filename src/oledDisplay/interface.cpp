@@ -88,6 +88,38 @@ result showLightChart()
     manager.oledDisplay();
 }
 
+result showLightClean()
+{
+  sleepMenu();
+  startTime = millis(); 
+  menuRunning = true;
+  unsigned long previousMillis = 0;
+const long interval = 1000;
+  while (digitalRead(BUTTON_EXIT_PIN))
+  { 
+      unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+
+    display.clearDisplay();
+    centerText("lux: " + String(lightLevel), (SCREEN_HEIGHT / 3) - 5);
+    display.display();
+  }
+    if (millis() - startTime >= 15 * 60 * 1000) {
+      break;
+    }
+  }
+  
+  display.clearDisplay();
+  manager.oledDisplay();
+  refreshMenu();
+      display.clearDisplay();
+    manager.oledDisplay();
+  return proceed;
+      display.clearDisplay();
+    manager.oledDisplay();
+}
+
 result showCurrentWeather()
 {
   menuRunning = true;
@@ -320,6 +352,7 @@ MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
 MENU(sensors, "Sensors Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
      , OP("Temperature", showTempChart, enterEvent)
      , OP("Light", showLightChart, enterEvent)
+     , OP("Light clean", showLightClean, enterEvent)
      , EXIT("<Back")
     );
 

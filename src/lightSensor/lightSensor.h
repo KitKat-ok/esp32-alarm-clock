@@ -19,6 +19,7 @@ extern bool maxBrightness;
 extern bool displayON;
 
 extern bool inputDetected;
+extern float lightLevel;
 
 
 #endif

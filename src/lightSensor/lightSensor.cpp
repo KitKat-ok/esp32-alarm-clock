@@ -30,6 +30,8 @@ void createDimmingTask()
 
 bool dimmed = false;
 
+float lightLevel = 0.0;
+
 void dimmingFunction(void *pvParameters)
 {
     const unsigned long intervalLight = 60000;
@@ -64,6 +66,7 @@ void dimmingFunction(void *pvParameters)
 
             if (currentMillis - previousMillisDimming >= intervalDimming && charging == true)
             {
+                lightLevel = removeLightNoise();
                 dimOledDisplay();
                 maxBrightness = false;
 
@@ -99,6 +102,8 @@ void dimmingFunction(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(10));
         while (millis() - lastActionTime < delayDuration)
         {
+            lightLevel = removeLightNoise();
+
             vTaskDelay(10);
             if (checkForInput() == true)
             {
@@ -130,14 +135,13 @@ void dimOledDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    int lightLevel = removeLightNoise();
     Serial.println("raw light level: " + String(removeLightNoise()));
     Serial.println("smoothened light level: " + String(lightLevel));
 
     if (OLED_DISABLE_THRESHOLD > lightLevel)
     {
         manager.oledDisable();
-        
+
         if (dimmed == false)
         {
             manager.oledFadeOut();
@@ -164,7 +168,6 @@ void dimLedDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    int lightLevel = removeLightNoise();
     Serial.println("raw light level: " + String(removeLightNoise()));
     Serial.println("smoothened light level: " + String(lightLevel));
     if (lightLevel < 5000)
@@ -189,33 +192,50 @@ void dimLedDisplay()
     }
 }
 
-float lastLightLevel = 0.0;
+const int bufferLightSize = 30; // Adjust buffer size as needed
+float lightLevelBuffer[bufferLightSize];
+int bufferLightIndex = 0;
+
+float smoothedLightLevel = 0.0; // Initial smoothed light level
 
 float removeLightNoise()
 {
-    delay(100);
-    static float smoothedLightLevel = 0.0; // Initial smoothed light level
-    #define numReadings 20 // Number of readings to average
-    static float readings[numReadings]; // Array to store recent readings
-    static int index = 0; // Current index in the readings array
-    static float total = 0.0; // Sum of all readings
-    
+    const float smoothingFactor = 0.5; // Smoothing factor (adjust as needed)
+    const float smallChangeThreshold = 1.0; // Threshold to ignore small changes (adjust as needed)
+    const float largeChangeMultiplier = 2.0; // Amplify the response to large changes (adjust as needed)
+
     float currentLightLevel = lightMeter.readLightLevel(); // Read the current light level from BH1750 sensor
 
-    // Subtract the oldest reading from the total
-    total -= readings[index];
+    // Calculate the difference between the current light level and the last known buffer value
+    float lightLevelDifference = currentLightLevel - lightLevelBuffer[bufferLightIndex];
 
-    // Store the new reading in the array
-    readings[index] = currentLightLevel;
+    // Apply a deadband to ignore small fluctuations in light levels
+    if (abs(lightLevelDifference) < smallChangeThreshold)
+    {
+        currentLightLevel = lightLevelBuffer[bufferLightIndex]; // Ignore small changes
+    }
+    // Handle sudden spikes in light level (large change scenario)
+    else if (lightLevelDifference > MAX_INCREASE_OF_LIGHT_LEVEL)
+    {
+        currentLightLevel = lightLevelBuffer[bufferLightIndex] + largeChangeMultiplier * lightLevelDifference; // Amplify large changes
+    }
 
-    // Add the new reading to the total
-    total += currentLightLevel;
+    // Store the current light level in the circular buffer
+    lightLevelBuffer[bufferLightIndex] = currentLightLevel;
 
-    // Move to the next index, wrapping around if necessary
-    index = (index + 1) % numReadings;
+    // Update the buffer index (circular increment)
+    bufferLightIndex = (bufferLightIndex + 1) % bufferLightSize;
 
-    // Calculate the average of the readings
-    smoothedLightLevel = lightMeter.readLightLevel();
+    // Calculate simple moving average
+    float movingAverage = 0.0;
+    for (int i = 0; i < bufferLightSize; ++i)
+    {
+        movingAverage += lightLevelBuffer[i];
+    }
+    movingAverage /= bufferLightSize;
+
+    // Apply exponential smoothing to the moving average
+    smoothedLightLevel = smoothingFactor * movingAverage + (1.0 - smoothingFactor) * smoothedLightLevel;
 
     return smoothedLightLevel;
 }
