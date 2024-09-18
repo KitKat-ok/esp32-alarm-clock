@@ -122,10 +122,11 @@ void showFirstPage()
     display.clearDisplay();
     display.setTextSize(1);
     display.setFont(&DejaVu_Sans_Bold_16);
-    centerText(String(day()) + "." + String(month()) + "." + String(year()), SCREEN_HEIGHT / 2);
+    centerText(String(day()) + "." + String(month()) + "." + String(year()), SCREEN_HEIGHT / 2 - 10);
     display.setTextSize(1);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    centerText(getCurrentWeekdayName() + "/" + getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
+    centerText(getCurrentWeekdayName(), SCREEN_HEIGHT / 2);
+    centerText(getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
     centerText("Temp: " + String(temperature) + " C", SCREEN_HEIGHT / 2 + 23);
     display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
     manager.oledDisplay();

@@ -44,6 +44,23 @@ int currentPage = 0;
 Submenu *menuStack[MAX_STACK_SIZE];
 int stackPointer = -1;
 
+unsigned long lastInputTime = 0;
+const unsigned long idleTimeout = 300000; // 5 minutes in milliseconds
+
+bool checkButtonReleased(int pin, bool &heldState) {
+    bool pressed = digitalRead(pin) == LOW;
+
+    if (!pressed && heldState) {
+        heldState = false;
+        return true;  // Button was released
+    } else if (pressed && !heldState) {
+        heldState = true;
+    }
+
+    return false;  // Button not released yet
+}
+
+
 void resetPreviousItems()
 {
     display.clearDisplay();
@@ -127,23 +144,48 @@ void initMenu(entryMenu *entryList, int totalMenus, String menuName, int textSiz
     Serial.println("Initialized menu: " + menuName);
 }
 
-void exitSubmenu()
-{
-    if (data.isSubmenu && stackPointer >= 0)
-    {
+void updateLastInputTime() {
+    lastInputTime = millis();
+}
+
+bool idleEnabled = false;
+
+void startIdleAnimation() {
+    static bool confirmHeld = false;
+    static bool upHeld = false;
+    static bool downHeld = false;
+    static bool exitHeld = false;
+
+    Serial.println("Main Page started...");
+    delay(100);
+
+    while (millis() - lastInputTime > idleTimeout || idleEnabled == true) {
+        showMainPage();  // Your animation logic goes here
+        if (digitalRead(BUTTON_CONFIRM_PIN) == LOW || 
+            digitalRead(BUTTON_UP_PIN) == LOW || 
+            digitalRead(BUTTON_DOWN_PIN) == LOW || 
+            digitalRead(BUTTON_EXIT_PIN) == LOW) {
+            updateLastInputTime();
+            break;
+        }
+
+    }
+    idleEnabled = false;
+}
+
+
+void exitSubmenu() {
+    if (data.isSubmenu && stackPointer >= 0) {
         stackPointer--;
         data.currentButton = 0;
 
-        if (stackPointer >= 0)
-        {
+        if (stackPointer >= 0) {
             Submenu *prevSubmenu = menuStack[stackPointer + 1];
             data.currentSubmenu = prevSubmenu->entries;
             data.submenuCount = prevSubmenu->count;
             data.menuName = prevSubmenu->name; // Use the stored submenu name
             data.isSubmenu = true;
-        }
-        else
-        {
+        } else {
             data.currentSubmenu = nullptr;
             data.menuName = "Main Menu";
             data.isSubmenu = false;
@@ -151,93 +193,128 @@ void exitSubmenu()
 
         showMenu();
         Serial.println("Exited submenu, now in: " + data.menuName);
-    }
-    else
-    {
+    } else {
         Serial.println("No submenu to exit.");
+        // Start idle animation on exit
+        idleEnabled = true;
+        startIdleAnimation();
     }
 }
 
-void loopMenu()
+void pushSubmenu(Submenu *submenu)
 {
-    if (digitalRead(BUTTON_UP_PIN) == LOW)
+    if (stackPointer < 9)
     {
-        // Handle button up logic
-        delay(200);
+        stackPointer++;
+        menuStack[stackPointer] = new Submenu{
+            data.menuName,
+            data.currentSubmenu,
+            data.submenuCount
+        };
     }
-    else if (digitalRead(BUTTON_DOWN_PIN) == LOW)
-    {
-        // Handle button down logic
-        delay(200);
-    }
-    else if (digitalRead(BUTTON_CONFIRM_PIN) == LOW)
-    {
-        if (data.isSubmenu && data.currentSubmenu != nullptr)
-        {
-            entryMenu selectedEntry = data.currentSubmenu[data.currentButton];
+}
 
-            // Handle submenu entry selection
-            if (selectedEntry.function != nullptr)
-            {
-                selectedEntry.function();
-            }
-            else if (selectedEntry.boolToggleFunction != nullptr)
-            {
-                selectedEntry.boolToggleFunction();
-                showMenu();
-            }
-            else if (selectedEntry.submenu != nullptr)
-            {
-                // Handle entering submenu
-            }
+void runLoopFunction(void (*loopFunction)()) {
+    static bool exitHeld = false;
+
+    while (true) {
+        loopFunction();
+
+        if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld)) {
+            break;  // Exit the loop when the exit button is released
         }
-        else if (data.entryList[data.currentButton].function != nullptr)
+
+        delay(50);  // Optional delay to control loop speed
+    }
+}
+
+
+
+void handleConfirm()
+{
+    if (data.isSubmenu && data.currentSubmenu != nullptr)
+    {
+        entryMenu selectedEntry = data.currentSubmenu[data.currentButton];
+        
+        if (selectedEntry.submenu != nullptr)
         {
-            data.entryList[data.currentButton].function();
-        }
-        else if (data.entryList[data.currentButton].boolToggleFunction != nullptr)
-        {
-            data.entryList[data.currentButton].boolToggleFunction();
+            pushSubmenu(selectedEntry.submenu);
+            data.currentSubmenu = selectedEntry.submenu->entries;
+            data.submenuCount = selectedEntry.submenu->count;
+            data.menuName = selectedEntry.submenu->name;
+            data.isSubmenu = true;
+            data.currentButton = 0;
             showMenu();
         }
-        delay(200);
-    }
-    else if (digitalRead(BUTTON_EXIT_PIN) == LOW)
-    {
-        // Handle exit submenu logic
-        delay(200);
-    }
-    else
-    {
-        // Check if there's a loop function to run
-        if (data.isSubmenu && data.currentSubmenu != nullptr)
+        else if (selectedEntry.function != nullptr)
         {
-            entryMenu selectedEntry = data.currentSubmenu[data.currentButton];
-            if (selectedEntry.loopFunction != nullptr)
-            {
-                while (digitalRead(BUTTON_EXIT_PIN) == HIGH)
-                {
-                    selectedEntry.loopFunction();
-                    // Optionally show menu here if needed
-                    delay(100); // Adjust delay as needed
-                }
-            }
+            selectedEntry.function();
         }
-        else
+        else if (selectedEntry.boolToggleFunction != nullptr)
         {
-            entryMenu selectedEntry = data.entryList[data.currentButton];
-            if (selectedEntry.loopFunction != nullptr)
-            {
-                while (digitalRead(BUTTON_EXIT_PIN) == HIGH)
-                {
-                    selectedEntry.loopFunction();
-                    // Optionally show menu here if needed
-                    delay(100); // Adjust delay as needed
-                }
-            }
+            selectedEntry.boolToggleFunction();
+            showMenu();
         }
+        else if (selectedEntry.loopFunction != nullptr)
+        {
+            runLoopFunction(selectedEntry.loopFunction);
+        }
+    }
+    else if (data.entryList[data.currentButton].submenu != nullptr)
+    {
+        pushSubmenu(data.entryList[data.currentButton].submenu);
+        data.currentSubmenu = data.entryList[data.currentButton].submenu->entries;
+        data.submenuCount = data.entryList[data.currentButton].submenu->count;
+        data.menuName = data.entryList[data.currentButton].submenu->name;
+        data.isSubmenu = true;
+        data.currentButton = 0;
+        showMenu();
+    }
+    else if (data.entryList[data.currentButton].function != nullptr)
+    {
+        data.entryList[data.currentButton].function();
+    }
+    else if (data.entryList[data.currentButton].boolToggleFunction != nullptr)
+    {
+        data.entryList[data.currentButton].boolToggleFunction();
+        showMenu();
+    }
+    else if (data.entryList[data.currentButton].loopFunction != nullptr)
+    {
+        runLoopFunction(data.entryList[data.currentButton].loopFunction);
     }
 }
+
+void loopMenu() {
+    static bool upHeld = false;
+    static bool downHeld = false;
+    static bool confirmHeld = false;
+    static bool exitHeld = false;
+
+    if (checkButtonReleased(BUTTON_UP_PIN, upHeld)) {
+        data.currentButton = max(data.currentButton - 1, 0);
+        showMenu();
+    }
+
+    if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld)) {
+        data.currentButton = min(data.currentButton + 1, (data.isSubmenu ? data.submenuCount : data.totalMenus) - 1);
+        showMenu();
+    }
+
+    if (checkButtonReleased(BUTTON_CONFIRM_PIN, confirmHeld)) {
+        handleConfirm();
+    }
+
+    if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld)) {
+        exitSubmenu();
+    }
+
+    // Start idle animation if no input is detected for 5 minutes
+    if (millis() - lastInputTime > idleTimeout) {
+        startIdleAnimation();
+    }
+}
+
 
 void addMenuEntry(entryMenu entry)
 {
