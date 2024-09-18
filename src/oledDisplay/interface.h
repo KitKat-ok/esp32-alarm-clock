@@ -5,9 +5,7 @@
 
 void initMenus();
 void handleMenus();
-void sleepMenu();
-void refreshMenu();
-void wakeUpMenu();
+void showMenu();
 
 extern bool menuRunning;
 

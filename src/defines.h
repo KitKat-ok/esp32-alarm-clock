@@ -36,7 +36,7 @@ extern bool OTAEnabled;
 #define CURRENT_WEATHER_INTERVAL 30 * 60 * 1000  // 30 minutes
 
 // Light Sensor
-#define OLED_DISABLE_THRESHOLD 50
+#define OLED_DISABLE_THRESHOLD 45
 #define LED_DIM_THRESHOLD 30
 #define LED_DISABLE_THRESHOLD 1
 
@@ -47,6 +47,10 @@ extern bool OTAEnabled;
 #define BUTTON_DOWN_PIN    GPIO_NUM_13
 #define BUTTON_CONFIRM_PIN GPIO_NUM_14
 #define BUTTON_EXIT_PIN    GPIO_NUM_15
+
+#define MAX_MENU_ITEMS 15
+#define MAX_ALARMS 15
+
 
 #define TOUCH_BUTTON_PIN 4
 #define TOUCH_BUTTON_THRESHOLD 8

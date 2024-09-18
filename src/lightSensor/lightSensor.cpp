@@ -198,32 +198,26 @@ int bufferLightIndex = 0;
 
 float smoothedLightLevel = 0.0; // Initial smoothed light level
 
+// New parameters for adjustment
+float normalSmoothingFactor = 0.005;  // Normal smoothing factor (adjust as needed)
+float highChangeSmoothingFactor = 0.5;  // Smoothing factor for significant changes (adjust as needed)
+float significantChangeThreshold = 5.0; // Threshold to classify a big change (adjust as needed)
+float spikeSuppressionThreshold = MAX_INCREASE_OF_LIGHT_LEVEL; // Suppress spikes beyond this value
+
 float removeLightNoise()
 {
-    const float smoothingFactor = 0.5; // Smoothing factor (adjust as needed)
-    const float smallChangeThreshold = 1.0; // Threshold to ignore small changes (adjust as needed)
-    const float largeChangeMultiplier = 2.0; // Amplify the response to large changes (adjust as needed)
-
     float currentLightLevel = lightMeter.readLightLevel(); // Read the current light level from BH1750 sensor
 
-    // Calculate the difference between the current light level and the last known buffer value
-    float lightLevelDifference = currentLightLevel - lightLevelBuffer[bufferLightIndex];
-
-    // Apply a deadband to ignore small fluctuations in light levels
-    if (abs(lightLevelDifference) < smallChangeThreshold)
+    // Handle sudden spikes in light level by suppressing them
+    if (currentLightLevel - lightLevelBuffer[bufferLightIndex] > spikeSuppressionThreshold)
     {
-        currentLightLevel = lightLevelBuffer[bufferLightIndex]; // Ignore small changes
-    }
-    // Handle sudden spikes in light level (large change scenario)
-    else if (lightLevelDifference > MAX_INCREASE_OF_LIGHT_LEVEL)
-    {
-        currentLightLevel = lightLevelBuffer[bufferLightIndex] + largeChangeMultiplier * lightLevelDifference; // Amplify large changes
+        currentLightLevel = lightLevelBuffer[bufferLightIndex]; // Suppress the spike by keeping the last good value
     }
 
-    // Store the current light level in the circular buffer
+    // Store current light level in the circular buffer
     lightLevelBuffer[bufferLightIndex] = currentLightLevel;
 
-    // Update the buffer index (circular increment)
+    // Update buffer index (circular increment)
     bufferLightIndex = (bufferLightIndex + 1) % bufferLightSize;
 
     // Calculate simple moving average
@@ -234,11 +228,23 @@ float removeLightNoise()
     }
     movingAverage /= bufferLightSize;
 
-    // Apply exponential smoothing to the moving average
-    smoothedLightLevel = smoothingFactor * movingAverage + (1.0 - smoothingFactor) * smoothedLightLevel;
+    // Determine if this is a significant change
+    float lightLevelDifference = abs(currentLightLevel - smoothedLightLevel);
+    if (lightLevelDifference > significantChangeThreshold)
+    {
+        // Use the adjustable smoothing factor for significant changes
+        smoothedLightLevel = highChangeSmoothingFactor * movingAverage + (1.0 - highChangeSmoothingFactor) * smoothedLightLevel;
+    }
+    else
+    {
+        // Use the normal smoothing factor for small changes
+        smoothedLightLevel = normalSmoothingFactor * movingAverage + (1.0 - normalSmoothingFactor) * smoothedLightLevel;
+    }
 
     return smoothedLightLevel;
 }
+
+
 
 
 int touchSamples[NUM_TOUCH_SAMPLES];
@@ -307,7 +313,7 @@ bool checkForNight()
 
     int currentHour = hour();
 
-    if ((alarms[weekdayIndex].hours == 0 && alarms[weekdayIndex].minutes == 0) && alarms[weekdayIndex].isSet == false)
+    if ((alarms[weekdayIndex].hours == 0 && alarms[weekdayIndex].minutes == 0) && alarms[weekdayIndex].enabled == false)
     {
         if (currentHour >= 23 || currentHour < 10)
         {

@@ -1,447 +1,348 @@
 #include "interface.h"
 
-using namespace Menu;
+#define BUTTONS_OFFSET 2
+#define BUTTON_HEIGHT 10
 
-bool menuRunning = false;
-
-unsigned long startTime;  // Variable to store the start time
-const unsigned long delayTime = 6000;  // 10 minutes in milliseconds
-
-// Define color scheme
-const colorDef<uint16_t> colors[6] MEMMODE = {
-  {{0,0},{0,1,1}},  // bgColor
-  {{1,1},{1,0,0}},  // fgColor
-  {{1,1},{1,0,0}},  // valColor
-  {{1,1},{1,0,0}},  // unitColor
-  {{0,1},{0,0,1}},  // cursorColor
-  {{1,1},{1,0,0}}   // titleColor
+struct entryMenu
+{
+    String text;
+    void (*function)();
+    void (*loopFunction)(); // Added loop function pointer
+    struct Submenu *submenu;
+    bool *boolPtr;
+    void (*boolToggleFunction)();
 };
 
-// Helper Functions
-result saveAlarms(eventMask e, navNode &nav, prompt &item) {
-  saveAlarms();
-  return proceed;
-}
-
-result enableAlarms(eventMask e, navNode &nav, prompt &item) {
-  enableAllAlarms();
-  return proceed;
-}
-
-result disableAlarms(eventMask e, navNode &nav, prompt &item) {
-  disableAllAlarms();
-  return proceed;
-}
-
-result startOTA() {
-  saveOtaValue(true);
-  ESP.restart();
-  return proceed;
-}
-
-result softwareReset() {
-  ESP.restart();
-  return proceed;
-}
-
-result showTempChart()
+struct Submenu
 {
-  sleepMenu();
-  initTempGraph();
-  startTime = millis(); 
-  menuRunning = true;
-  while (digitalRead(BUTTON_EXIT_PIN))
-  { 
-    loopTempGraph();
-    if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-    }
-  }
-  
-  display.clearDisplay();
-  manager.oledDisplay();
-  refreshMenu();
-  return proceed;
-}
-
-result showLightChart()
-{
-  sleepMenu();
-  initLightGraph();
-  startTime = millis(); 
-  menuRunning = true;
-  while (digitalRead(BUTTON_EXIT_PIN))
-  { 
-    loopLightGraph();
-    if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-    }
-  }
-  
-  display.clearDisplay();
-  manager.oledDisplay();
-  refreshMenu();
-      display.clearDisplay();
-    manager.oledDisplay();
-  return proceed;
-      display.clearDisplay();
-    manager.oledDisplay();
-}
-
-result showLightClean()
-{
-  sleepMenu();
-  startTime = millis(); 
-  menuRunning = true;
-  unsigned long previousMillis = 0;
-const long interval = 1000;
-  while (digitalRead(BUTTON_EXIT_PIN))
-  { 
-      unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-
-    display.clearDisplay();
-    centerText("lux: " + String(lightLevel), (SCREEN_HEIGHT / 3) - 5);
-    display.display();
-  }
-    if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-    }
-  }
-  
-  display.clearDisplay();
-  manager.oledDisplay();
-  refreshMenu();
-      display.clearDisplay();
-    manager.oledDisplay();
-  return proceed;
-      display.clearDisplay();
-    manager.oledDisplay();
-}
-
-result showCurrentWeather()
-{
-  menuRunning = true;
-  startTime = millis(); 
-  sleepMenu();
-  currentWeather();
-  delay(100);
-  while(digitalRead(BUTTON_EXIT_PIN)) {
-        if (millis() - startTime >= 1 * 60 * 1000) {
-      break;
-  }}
-  manager.stopScrolling();
-  display.clearDisplay();
-  refreshMenu();
-  return proceed;
-}
-
-result showTodaysWeather()
-{
-  menuRunning = true;
-  sleepMenu();
-  displayWeatherCast(0);
-  startTime = millis(); 
-  delay(100);
-  while(digitalRead(BUTTON_EXIT_PIN)) {
-  if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-  }
-  }
-  manager.stopScrolling();
-  display.clearDisplay();
-  refreshMenu();
-  return proceed;
-}
-
-result showTomorrowsWeather()
-{
-  menuRunning = true;
-  sleepMenu();
-  displayWeatherCast(1);
-  startTime = millis(); 
-  delay(100);
-  while(digitalRead(BUTTON_EXIT_PIN)) {
-  if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-  }
-  }
-  manager.stopScrolling();
-  display.clearDisplay();
-  refreshMenu();
-  return proceed;
-}
-
-result showDaysAfterWeather()
-{
-  menuRunning = true;
-  sleepMenu();
-  displayWeatherCast(2);
-  startTime = millis(); 
-  delay(100);
-  while(digitalRead(BUTTON_EXIT_PIN)) {
-  if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-  }
-  }
-  manager.stopScrolling();
-  display.clearDisplay();
-  refreshMenu();
-  return proceed;
-}
-result showWifiDebugMenu()
-{
-  menuRunning = true;
-  sleepMenu();
-  wifiDebugMenu();
-  startTime = millis(); 
-  delay(100);
-  while(digitalRead(BUTTON_EXIT_PIN)) {
-  if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-  }
-    wifiDebugMenu();
-  }
-  manager.stopScrolling();
-  display.clearDisplay();
-  refreshMenu();
-  return proceed;
-}
-result showCPUDebugMenu()
-{
-  menuRunning = true;
-  sleepMenu();
-  CPUDebugMenu();
-  startTime = millis(); 
-  delay(100);
-  while(digitalRead(BUTTON_EXIT_PIN)) {
-  if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-  }
-    CPUDebugMenu();
-  }
-  manager.stopScrolling();
-  display.clearDisplay();
-  refreshMenu();
-  return proceed;
-}
-result showGeneralDebugMenu()
-{
-  menuRunning = true;
-  sleepMenu();
-  generalDebugMenu();
-  startTime = millis(); 
-  delay(100);
-  while(digitalRead(BUTTON_EXIT_PIN)) {
-  if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-  }
-    generalDebugMenu();
-  }
-  manager.stopScrolling();
-  display.clearDisplay();
-  refreshMenu();
-  return proceed;
-}
-
-result showFpsMenu()
-{
-  menuRunning = true;
-  sleepMenu();
-  fpsCalc();
-  startTime = millis(); 
-  delay(100);
-  while(digitalRead(BUTTON_EXIT_PIN)) {
-  if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-  }
-    fpsCalc();
-  }
-  manager.stopScrolling();
-  display.clearDisplay();
-  refreshMenu();
-  return proceed;
-}
-
-result showCallendarMenu()
-{
-  time_t currentTime = now();              // Get the current time
-  int weekdayIndex = weekday(currentTime); // Get the day of the week (1 = Sunday, 2 = Monday, etc.)
-  menuRunning = true;
-  sleepMenu();
-  showCalendar(weekdayIndex,2024);
-  startTime = millis(); 
-  delay(100);
-  while(digitalRead(BUTTON_EXIT_PIN)) {
-  if (millis() - startTime >= 15 * 60 * 1000) {
-      break;
-  }
-    loopCallendar();
-  }
-  manager.stopScrolling();
-  display.clearDisplay();
-  refreshMenu();
-  return proceed;
-}
-
-result syncTime() {
-  synchronizeAndSetTime();
-  return proceed;
-}
-
-result fixDisplay() {
-manager.sendCustomCommand(0xD3);
-manager.sendCustomCommand(0);
- return proceed;
-}
-
-
-// Alarm Toggles
-#define DEFINE_ALARM_TOGGLE(day, index) \
-  TOGGLE(alarms[index].isSet, day##Toggle, #day ":", doNothing, noEvent, noStyle, \
-    VALUE("On", true, doNothing, noEvent), \
-    VALUE("Off", false, doNothing, noEvent) \
-  ); \
-  TOGGLE(alarms[index].soundOn, day##ToggleRing, "Ring alarm:", doNothing, noEvent, noStyle, \
-    VALUE("True", true, doNothing, noEvent), \
-    VALUE("False", false, doNothing, noEvent) \
-  ); \
-  MENU(day, #day, Menu::doNothing, Menu::noEvent, Menu::wrapStyle, \
-    SUBMENU(day##Toggle), \
-    SUBMENU(day##ToggleRing), \
-    FIELD(alarms[index].hours, "Hours:", "", 0, 24, 1, 0, doNothing, noEvent, noStyle), \
-    FIELD(alarms[index].minutes, "Minutes:", "", 0, 60, 10, 1, doNothing, noEvent, noStyle), \
-    EXIT("<Back") \
-  )
-
-DEFINE_ALARM_TOGGLE(Monday, 1);
-DEFINE_ALARM_TOGGLE(Tuesday, 2);
-DEFINE_ALARM_TOGGLE(Wednesday, 3);
-DEFINE_ALARM_TOGGLE(Thursday, 4);
-DEFINE_ALARM_TOGGLE(Friday, 5);
-DEFINE_ALARM_TOGGLE(Saturday, 6);
-DEFINE_ALARM_TOGGLE(Sunday, 0);
-
-MENU(alarmMenu, "Alarm Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-      , SUBMENU(Monday)
-      , SUBMENU(Tuesday)
-      , SUBMENU(Wednesday)
-      , SUBMENU(Thursday)
-      , SUBMENU(Friday)
-      , SUBMENU(Saturday)
-      , SUBMENU(Sunday)
-      , OP("Save alarms ---------------", saveAlarms, enterEvent)
-      , OP("Disable alarms", disableAlarms, enterEvent)
-      , OP("Enable alarms", enableAlarms, enterEvent)
-      , EXIT("<Back")
-);
-
-MENU(debug, "Debug Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
-     , OP("Fix Display...", fixDisplay, enterEvent)
-     , OP("WiFi", showWifiDebugMenu, enterEvent)
-     , OP("CPU", showCPUDebugMenu, enterEvent)
-     , OP("General", showGeneralDebugMenu, enterEvent)
-     , OP("Fps calc", showFpsMenu, enterEvent)
-     , OP("Start OTA", startOTA, enterEvent)
-     , OP("Software Reset", softwareReset, enterEvent)
-     , OP("Synchronize Time", syncTime, enterEvent)
-     , EXIT("<Back")
-    );
-
-MENU(sensors, "Sensors Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
-     , OP("Temperature", showTempChart, enterEvent)
-     , OP("Light", showLightChart, enterEvent)
-     , OP("Light clean", showLightClean, enterEvent)
-     , EXIT("<Back")
-    );
-
-MENU(info, "Info Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
-     , OP("Callendar", showCallendarMenu, enterEvent)
-     , SUBMENU(sensors)
-     , SUBMENU(debug)
-     , EXIT("<Back")
-    );
-
-MENU(menus, "Weather Menu", Menu::doExit, Menu::noEvent, Menu::wrapStyle
-     , OP("Current Weather", showCurrentWeather, enterEvent)
-     , OP("Today's cast", showTodaysWeather, enterEvent)
-     , OP("Tomorrow's cast", showTomorrowsWeather, enterEvent)
-     , OP("Day After's Cast", showDaysAfterWeather, enterEvent)
-     , EXIT("<Back")
-    );
-
-MENU(mainMenu, "Main Menu", Menu::doNothing, Menu::noEvent, Menu::wrapStyle
-  , SUBMENU(alarmMenu)
-  , SUBMENU(menus)
-  , SUBMENU(info)
-  ,EXIT("<Back")
-);
-
-// Key Mapping and Outputs
-keyMap joystickBtn_map[] = {
-  { -BUTTON_CONFIRM_PIN, defaultNavCodes[enterCmd].ch },
-  { -BUTTON_UP_PIN, defaultNavCodes[upCmd].ch },
-  { -BUTTON_DOWN_PIN, defaultNavCodes[downCmd].ch },
-  { -BUTTON_EXIT_PIN, defaultNavCodes[escCmd].ch }
+    String name;
+    entryMenu *entries;
+    int count;
 };
-keyIn<TOTAL_NAV_BUTTONS> joystickBtns(joystickBtn_map);
 
-MENU_OUTPUTS(out, MAX_DEPTH,
-  ADAGFX_OUT(display, colors, fontX, fontY, {0, 0, SCREEN_WIDTH / fontX, SCREEN_HEIGHT / fontY}),
-  SERIAL_OUT(Serial)
-);
+// Global menu data
+struct menuData
+{
+    int totalMenus;
+    int textSize;
+    String menuName; // Menu name to display (main or submenu name)
+    int linesThick;
+    entryMenu entryList[MAX_MENU_ITEMS];
+    int itemsOnPage;
+    int currentButton;
+    bool isSubmenu;
+    entryMenu *currentSubmenu; // Pointer to current submenu entries
+    int submenuCount;
+};
 
-NAVROOT(nav, mainMenu, MAX_DEPTH, joystickBtns, out);
+menuData data = {};
+int currentMenuItem = 0;
+int pageNumber = 0;
+int currentPage = 0;
 
-const panel panels[] MEMMODE = { {0, 0, 128 / fontX, 64 / fontY} };
-navNode* nodes[sizeof(panels) / sizeof(panel)];  // navNodes to store navigation status
-panelsList pList(panels, nodes, 1);  // a list of panels and nodes
-idx_t tops[sizeof(panels) / sizeof(panel)];
+#define MAX_STACK_SIZE 10
+Submenu *menuStack[MAX_STACK_SIZE];
+int stackPointer = -1;
 
-
-void initMenus() {
-  nav.timeOut = 30;
-  joystickBtns.begin();
-}
-
-bool sleeping = false;
-
-void handleMenus() {
-  nav.poll();
-
-  if (nav.idleChanged)
-  {
+void resetPreviousItems()
+{
     display.clearDisplay();
+}
+
+void showMenu()
+{
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    display.clearDisplay();
+    display.setTextSize(data.textSize);
+    data.itemsOnPage = 4;
+    int startingButton = data.currentButton - (data.currentButton % data.itemsOnPage);
+    currentPage = data.currentButton / data.itemsOnPage;
+    pageNumber = ((data.isSubmenu ? data.submenuCount : data.totalMenus) + data.itemsOnPage - 1) / data.itemsOnPage;
+
+    display.setCursor(0, 0);
+    display.setTextColor(SSD1306_WHITE);
+
+    display.setCursor(0, 10);
+    display.print(String(currentPage + 1) + "/" + String(pageNumber));
+
+    centerText(data.menuName, 10);
+
+    int y = 20;
+    for (int i = startingButton; i < startingButton + data.itemsOnPage && i < (data.isSubmenu ? data.submenuCount : data.totalMenus); i++)
+    {
+        if (data.currentButton == i)
+        {
+            display.fillRect(0, y - 8, SCREEN_WIDTH, BUTTON_HEIGHT, SSD1306_WHITE);
+            display.setTextColor(SSD1306_BLACK);
+        }
+        else
+        {
+            display.setTextColor(SSD1306_WHITE);
+        }
+
+        String displayText = (data.isSubmenu ? data.currentSubmenu[i].text : data.entryList[i].text);
+        if (data.isSubmenu && data.currentSubmenu[i].boolPtr != nullptr)
+        {
+            displayText += " " + String(*(data.currentSubmenu[i].boolPtr) ? "True" : "False");
+        }
+        else if (!data.isSubmenu && data.entryList[i].boolPtr != nullptr)
+        {
+            displayText += " " + String(*(data.entryList[i].boolPtr) ? "True" : "False");
+        }
+
+        display.setCursor(0, y);
+        display.print(displayText);
+
+        y += BUTTON_HEIGHT + BUTTONS_OFFSET;
+    }
+
     manager.oledDisplay();
-  }
-  
-
-  if (!nav.sleepTask) {
-    manager.oledDisplay();    
-    manager.stopScrolling();
-  }
-  
-
-  if (nav.sleepTask) {
-    showMainPage();
-  }
 }
 
-void sleepMenu() {
-    nav.idleOn();
+void initMenu(entryMenu *entryList, int totalMenus, String menuName, int textSize, int linesThick)
+{
+    int realTotalMenus = 0;
+    for (int i = 0; i < totalMenus; i++)
+    {
+        if (entryList[i].text != "")
+        {
+            data.entryList[realTotalMenus] = entryList[i];
+            realTotalMenus++;
+        }
+    }
+
+    data.totalMenus = realTotalMenus;
+    data.textSize = textSize;
+    data.menuName = menuName;
+    data.linesThick = linesThick;
+    data.currentButton = 0;
+    data.itemsOnPage = (textSize == 1) ? 8 : 5;
+    data.isSubmenu = false;
+    data.currentSubmenu = nullptr;
+    data.submenuCount = 0;
+
+    resetPreviousItems();
+    showMenu();
+
+    Serial.println("Initialized menu: " + menuName);
 }
 
-void refreshMenu() {
-  nav.refresh();
+void exitSubmenu()
+{
+    if (data.isSubmenu && stackPointer >= 0)
+    {
+        stackPointer--;
+        data.currentButton = 0;
+
+        if (stackPointer >= 0)
+        {
+            Submenu *prevSubmenu = menuStack[stackPointer + 1];
+            data.currentSubmenu = prevSubmenu->entries;
+            data.submenuCount = prevSubmenu->count;
+            data.menuName = prevSubmenu->name; // Use the stored submenu name
+            data.isSubmenu = true;
+        }
+        else
+        {
+            data.currentSubmenu = nullptr;
+            data.menuName = "Main Menu";
+            data.isSubmenu = false;
+        }
+
+        showMenu();
+        Serial.println("Exited submenu, now in: " + data.menuName);
+    }
+    else
+    {
+        Serial.println("No submenu to exit.");
+    }
 }
 
-void wakeUpMenu() {
-  display.clearDisplay();
-  manager.oledDisplay();
-  refreshMenu();
-  nav.idleOff();
-  refreshMenu();
-  display.clearDisplay();
-  manager.oledDisplay();
+void loopMenu()
+{
+    if (digitalRead(BUTTON_UP_PIN) == LOW)
+    {
+        // Handle button up logic
+        delay(200);
+    }
+    else if (digitalRead(BUTTON_DOWN_PIN) == LOW)
+    {
+        // Handle button down logic
+        delay(200);
+    }
+    else if (digitalRead(BUTTON_CONFIRM_PIN) == LOW)
+    {
+        if (data.isSubmenu && data.currentSubmenu != nullptr)
+        {
+            entryMenu selectedEntry = data.currentSubmenu[data.currentButton];
+
+            // Handle submenu entry selection
+            if (selectedEntry.function != nullptr)
+            {
+                selectedEntry.function();
+            }
+            else if (selectedEntry.boolToggleFunction != nullptr)
+            {
+                selectedEntry.boolToggleFunction();
+                showMenu();
+            }
+            else if (selectedEntry.submenu != nullptr)
+            {
+                // Handle entering submenu
+            }
+        }
+        else if (data.entryList[data.currentButton].function != nullptr)
+        {
+            data.entryList[data.currentButton].function();
+        }
+        else if (data.entryList[data.currentButton].boolToggleFunction != nullptr)
+        {
+            data.entryList[data.currentButton].boolToggleFunction();
+            showMenu();
+        }
+        delay(200);
+    }
+    else if (digitalRead(BUTTON_EXIT_PIN) == LOW)
+    {
+        // Handle exit submenu logic
+        delay(200);
+    }
+    else
+    {
+        // Check if there's a loop function to run
+        if (data.isSubmenu && data.currentSubmenu != nullptr)
+        {
+            entryMenu selectedEntry = data.currentSubmenu[data.currentButton];
+            if (selectedEntry.loopFunction != nullptr)
+            {
+                while (digitalRead(BUTTON_EXIT_PIN) == HIGH)
+                {
+                    selectedEntry.loopFunction();
+                    // Optionally show menu here if needed
+                    delay(100); // Adjust delay as needed
+                }
+            }
+        }
+        else
+        {
+            entryMenu selectedEntry = data.entryList[data.currentButton];
+            if (selectedEntry.loopFunction != nullptr)
+            {
+                while (digitalRead(BUTTON_EXIT_PIN) == HIGH)
+                {
+                    selectedEntry.loopFunction();
+                    // Optionally show menu here if needed
+                    delay(100); // Adjust delay as needed
+                }
+            }
+        }
+    }
+}
+
+void addMenuEntry(entryMenu entry)
+{
+    if (data.isSubmenu && data.currentSubmenu != nullptr)
+    {
+        if (data.submenuCount < MAX_MENU_ITEMS)
+        {
+            data.currentSubmenu[data.submenuCount++] = entry;
+            showMenu();
+            Serial.println("Added entry to submenu: " + entry.text);
+        }
+        else
+        {
+            Serial.println("Failed to add entry to submenu: Max menu items reached.");
+        }
+    }
+    else
+    {
+        if (data.totalMenus < MAX_MENU_ITEMS)
+        {
+            data.entryList[data.totalMenus++] = entry;
+            showMenu();
+            Serial.println("Added entry to main menu: " + entry.text);
+        }
+        else
+        {
+            Serial.println("Failed to add entry to main menu: Max menu items reached.");
+        }
+    }
+}
+
+void removeMenuEntry(int index)
+{
+    if (data.isSubmenu && data.currentSubmenu != nullptr)
+    {
+        if (index >= 0 && index < data.submenuCount)
+        {
+            for (int i = index; i < data.submenuCount - 1; i++)
+            {
+                data.currentSubmenu[i] = data.currentSubmenu[i + 1];
+            }
+            data.submenuCount--;
+            showMenu();
+            Serial.println("Removed entry from submenu at index: " + String(index));
+        }
+    }
+    else
+    {
+        if (index >= 0 && index < data.totalMenus)
+        {
+            for (int i = index; i < data.totalMenus - 1; i++)
+            {
+                data.entryList[i] = data.entryList[i + 1];
+            }
+            data.totalMenus--;
+            showMenu();
+            Serial.println("Removed entry from main menu at index: " + String(index));
+        }
+    }
+}
+
+bool myBool = false;
+
+void toggleBool()
+{
+    myBool = !myBool;
+}
+
+entryMenu newButton = {"New Item", nullptr, nullptr,nullptr, &myBool, toggleBool};
+
+void test()
+{
+    addMenuEntry(newButton);
+}
+bool menuRunning;
+void loopExample()
+{
+    // Example of a loop function that runs continuously
+    Serial.println("Loop function is running...");
+    delay(50); // Adjust as needed for loop speed
+}
+
+void initMenus()
+{
+    entryMenu *subSubmenuItems = new entryMenu[MAX_MENU_ITEMS]{
+        {"SubSubItem 1", nullptr, nullptr, nullptr, nullptr},
+        {"SubSubItem 2", nullptr, nullptr, nullptr, nullptr}};
+
+    Submenu *subSubmenu = new Submenu{"SubSubmenu", subSubmenuItems, 2};
+
+    entryMenu *submenuItems = new entryMenu[MAX_MENU_ITEMS]{
+        {"SubItem 1", nullptr, nullptr, subSubmenu, nullptr},
+        {"SubItem 2", nullptr, nullptr, nullptr, nullptr}};
+
+    Submenu *submenu = new Submenu{"Submenu", submenuItems, 2};
+
+    entryMenu button0 = {"Text 0", test, nullptr, nullptr, nullptr};
+    entryMenu button1 = {"Text 1", nullptr, nullptr, nullptr, nullptr};
+    entryMenu button2 = {"Text 2", nullptr, loopExample, nullptr, nullptr}; // Added loop function here
+    entryMenu button3 = {"Submenu", nullptr, nullptr, submenu, nullptr};
+
+    initMenu(new entryMenu[5]{button0, button1, button2, newButton, button3}, 5, "Main Menu", 1, 1);
+}
+
+void handleMenus()
+{
+    loopMenu();
 }

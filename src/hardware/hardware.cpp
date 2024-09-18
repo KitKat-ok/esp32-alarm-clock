@@ -98,6 +98,7 @@ void initOledDisplay()
   manager.oledDisplay();
 
   centerText("Oled Initialized", SCREEN_HEIGHT / 2);
+  centerText((resetReasonToString(esp_reset_reason())), 10);
 
   manager.oledDisplay();
   Serial.println("OLed display initialized");

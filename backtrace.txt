@@ -1,29 +1,20 @@
 Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.
 
 Core  1 register dump:
-PC      : 0x40092b01  PS      : 0x00060133  A0      : 0x80091ae1  A1      : 0x3ffbbea0
-A2      : 0x3ffe0964  A3      : 0x3ffc7d70  A4      : 0x3ffc7d74  A5      : 0x00060123
-A6      : 0x00060120  A7      : 0x00000001  A8      : 0x00000000  A9      : 0x3ffde138
-A10     : 0x3ffe05f4  A11     : 0x3f40c4a3  A12     : 0x00000002  A13     : 0x0000ff00
-A14     : 0x007bff18  A15     : 0x003fffff  SAR     : 0x0000001d  EXCCAUSE: 0x0000001c
-EXCVADDR: 0x00000004  LBEG    : 0x4008b0e8  LEND    : 0x4008b0ed  LCOUNT  : 0x00000000
+PC      : 0x400d596f  PS      : 0x00060a30  A0      : 0x800d5df5  A1      : 0x3ffb2190  
+A2      : 0x00000000  A3      : 0x3ffc49e0  A4      : 0x3ffc45c8  A5      : 0x00000000  
+A6      : 0x3ffc47c8  A7      : 0x3ffc45c8  A8      : 0x800d5df5  A9      : 0x00000000  
+A10     : 0x3ffb21cc  A11     : 0x3f402037  A12     : 0x0000000c  A13     : 0x00000080  
+A14     : 0x0000000a  A15     : 0x00000001  SAR     : 0x0000001f  EXCCAUSE: 0x0000001c  
+EXCVADDR: 0x800d5df5  LBEG    : 0x4008beed  LEND    : 0x4008befd  LCOUNT  : 0xffffffff  
 
 
-Backtrace: 0x40092afe:0x3ffbbea0 0x40091ade:0x3ffbbec0 0x400d361c:0x3ffbbee0 0x400d3841:0x3ffbbf00 0x400dd544:0x3ffbbf20 0x400dd80c:0x3ffbc0b0
+Backtrace: 0x400d596c:0x3ffb2190 0x400d5df2:0x3ffb2200 0x400d5f1b:0x3ffb2250 0x400d549f:0x3ffb2270 0x400e5845:0x3ffb2290
 
 
 
 
-ELF file SHA256: 0281419b57685278
+ELF file SHA256: a845ac279127f08b
 
 Rebooting...
 ets Jul 29 2019 12:21:46
-
-rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
-configsip: 0, SPIWP:0xee
-clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
-mode:DIO, clock div:2
-load:0x3fff0030,len:1184
-load:0x40078000,len:13232
-load:0x40080400,len:3028
-entry 0x400805e4

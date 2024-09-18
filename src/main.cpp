@@ -79,7 +79,7 @@ void setup()
     createDimmingTask();
     initBattery();
     createBatteryTask();
-    initMenus();
+    initialzeAlarmArray();
     readAlarms();
     createTempTask();
     createTimeTask();
@@ -87,28 +87,11 @@ void setup()
     setupScreensaver();
     createAlarmTask();
   }
-  sleepMenu();
+  initMenus();
 }
 
-bool initialMenuRunning = false;
 
 void loop()
 {
-  if (menuRunning != initialMenuRunning)
-  {
-    Serial.println("Menu state has changed.");
-    display.clearDisplay();
-    manager.oledDisplay();
-    display.clearDisplay();
-    manager.oledDisplay();
-    wakeUpMenu();
-    display.clearDisplay();
-    manager.oledDisplay();
-    menuRunning = false;
-    initialMenuRunning = menuRunning;
-  }
-  if (menuRunning == false)
-  {
-    handleMenus();
-  }
+  handleMenus();
 }

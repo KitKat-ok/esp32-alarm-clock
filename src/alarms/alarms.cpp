@@ -1,18 +1,9 @@
 #include "alarms.h"
 #include <HTTPClient.h>
 
-//initializes the structure
-Alarm alarms[] = {
-    {false, 0, 0, true}, // Sunday
-    {false, 0, 0, true}, // Monday
-    {false, 0, 0, true}, // Tuesday
-    {false, 0, 0, true}, // Wednesday
-    {false, 0, 0, true}, // Thursday
-    {false, 0, 0, true}, // Friday
-    {false, 0, 0, true}  // Saturday
-};
+bool ringing = false;
 
-bool ringedToday = false;
+Alarm alarms[MAX_ALARMS];
 
 void ringAlarm(void *parameter);
 void createRiningingTask();
@@ -22,6 +13,12 @@ void sendOffPostRequest();
 
 void checkAlarm(int alarmHours, int alarmMinutes);
 void checkAllAlarms(void *pvParameters);
+
+void initialzeAlarmArray() {
+    for (int i = 0; i < MAX_ALARMS; i++) {
+    alarms[i] = {false, false, 0, 0, 0, true};
+  }
+}
 
 void createAlarmTask()
 {
@@ -42,36 +39,32 @@ void checkAllAlarms(void *pvParameters)
   {
     int currentDay = weekday() - 1; // Adjust to 0-based index
 
-    if (alarms[currentDay].isSet == true && ringedToday == false)
+    for (int i = 0; i < MAX_ALARMS; ++i)
     {
-      Serial.println("checking alarm");
-      checkAlarm(alarms[currentDay].hours, alarms[currentDay].minutes);
+      if (alarms[i].day == weekday())
+      {
+        checkAlarm(alarms[i].hours, alarms[i].minutes);
+      }
     }
-
-    if (hour() == 0 && minute() == 0 && second() == 0)
-    {
-      ringedToday = false;
-    }
-
     vTaskDelay(pdMS_TO_TICKS(1 * 1000));
   }
 }
 
 void disableAllAlarms()
 {
-  for (int i = 0; i < 7; i++)
+  for (int i = 0; i < MAX_ALARMS; i++)
   {
-    alarms[i].isSet = false;
+    alarms[i].enabled = false;
   }
 }
 
 void enableAllAlarms()
 {
-  for (int i = 0; i < 7; i++)
+  for (int i = 0; i < MAX_ALARMS; i++)
   {
     if (alarms[i].hours != 0 && alarms[i].minutes != 0)
     {
-      alarms[i].isSet = true;
+      alarms[i].enabled = true;
     }
   }
 }
@@ -83,10 +76,10 @@ void checkAlarm(int alarmHours, int alarmMinutes)
   int currentMinutes = minute();
 
   // Check if it's time for the alarm
-  if (currentHours == alarmHours && currentMinutes == alarmMinutes && ringedToday == false)
+  if (currentHours == alarmHours && currentMinutes == alarmMinutes && ringing == false)
   {
     Serial.print("Alarm! It's time to wake up on ");
-    ringedToday = true;
+    ringing == true;
     createRiningingTask();
   }
 }
@@ -114,6 +107,7 @@ void touchStopAlarm(int hour, bool ringOn)
     {
       vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
       sendOffPostRequest();
+      ringing = false;
     }
     vTaskDelete(Alarm);
   }
@@ -198,8 +192,8 @@ void sendOnPostRequest()
 
       HTTPClient http;
 
-      http.begin(LIGHT_IP); // Specify destination for HTTP request
-      http.addHeader("Content-Type", "application/json");          // Specify content-type header
+      http.begin(LIGHT_IP);                               // Specify destination for HTTP request
+      http.addHeader("Content-Type", "application/json"); // Specify content-type header
 
       int httpResponseCode = http.POST("{\"state\": \"ON\", \"transition\": 300}"); // Send the actual POST request
 

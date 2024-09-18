@@ -10,13 +10,17 @@ void ringAlarm(void *parameter);
 void disableAllAlarms();
 void enableAllAlarms();  // <-- Added semicolon here
 
+void initialzeAlarmArray();
+
 struct Alarm {
-    bool isSet;
+    bool exists;
+    bool enabled;
+    int day;
     int hours;
     int minutes;
     bool soundOn;
 };
 
-extern Alarm alarms[7];  // Declaration of the array
+extern Alarm alarms[MAX_ALARMS];  // Declaration of the array
 
 #endif
