@@ -41,7 +41,7 @@ void checkAllAlarms(void *pvParameters)
 
     for (int i = 0; i < MAX_ALARMS; ++i)
     {
-      if (alarms[i].day == weekday())
+      if (alarms[i].day == weekday() && alarms[i].enabled == true && alarms[i].exists == true)
       {
         checkAlarm(alarms[i].hours, alarms[i].minutes);
       }
