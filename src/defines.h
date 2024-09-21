@@ -14,10 +14,6 @@
 #include <TimeLib.h>
 #include <NTPClient.h>
 #include <Preferences.h>
-#include <menu.h>
-#include <menuIO/adafruitGfxOut.h>
-#include <menuIO/keyIn.h>
-#include <menuIO/serialOut.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <oledManager.h>
