@@ -26,7 +26,7 @@ struct menuData
 {
     int totalMenus;
     int textSize;
-    String menuName; 
+    String menuName;
     int linesThick;
     entryMenu entryList[MAX_MENU_ITEMS];
     int itemsOnPage;
@@ -46,7 +46,9 @@ Submenu *menuStack[MAX_STACK_SIZE];
 int stackPointer = -1;
 
 unsigned long lastInputTime = 0;
-const unsigned long idleTimeout = 300000; 
+const unsigned long idleTimeout = 300000;
+
+bool startedLoop = false;
 
 bool checkButtonReleased(int pin, bool &heldState)
 {
@@ -55,7 +57,7 @@ bool checkButtonReleased(int pin, bool &heldState)
     if (!pressed && heldState)
     {
         heldState = false;
-        return true; 
+        return true;
     }
     else if (pressed && !heldState)
     {
@@ -118,6 +120,8 @@ void showMenu()
     }
 
     manager.oledDisplay();
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    display.setTextColor(SSD1306_WHITE);
 }
 
 void initMenu(entryMenu *entryList, int totalMenus, String menuName, int textSize, int linesThick)
@@ -136,16 +140,13 @@ void initMenu(entryMenu *entryList, int totalMenus, String menuName, int textSiz
     data.textSize = textSize;
     data.menuName = menuName;
     data.linesThick = linesThick;
-    data.currentButton = 0;
+    data.currentButton = 0; // Ensure this is reset properly
     data.itemsOnPage = (textSize == 1) ? 8 : 5;
     data.isSubmenu = false;
     data.currentSubmenu = nullptr;
     data.submenuCount = 0;
 
-    resetPreviousItems();
     showMenu();
-
-    Serial.println("Initialized menu: " + menuName);
 }
 
 void updateLastInputTime()
@@ -192,7 +193,7 @@ void exitSubmenu()
             Submenu *prevSubmenu = menuStack[stackPointer + 1];
             data.currentSubmenu = prevSubmenu->entries;
             data.submenuCount = prevSubmenu->count;
-            data.menuName = prevSubmenu->name; 
+            data.menuName = prevSubmenu->name;
             data.isSubmenu = true;
         }
         else
@@ -244,58 +245,74 @@ void runLoopFunction(void (*loopFunction)())
 
 void handleConfirm()
 {
-    if (data.isSubmenu && data.currentSubmenu != nullptr)
+    if (startedLoop == true)
     {
-        entryMenu selectedEntry = data.currentSubmenu[data.currentButton];
-
-        if (selectedEntry.submenu != nullptr)
+        if (data.isSubmenu && data.currentSubmenu != nullptr)
         {
-            pushSubmenu(selectedEntry.submenu);
-            data.currentSubmenu = selectedEntry.submenu->entries;
-            data.submenuCount = selectedEntry.submenu->count;
-            data.menuName = selectedEntry.submenu->name;
+            entryMenu selectedEntry = data.currentSubmenu[data.currentButton];
+
+            if (selectedEntry.function != nullptr)
+            {
+                selectedEntry.function();  // Execute function before submenu navigation
+            }
+
+            if (selectedEntry.submenu != nullptr)
+            {
+                pushSubmenu(selectedEntry.submenu);
+                data.currentSubmenu = selectedEntry.submenu->entries;
+                data.submenuCount = selectedEntry.submenu->count;
+                data.menuName = selectedEntry.submenu->name;
+                data.isSubmenu = true;
+                data.currentButton = 0;
+                showMenu();
+            }
+            else if (selectedEntry.boolToggleFunction != nullptr)
+            {
+                selectedEntry.boolToggleFunction();
+                showMenu();
+            }
+            else if (selectedEntry.loopFunction != nullptr)
+            {
+                runLoopFunction(selectedEntry.loopFunction);
+            }
+        }
+        else if (data.entryList[data.currentButton].function != nullptr)
+        {
+            data.entryList[data.currentButton].function();  // Execute function before submenu navigation
+
+            if (data.entryList[data.currentButton].submenu != nullptr)
+            {
+                pushSubmenu(data.entryList[data.currentButton].submenu);
+                data.currentSubmenu = data.entryList[data.currentButton].submenu->entries;
+                data.submenuCount = data.entryList[data.currentButton].submenu->count;
+                data.menuName = data.entryList[data.currentButton].submenu->name;
+                data.isSubmenu = true;
+                data.currentButton = 0;
+                showMenu();
+            }
+        }
+        else if (data.entryList[data.currentButton].submenu != nullptr)
+        {
+            pushSubmenu(data.entryList[data.currentButton].submenu);
+            data.currentSubmenu = data.entryList[data.currentButton].submenu->entries;
+            data.submenuCount = data.entryList[data.currentButton].submenu->count;
+            data.menuName = data.entryList[data.currentButton].submenu->name;
             data.isSubmenu = true;
             data.currentButton = 0;
             showMenu();
         }
-        else if (selectedEntry.function != nullptr)
+        else if (data.entryList[data.currentButton].boolToggleFunction != nullptr)
         {
-            selectedEntry.function();
-        }
-        else if (selectedEntry.boolToggleFunction != nullptr)
-        {
-            selectedEntry.boolToggleFunction();
+            data.entryList[data.currentButton].boolToggleFunction();
             showMenu();
         }
-        else if (selectedEntry.loopFunction != nullptr)
+        else if (data.entryList[data.currentButton].loopFunction != nullptr)
         {
-            runLoopFunction(selectedEntry.loopFunction);
+            runLoopFunction(data.entryList[data.currentButton].loopFunction);
         }
     }
-    else if (data.entryList[data.currentButton].submenu != nullptr)
-    {
-        pushSubmenu(data.entryList[data.currentButton].submenu);
-        data.currentSubmenu = data.entryList[data.currentButton].submenu->entries;
-        data.submenuCount = data.entryList[data.currentButton].submenu->count;
-        data.menuName = data.entryList[data.currentButton].submenu->name;
-        data.isSubmenu = true;
-        data.currentButton = 0;
-        showMenu();
-    }
-    else if (data.entryList[data.currentButton].function != nullptr)
-    {
-        data.entryList[data.currentButton].function();
-    }
-    else if (data.entryList[data.currentButton].boolToggleFunction != nullptr)
-    {
-        data.entryList[data.currentButton].boolToggleFunction();
-        showMenu();
-    }
-    else if (data.entryList[data.currentButton].loopFunction != nullptr)
-    {
-        runLoopFunction(data.entryList[data.currentButton].loopFunction);
-    }
 }
+
 
 void loopMenu()
 {
@@ -396,7 +413,7 @@ void removeMenuEntry(int index)
 
 void editCurrentMenuEntry(String newText, void (*newFunction)() = nullptr, void (*newLoopFunction)() = nullptr)
 {
-    entryMenu* currentEntry;
+    entryMenu *currentEntry;
     if (data.isSubmenu && data.currentSubmenu != nullptr)
     {
         currentEntry = &data.currentSubmenu[data.currentButton];
@@ -417,7 +434,6 @@ void editCurrentMenuEntry(String newText, void (*newFunction)() = nullptr, void 
     showMenu();
 }
 
-
 bool myBool = false;
 
 void toggleBool()
@@ -432,11 +448,69 @@ void test()
     addMenuEntry(newButton);
 }
 bool menuRunning;
+
+int test1 = 0;
+String hour1 = "hour";
 void loopExample()
 {
-    Serial.println("Loop function is running...");
-    delay(50);
+
+
 }
+
+Submenu *createSubmenu(const String &name, int maxMenus)
+{
+    Submenu *submenu = new Submenu;
+    submenu->name = name;
+    submenu->entries = new entryMenu[maxMenus];
+    submenu->count = 0;
+    submenu->maxMenus = maxMenus;
+    return submenu;
+}
+
+bool addEntryToSubmenu(Submenu *submenu, const String &text,
+                       void (*function)() = nullptr,
+                       void (*loopFunction)() = nullptr,
+                       bool *boolPtr = nullptr,
+                       void (*boolToggleFunction)() = nullptr)
+{
+    if (submenu->count >= submenu->maxMenus)
+    {
+        Serial.println("Submenu is full. Cannot add more entries.");
+        return false;
+    }
+    submenu->entries[submenu->count].text = text;
+    submenu->entries[submenu->count].function = function;
+    submenu->entries[submenu->count].loopFunction = loopFunction;
+    submenu->entries[submenu->count].submenu = nullptr; // Initialize as no submenu
+    submenu->entries[submenu->count].boolPtr = boolPtr;
+    submenu->entries[submenu->count].boolToggleFunction = boolToggleFunction;
+    submenu->count++;
+    return true;
+}
+
+Submenu* createAlarmsSubmenu() {
+    Submenu* alarmsSubmenu = createSubmenu("Manage Alarms", MAX_ALARMS + 1);  // +1 for "Add New Alarm" option
+
+    // Add existing alarms to the submenu
+    for (int i = 0; i < MAX_ALARMS; ++i) {
+        if (alarms[i].exists) {
+            Submenu* alarmSubmenu = createAlarmSubmenu(i);
+            addEntryToSubmenu(alarmsSubmenu, "Alarm " + String(i), nullptr, nullptr, nullptr, nullptr, alarmSubmenu);
+        }
+    }
+
+    // Add "Add New Alarm" option
+    addEntryToSubmenu(alarmsSubmenu, "Add New Alarm", []() {
+        addNewAlarm();
+        // Refresh the alarms submenu after adding a new alarm
+        data.currentSubmenu = createAlarmsSubmenu()->entries;
+        data.submenuCount = createAlarmsSubmenu()->count;
+        showMenu();
+    });
+
+    return alarmsSubmenu;
+}
+
 
 void initMenus()
 {
@@ -457,10 +531,11 @@ void initMenus()
     entryMenu button2 = {"Text 2", nullptr, loopExample, nullptr, nullptr};
     entryMenu button3 = {"Submenu", nullptr, nullptr, submenu, nullptr};
 
-    initMenu(new entryMenu[5]{button0, button1, button2, newButton, button3}, 5, "Main Menu", 1, 1);
+    initMenu(new entryMenu[5]{button0, button1, button2, button3, newButton}, 5, "Main Menu", 1, 1);
 }
 
 void handleMenus()
 {
     loopMenu();
+    startedLoop = true;
 }
