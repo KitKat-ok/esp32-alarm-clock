@@ -88,6 +88,7 @@ void setup()
     createAlarmTask();
   }
   initMenus();
+  delay(100);
 }
 
 
