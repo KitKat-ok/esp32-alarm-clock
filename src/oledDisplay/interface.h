@@ -7,6 +7,8 @@ void initMenus();
 void handleMenus();
 void showMenu();
 
+void addNewAlarm();
+
 extern bool menuRunning;
 
 

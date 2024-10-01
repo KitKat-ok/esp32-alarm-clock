@@ -10,7 +10,7 @@ struct entryMenu
     void (*loopFunction)();
     struct Submenu *submenu;
     bool *boolPtr;
-    void (*boolToggleFunction)();
+    void (*boolToggleFunction)(bool *);
 };
 
 struct Submenu
@@ -18,7 +18,7 @@ struct Submenu
     String name;
     entryMenu *entries;
     int count;
-    int maxMenus; // this should save on memory becuase now I can set it differently for different menus without worrying about an overflow when adding entries
+    int maxMenus;
 };
 
 // Global menu data
@@ -32,7 +32,7 @@ struct menuData
     int itemsOnPage;
     int currentButton;
     bool isSubmenu;
-    entryMenu *currentSubmenu; // Pointer to current submenu array
+    entryMenu *currentSubmenu;
     int submenuCount;
 };
 
@@ -61,7 +61,11 @@ bool checkButtonReleased(int pin, bool &heldState)
     }
     else if (pressed && !heldState)
     {
-        heldState = true;
+        delay(1);
+        if (digitalRead(pin) == LOW)
+        {
+            heldState = true;
+        }
     }
 
     return false;
@@ -140,7 +144,7 @@ void initMenu(entryMenu *entryList, int totalMenus, String menuName, int textSiz
     data.textSize = textSize;
     data.menuName = menuName;
     data.linesThick = linesThick;
-    data.currentButton = 0; // Ensure this is reset properly
+    data.currentButton = 0;
     data.itemsOnPage = (textSize == 1) ? 8 : 5;
     data.isSubmenu = false;
     data.currentSubmenu = nullptr;
@@ -190,7 +194,7 @@ void exitSubmenu()
 
         if (stackPointer >= 0)
         {
-            Submenu *prevSubmenu = menuStack[stackPointer + 1];
+            Submenu *prevSubmenu = menuStack[stackPointer];
             data.currentSubmenu = prevSubmenu->entries;
             data.submenuCount = prevSubmenu->count;
             data.menuName = prevSubmenu->name;
@@ -219,10 +223,7 @@ void pushSubmenu(Submenu *submenu)
     if (stackPointer < 9)
     {
         stackPointer++;
-        menuStack[stackPointer] = new Submenu{
-            data.menuName,
-            data.currentSubmenu,
-            data.submenuCount};
+        menuStack[stackPointer] = submenu;
     }
 }
 
@@ -253,7 +254,7 @@ void handleConfirm()
 
             if (selectedEntry.function != nullptr)
             {
-                selectedEntry.function();  // Execute function before submenu navigation
+                selectedEntry.function();
             }
 
             if (selectedEntry.submenu != nullptr)
@@ -268,7 +269,7 @@ void handleConfirm()
             }
             else if (selectedEntry.boolToggleFunction != nullptr)
             {
-                selectedEntry.boolToggleFunction();
+                selectedEntry.boolToggleFunction(selectedEntry.boolPtr);
                 showMenu();
             }
             else if (selectedEntry.loopFunction != nullptr)
@@ -278,7 +279,7 @@ void handleConfirm()
         }
         else if (data.entryList[data.currentButton].function != nullptr)
         {
-            data.entryList[data.currentButton].function();  // Execute function before submenu navigation
+            data.entryList[data.currentButton].function();
 
             if (data.entryList[data.currentButton].submenu != nullptr)
             {
@@ -303,7 +304,7 @@ void handleConfirm()
         }
         else if (data.entryList[data.currentButton].boolToggleFunction != nullptr)
         {
-            data.entryList[data.currentButton].boolToggleFunction();
+            data.entryList[data.currentButton].boolToggleFunction(data.entryList[data.currentButton].boolPtr);
             showMenu();
         }
         else if (data.entryList[data.currentButton].loopFunction != nullptr)
@@ -312,7 +313,6 @@ void handleConfirm()
         }
     }
 }
-
 
 void loopMenu()
 {
@@ -329,7 +329,7 @@ void loopMenu()
 
     if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
     {
-        data.currentButton = min(data.currentButton + 1, (data.isSubmenu ? data.submenuCount : data.totalMenus) - 1);
+        data.currentButton = min(data.currentButton + 1, (data.isSubmenu ? data.submenuCount - 1 : data.totalMenus - 1));
         showMenu();
     }
 
@@ -341,11 +341,6 @@ void loopMenu()
     if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
     {
         exitSubmenu();
-    }
-
-    if (millis() - lastInputTime > idleTimeout)
-    {
-        startIdleAnimation();
     }
 }
 
@@ -436,9 +431,9 @@ void editCurrentMenuEntry(String newText, void (*newFunction)() = nullptr, void 
 
 bool myBool = false;
 
-void toggleBool()
+void toggleBool(bool *boolPtr)
 {
-    myBool = !myBool;
+    *boolPtr = !(*boolPtr);
 }
 
 entryMenu newButton = {"New Item", nullptr, nullptr, nullptr, &myBool, toggleBool};
@@ -447,14 +442,13 @@ void test()
 {
     addMenuEntry(newButton);
 }
+
 bool menuRunning;
 
 int test1 = 0;
 String hour1 = "hour";
 void loopExample()
 {
-
-
 }
 
 Submenu *createSubmenu(const String &name, int maxMenus)
@@ -471,7 +465,7 @@ bool addEntryToSubmenu(Submenu *submenu, const String &text,
                        void (*function)() = nullptr,
                        void (*loopFunction)() = nullptr,
                        bool *boolPtr = nullptr,
-                       void (*boolToggleFunction)() = nullptr)
+                       void (*boolToggleFunction)(bool *) = nullptr)
 {
     if (submenu->count >= submenu->maxMenus)
     {
@@ -487,51 +481,116 @@ bool addEntryToSubmenu(Submenu *submenu, const String &text,
     submenu->count++;
     return true;
 }
+// Global variable to track the current alarm index
+int currentAlarmIndex = -1;
 
-Submenu* createAlarmsSubmenu() {
-    Submenu* alarmsSubmenu = createSubmenu("Manage Alarms", MAX_ALARMS + 1);  // +1 for "Add New Alarm" option
-
-    // Add existing alarms to the submenu
-    for (int i = 0; i < MAX_ALARMS; ++i) {
-        if (alarms[i].exists) {
-            Submenu* alarmSubmenu = createAlarmSubmenu(i);
-            addEntryToSubmenu(alarmsSubmenu, "Alarm " + String(i), nullptr, nullptr, nullptr, nullptr, alarmSubmenu);
-        }
-    }
-
-    // Add "Add New Alarm" option
-    addEntryToSubmenu(alarmsSubmenu, "Add New Alarm", []() {
-        addNewAlarm();
-        // Refresh the alarms submenu after adding a new alarm
-        data.currentSubmenu = createAlarmsSubmenu()->entries;
-        data.submenuCount = createAlarmsSubmenu()->count;
-        showMenu();
-    });
-
-    return alarmsSubmenu;
+void deleteAlarm(int index)
+{
+    alarms[index].exists = false;
+    // Optionally refresh the alarms submenu after deletion
+    showMenu();
 }
 
+void deleteAlarmStatic()
+{
+    if (currentAlarmIndex >= 0)
+    {
+        deleteAlarm(currentAlarmIndex);
+    }
+}
+
+// Function to create the submenu for an individual alarm
+Submenu *createAlarmSubmenu(int index)
+{
+    currentAlarmIndex = index; // Set the current alarm index
+
+    Submenu *alarmSubmenu = createSubmenu("Alarm " + String(index), 3); // Adjust maxMenus as needed
+
+    // Create a pointer for the alarm's enabled state
+    bool *isEnabled = &alarms[index].enabled;
+
+    // Add entries to the submenu
+    addEntryToSubmenu(alarmSubmenu, "Enabled: ", nullptr, nullptr, isEnabled, toggleBool);
+
+    // Add delete entry (function pointer remains the same)
+    addEntryToSubmenu(alarmSubmenu, "Delete", deleteAlarmStatic, nullptr, nullptr, nullptr);
+
+    return alarmSubmenu;
+}
+
+// Function to create the main alarms submenu
+Submenu *createAlarmsSubmenu()
+{
+    Submenu *alarmsSubmenu = nullptr; // Static to retain state
+    if (!alarmsSubmenu)               // Create only if not existing
+    {
+        alarmsSubmenu = createSubmenu("Manage Alarms", MAX_ALARMS + 1); // +1 for "Add New Alarm"
+
+        // Add "Add New Alarm" option
+        addEntryToSubmenu(alarmsSubmenu, "Add New Alarm", []()
+                          {
+            addNewAlarm();
+            showMenu(); });
+    }
+    return alarmsSubmenu; // Return the created submenu
+}
+
+Submenu *alarmsSubmenu = createAlarmsSubmenu();
+
+void addNewAlarm()
+{
+    for (int i = 0; i < MAX_ALARMS; ++i)
+    {
+        if (!alarms[i].exists)
+        {
+            alarms[i] = {true, true, 0, 0, 0, false}; // Create a default alarm
+            Serial.println("New alarm added.");
+            // Refresh the current submenu
+            data.currentSubmenu = alarmsSubmenu->entries;
+            data.submenuCount = alarmsSubmenu->count; // Update the count
+            Submenu *alarmSubmenu = createAlarmSubmenu(i);
+            // Add the entry to manage that alarm, linking to its submenu
+            addEntryToSubmenu(alarmsSubmenu, "Alarm " + String(i), nullptr, nullptr, nullptr, nullptr);
+            alarmsSubmenu->entries[alarmsSubmenu->count - 1].submenu = alarmSubmenu; // Link the submenu
+            data.submenuCount++;
+            delay(1);
+            showMenu();
+            return;
+            showMenu();
+        }
+        showMenu();
+    }
+    Serial.println("Failed to add alarm: Maximum number of alarms reached.");
+}
 
 void initMenus()
 {
+    // Create sub-submenu
     entryMenu *subSubmenuItems = new entryMenu[MAX_MENU_ITEMS]{
         {"SubSubItem 1", nullptr, nullptr, nullptr, nullptr},
         {"SubSubItem 2", nullptr, nullptr, nullptr, nullptr}};
 
     Submenu *subSubmenu = new Submenu{"SubSubmenu", subSubmenuItems, 2, MAX_MENU_ITEMS};
 
+    // Create submenu
     entryMenu *submenuItems = new entryMenu[MAX_MENU_ITEMS]{
         {"SubItem 1", nullptr, nullptr, subSubmenu, nullptr},
         {"SubItem 2", nullptr, nullptr, nullptr, nullptr}};
 
     Submenu *submenu = new Submenu{"Submenu", submenuItems, 2, MAX_MENU_ITEMS};
 
+    // Initialize main menu buttons
     entryMenu button0 = {"Text 0", test, nullptr, nullptr, nullptr};
     entryMenu button1 = {"Text 1", nullptr, nullptr, nullptr, nullptr};
     entryMenu button2 = {"Text 2", nullptr, loopExample, nullptr, nullptr};
     entryMenu button3 = {"Submenu", nullptr, nullptr, submenu, nullptr};
 
-    initMenu(new entryMenu[5]{button0, button1, button2, button3, newButton}, 5, "Main Menu", 1, 1);
+    // Initialize new button for the alarms menu
+    alarmsSubmenu = createAlarmsSubmenu();                                                // Call the function to get the Submenu*
+    entryMenu alarmsButton = {"Manage Alarms", nullptr, nullptr, alarmsSubmenu, nullptr}; // Use alarmsSubmenu
+
+    // Initialize the main menu
+    initMenu(new entryMenu[6]{button0, button1, button2, button3, alarmsButton, newButton}, 6, "Main Menu", 1, 1);
 }
 
 void handleMenus()
