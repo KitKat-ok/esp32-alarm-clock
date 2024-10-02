@@ -255,6 +255,7 @@ void handleConfirm()
             if (selectedEntry.function != nullptr)
             {
                 selectedEntry.function();
+                delay(1);
             }
 
             if (selectedEntry.submenu != nullptr)
@@ -482,7 +483,7 @@ bool addEntryToSubmenu(Submenu *submenu, const String &text,
     return true;
 }
 // Global variable to track the current alarm index
-int currentAlarmIndex = -1;
+int currentAlarmIndex = 0;
 
 void deleteAlarm(int index)
 {
@@ -491,18 +492,12 @@ void deleteAlarm(int index)
     showMenu();
 }
 
-void deleteAlarmStatic()
-{
-    if (currentAlarmIndex >= 0)
-    {
-        deleteAlarm(currentAlarmIndex);
-    }
-}
+void deleteAlarmStatic();
 
 // Function to create the submenu for an individual alarm
 Submenu *createAlarmSubmenu(int index)
 {
-    currentAlarmIndex = index; // Set the current alarm index
+    index--;
 
     Submenu *alarmSubmenu = createSubmenu("Alarm " + String(index), 3); // Adjust maxMenus as needed
 
@@ -524,7 +519,7 @@ Submenu *createAlarmsSubmenu()
     Submenu *alarmsSubmenu = nullptr; // Static to retain state
     if (!alarmsSubmenu)               // Create only if not existing
     {
-        alarmsSubmenu = createSubmenu("Manage Alarms", MAX_ALARMS + 1); // +1 for "Add New Alarm"
+        alarmsSubmenu = createSubmenu("Alarms", MAX_ALARMS + 1); // +1 for "Add New Alarm"
 
         // Add "Add New Alarm" option
         addEntryToSubmenu(alarmsSubmenu, "Add New Alarm", []()
@@ -537,6 +532,32 @@ Submenu *createAlarmsSubmenu()
 
 Submenu *alarmsSubmenu = createAlarmsSubmenu();
 
+void deleteAlarmStatic()
+{
+    if (currentAlarmIndex >= 0)
+    {
+        String str = data.menuName;
+        int number = str.substring(6).toInt();
+        deleteAlarm(number);
+        exitSubmenu();
+
+        // Remove the alarm from the submenu
+        removeMenuEntry(currentAlarmIndex);
+
+        // Update submenu count and refresh submenu entries
+        alarmsSubmenu->count--;
+
+        // Show the updated menu
+        showMenu();
+    }
+}
+
+
+void setAlarmIndex()
+{
+    currentAlarmIndex = data.currentButton;
+}
+
 void addNewAlarm()
 {
     for (int i = 0; i < MAX_ALARMS; ++i)
@@ -544,21 +565,22 @@ void addNewAlarm()
         if (!alarms[i].exists)
         {
             alarms[i] = {true, true, 0, 0, 0, false}; // Create a default alarm
-            Serial.println("New alarm added.");
+            Serial.println("New alarm added. " + String(i));
             // Refresh the current submenu
             data.currentSubmenu = alarmsSubmenu->entries;
             data.submenuCount = alarmsSubmenu->count; // Update the count
             Submenu *alarmSubmenu = createAlarmSubmenu(i);
             // Add the entry to manage that alarm, linking to its submenu
-            addEntryToSubmenu(alarmsSubmenu, "Alarm " + String(i), nullptr, nullptr, nullptr, nullptr);
+            String menuName = String(i + 1) + " " + getWeekdayName(alarms[i].day);
+            addEntryToSubmenu(alarmsSubmenu,menuName, setAlarmIndex, nullptr, nullptr, nullptr);
             alarmsSubmenu->entries[alarmsSubmenu->count - 1].submenu = alarmSubmenu; // Link the submenu
+            alarmsSubmenu->name = menuName;
             data.submenuCount++;
+            data.currentButton = data.submenuCount - 1;
             delay(1);
             showMenu();
             return;
-            showMenu();
         }
-        showMenu();
     }
     Serial.println("Failed to add alarm: Maximum number of alarms reached.");
 }

@@ -73,7 +73,7 @@ String getWeekdayName(int weekday)
 
 String getShortWeekdayName(int weekday)
 {
-  const char *weekdays[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+  const char *weekdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
   int weekdayIndex = weekday;        // Get the day of the week (1 = Sunday, 2 = Monday, etc.)
   return weekdays[weekdayIndex - 1]; // Adjust index to match array (0 = Sunday, 1 = Monday, etc.)
 }
