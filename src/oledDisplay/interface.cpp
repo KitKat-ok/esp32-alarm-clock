@@ -50,6 +50,9 @@ const unsigned long idleTimeout = 300000;
 
 bool startedLoop = false;
 
+bool DownHeld = false;
+bool UpHeld = false;
+
 bool checkButtonReleased(int pin, bool &heldState)
 {
     bool pressed = digitalRead(pin) == LOW;
@@ -242,6 +245,7 @@ void runLoopFunction(void (*loopFunction)())
 
         delay(50);
     }
+    showMenu();
 }
 
 void handleConfirm()
@@ -452,7 +456,7 @@ void loopExample()
 {
 }
 
-Submenu *createSubmenu(const String &name, int maxMenus)
+Submenu *createSubmenu(const String &name, int maxMenus, void (*function)() = nullptr)
 {
     Submenu *submenu = new Submenu;
     submenu->name = name;
@@ -463,7 +467,7 @@ Submenu *createSubmenu(const String &name, int maxMenus)
 }
 
 bool addEntryToSubmenu(Submenu *submenu, const String &text,
-                       void (*function)() = nullptr,
+                       void (*function)(),
                        void (*loopFunction)() = nullptr,
                        bool *boolPtr = nullptr,
                        void (*boolToggleFunction)(bool *) = nullptr)
@@ -474,84 +478,116 @@ bool addEntryToSubmenu(Submenu *submenu, const String &text,
         return false;
     }
     submenu->entries[submenu->count].text = text;
-    submenu->entries[submenu->count].function = function;
+    submenu->entries[submenu->count].function = nullptr;
     submenu->entries[submenu->count].loopFunction = loopFunction;
-    submenu->entries[submenu->count].submenu = nullptr; // Initialize as no submenu
+    submenu->entries[submenu->count].submenu = nullptr;
     submenu->entries[submenu->count].boolPtr = boolPtr;
     submenu->entries[submenu->count].boolToggleFunction = boolToggleFunction;
     submenu->count++;
     return true;
 }
-// Global variable to track the current alarm index
 int currentAlarmIndex = 0;
+int currentEntryAlarm = 0;
 
 void deleteAlarm(int index)
 {
     alarms[index].exists = false;
-    // Optionally refresh the alarms submenu after deletion
     showMenu();
 }
 
 void deleteAlarmStatic();
+void changeAlarmDay();
 
-// Function to create the submenu for an individual alarm
-Submenu *createAlarmSubmenu(int index)
+void setEntryIndex() {
+    currentEntryAlarm = data.currentButton;
+    Serial.println("this function has run");
+}
+
+Submenu *createAlarmSubmenu(int index, String menuName)
 {
-    index--;
+    // index--; // what the heck why is this here
+    currentAlarmIndex = index; // sure? should not break anything...
 
-    Submenu *alarmSubmenu = createSubmenu("Alarm " + String(index), 3); // Adjust maxMenus as needed
+    Submenu *alarmSubmenu = createSubmenu(menuName, 3,setEntryIndex);
 
-    // Create a pointer for the alarm's enabled state
     bool *isEnabled = &alarms[index].enabled;
 
-    // Add entries to the submenu
     addEntryToSubmenu(alarmSubmenu, "Enabled: ", nullptr, nullptr, isEnabled, toggleBool);
+    addEntryToSubmenu(alarmSubmenu, "Change Day", nullptr, changeAlarmDay, nullptr, nullptr);
 
-    // Add delete entry (function pointer remains the same)
     addEntryToSubmenu(alarmSubmenu, "Delete", deleteAlarmStatic, nullptr, nullptr, nullptr);
 
     return alarmSubmenu;
 }
 
-// Function to create the main alarms submenu
-Submenu *createAlarmsSubmenu()
+Submenu *createAlarmsMenu()
 {
-    Submenu *alarmsSubmenu = nullptr; // Static to retain state
-    if (!alarmsSubmenu)               // Create only if not existing
+    Submenu *alarmsSubmenu = nullptr;
+    if (!alarmsSubmenu)
     {
-        alarmsSubmenu = createSubmenu("Alarms", MAX_ALARMS + 1); // +1 for "Add New Alarm"
+        alarmsSubmenu = createSubmenu("Alarms", MAX_ALARMS + 2); // +2 for the managing menus mhm
 
         // Add "Add New Alarm" option
         addEntryToSubmenu(alarmsSubmenu, "Add New Alarm", []()
                           {
             addNewAlarm();
             showMenu(); });
+
+        addEntryToSubmenu(alarmsSubmenu, "Save Alarms", []()
+                          {
+            saveAlarms();
+            showMenu(); });
     }
-    return alarmsSubmenu; // Return the created submenu
+    return alarmsSubmenu;
 }
 
-Submenu *alarmsSubmenu = createAlarmsSubmenu();
+Submenu *alarmsSubmenu = createAlarmsMenu();
 
 void deleteAlarmStatic()
 {
     if (currentAlarmIndex >= 0)
     {
         String str = data.menuName;
-        int number = str.substring(6).toInt();
+        int number = str.substring(0).toInt();
         deleteAlarm(number);
         exitSubmenu();
 
-        // Remove the alarm from the submenu
         removeMenuEntry(currentAlarmIndex);
 
-        // Update submenu count and refresh submenu entries
         alarmsSubmenu->count--;
 
-        // Show the updated menu
         showMenu();
     }
 }
 
+void changeAlarmDay() // kil me
+{
+    display.fillRoundRect(10, 15, SCREEN_WIDTH - 20, 40, 5, SSD1306_BLACK);
+    display.drawRoundRect(10, 15, SCREEN_WIDTH - 20, 40, 5, SSD1306_WHITE);
+    display.setFont(&DejaVu_LGC_Sans_15);
+    centerText(getWeekdayName(alarms[currentAlarmIndex].day + 1), SCREEN_HEIGHT / 2);
+
+    if (checkButtonReleased(BUTTON_DOWN_PIN, DownHeld) && alarms[currentAlarmIndex].day < 6) // ?
+    {
+        alarms[currentAlarmIndex].day++;
+        delay(5);
+    }
+
+    if (checkButtonReleased(BUTTON_UP_PIN, DownHeld) && alarms[currentAlarmIndex].day > 0)
+    {
+        alarms[currentAlarmIndex].day--;
+        delay(5);
+    }
+
+    Serial.println(String(currentEntryAlarm)); // change the name pleasee
+
+    manager.oledDisplay();
+
+    data.currentSubmenu->text = String(currentAlarmIndex + 1) + " " + getWeekdayName(alarms[currentAlarmIndex].day + 1);
+    alarmsSubmenu->entries[currentEntryAlarm].text = String(currentAlarmIndex + 1) + " " + getWeekdayName(alarms[currentAlarmIndex].day + 1);
+
+    delay(1);
+}
 
 void setAlarmIndex()
 {
@@ -564,17 +600,16 @@ void addNewAlarm()
     {
         if (!alarms[i].exists)
         {
-            alarms[i] = {true, true, 0, 0, 0, false}; // Create a default alarm
+            alarms[i] = {true, true, 0, 0, 0, false}; // probably should do it instead of letting random data in there
             Serial.println("New alarm added. " + String(i));
-            // Refresh the current submenu
             data.currentSubmenu = alarmsSubmenu->entries;
-            data.submenuCount = alarmsSubmenu->count; // Update the count
-            Submenu *alarmSubmenu = createAlarmSubmenu(i);
-            // Add the entry to manage that alarm, linking to its submenu
-            String menuName = String(i + 1) + " " + getWeekdayName(alarms[i].day);
-            addEntryToSubmenu(alarmsSubmenu,menuName, setAlarmIndex, nullptr, nullptr, nullptr);
-            alarmsSubmenu->entries[alarmsSubmenu->count - 1].submenu = alarmSubmenu; // Link the submenu
-            alarmsSubmenu->name = menuName;
+            data.submenuCount = alarmsSubmenu->count;
+            String menuName = String(i + 1) + " " + getWeekdayName(alarms[i].day + 1);
+
+            Submenu *alarmSubmenu = createAlarmSubmenu(i, menuName);
+            addEntryToSubmenu(alarmsSubmenu, String(i + 1) + " " + getWeekdayName(alarms[i].day + 1), setAlarmIndex, nullptr, nullptr, nullptr);
+            alarmsSubmenu->entries[alarmsSubmenu->count - 1].submenu = alarmSubmenu;
+            // alarmsSubmenu->name = menuName;
             data.submenuCount++;
             data.currentButton = data.submenuCount - 1;
             delay(1);
@@ -583,6 +618,27 @@ void addNewAlarm()
         }
     }
     Serial.println("Failed to add alarm: Maximum number of alarms reached.");
+}
+
+void initAlarmMenus()
+{
+    for (int i = 0; i < MAX_ALARMS; ++i)
+    {
+        if (alarms[i].exists)
+        {
+            alarms[i] = {true, true, 0, 0, 0, false};
+            Serial.println("New alarm added. " + String(i));
+            data.currentSubmenu = alarmsSubmenu->entries;
+            data.submenuCount = alarmsSubmenu->count;
+            String menuName = String(i + 1) + " " + getWeekdayName(alarms[i].day + 1);
+
+            Submenu *alarmSubmenu = createAlarmSubmenu(i, menuName);
+            addEntryToSubmenu(alarmsSubmenu, String(i + 1) + " " + getWeekdayName(alarms[i].day + 1), setAlarmIndex, nullptr, nullptr, nullptr);
+            alarmsSubmenu->entries[alarmsSubmenu->count - 1].submenu = alarmSubmenu;
+            // alarmsSubmenu->name = menuName;
+            data.submenuCount++;
+        }
+    }
 }
 
 void initMenus()
@@ -608,11 +664,12 @@ void initMenus()
     entryMenu button3 = {"Submenu", nullptr, nullptr, submenu, nullptr};
 
     // Initialize new button for the alarms menu
-    alarmsSubmenu = createAlarmsSubmenu();                                                // Call the function to get the Submenu*
+    alarmsSubmenu = createAlarmsMenu();                                                   // Call the function to get the Submenu*
     entryMenu alarmsButton = {"Manage Alarms", nullptr, nullptr, alarmsSubmenu, nullptr}; // Use alarmsSubmenu
 
     // Initialize the main menu
     initMenu(new entryMenu[6]{button0, button1, button2, button3, alarmsButton, newButton}, 6, "Main Menu", 1, 1);
+    initAlarmMenus();
 }
 
 void handleMenus()
