@@ -21,8 +21,8 @@
 extern bool OTAEnabled;
 
 // Led Display
-#define CLK  19 // The ESP32 pin GPIO22 connected to CLK
-#define DIO  18 // The ESP32 pin GPIO23 connected to DIO
+#define CLK  19 
+#define DIO  18 
 
 // NTP
 #define TIME_OFFSET_S 3600            // Time offset in seconds, use this as timezones
