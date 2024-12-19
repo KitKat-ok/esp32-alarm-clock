@@ -77,7 +77,6 @@ void setup()
   {
     createLedDisplayTask();
     createDimmingTask();
-    initBattery();
     createBatteryTask();
     initialzeAlarmArray();
     readAlarms();
@@ -90,7 +89,6 @@ void setup()
   initMenus();
   delay(100);
 }
-
 
 void loop()
 {

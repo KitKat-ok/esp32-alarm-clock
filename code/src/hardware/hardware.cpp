@@ -1,7 +1,8 @@
 #include "hardware.h"
+#include <esp_adc_cal.h>
 
 TM1637Display LedDisplay = TM1637Display(CLK, DIO);
-BH1750 lightMeter;
+LTR_F216A lightMeter;
 
 OneWire oneWire(TEMP_SENS_PIN);
 DallasTemperature tempSensor(&oneWire);
@@ -19,21 +20,21 @@ void initHardware()
   setCpuFrequencyMhz(80); // stable 160,80,240
   delay(2000);
   Serial.begin(115200);
-  analogReadResolution(12);
+  analogReadResolution(12);       // Set ADC resolution to 12-bit (0-4095)
+  analogSetAttenuation(ADC_11db); // Set attenuation to 11dB (0-3.9V)
+  analogSetClockDiv(80);
+  adcAttachPin(VOLTAGE_DIVIDER_PIN);
   initButtons();
   touchSetCycles(1000, 1000);
+  initBuzzer();
   delay(100);
   initOledDisplay();
   delay(100);
   initLedDisplay();
+  initLightSensor();
   delay(100);
   LowBattery();
   delay(100);
-  initBuzzer();
-  delay(100);
-  initLightSensor();
-  delay(100);
-  initTempSensor();
 }
 
 void LowBattery() // Prevents battery voltage from going too low by hybernating needs reset after this happens connecting the charger wont wake it up
@@ -113,10 +114,10 @@ void initLedDisplay()
 
 void initLightSensor()
 {
-  lightMeter.configure(BH1750::CONTINUOUS_HIGH_RES_MODE);
-  lightMeter.measurementReady(true);
   lightMeter.begin();
-  Serial.println("Light sensor initialized");
+  lightMeter.setActiveMode();
+  lightMeter.setGain(0x04);
+  lightMeter.configureMeasurement(0x00, 0x02);
 }
 
 void initButtons()

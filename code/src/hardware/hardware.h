@@ -5,7 +5,7 @@
 
 extern TM1637Display LedDisplay;
 
-extern BH1750 lightMeter;
+extern LTR_F216A lightMeter;
 
 extern OneWire oneWire;
 extern DallasTemperature tempSensor;

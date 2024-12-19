@@ -41,7 +41,7 @@ void dimmingFunction(void *pvParameters)
     unsigned long intervalDimming = 1000;
 
     unsigned long lastActionTime = 0;
-    unsigned long delayDuration = 60000;
+    unsigned long delayDuration = 30000;
     while (true)
     {
         dimmingTaskRunning = true;
@@ -206,7 +206,7 @@ float spikeSuppressionThreshold = MAX_INCREASE_OF_LIGHT_LEVEL; // Suppress spike
 
 float removeLightNoise()
 {
-    float currentLightLevel = lightMeter.readLightLevel(); // Read the current light level from BH1750 sensor
+    float currentLightLevel = lightMeter.readBrightnessInLux(); // Read the current light level from BH1750 sensor
 
     // Handle sudden spikes in light level by suppressing them
     if (currentLightLevel - lightLevelBuffer[bufferLightIndex] > spikeSuppressionThreshold)

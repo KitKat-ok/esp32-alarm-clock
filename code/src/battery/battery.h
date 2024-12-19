@@ -5,7 +5,6 @@
 
 int getBatteryPercentage();
 void createBatteryTask();
-void initBattery();
 
 void goToSleep();
 

@@ -1,6 +1,6 @@
 {
   "board": {
-    "active_layer": 36,
+    "active_layer": 31,
     "active_layer_preset": "All Layers",
     "auto_track_width": true,
     "hidden_netclasses": [],
@@ -80,27 +80,27 @@
   "project": {
     "files": [
       {
-        "name": "clock-pcb.kicad_pro",
-        "open": false,
+        "name": "clock-pcb.kicad_sch",
+        "open": true,
         "window": {
           "display": 1,
           "maximized": false,
           "pos_x": 0,
           "pos_y": 0,
-          "size_x": 1265,
-          "size_y": 1380
+          "size_x": 945,
+          "size_y": 1062
         }
       },
       {
         "name": "clock-pcb.kicad_pcb",
-        "open": false,
+        "open": true,
         "window": {
           "display": 1,
           "maximized": false,
           "pos_x": 0,
           "pos_y": 0,
-          "size_x": 1265,
-          "size_y": 1380
+          "size_x": 945,
+          "size_y": 1062
         }
       }
     ]

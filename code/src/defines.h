@@ -8,7 +8,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <TM1637Display.h>
-#include <BH1750.h>
+#include <LTR_F216A.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
 #include <TimeLib.h>
@@ -21,8 +21,8 @@
 extern bool OTAEnabled;
 
 // Led Display
-#define CLK  19 
-#define DIO  18 
+#define CLK  18 
+#define DIO  19 
 
 // NTP
 #define TIME_OFFSET_S 3600            // Time offset in seconds, use this as timezones
@@ -41,8 +41,8 @@ extern bool OTAEnabled;
 // Inputs
 #define BUTTON_UP_PIN      GPIO_NUM_12
 #define BUTTON_DOWN_PIN    GPIO_NUM_13
-#define BUTTON_CONFIRM_PIN GPIO_NUM_14
-#define BUTTON_EXIT_PIN    GPIO_NUM_15
+#define BUTTON_CONFIRM_PIN GPIO_NUM_25
+#define BUTTON_EXIT_PIN    GPIO_NUM_26
 
 #define MAX_MENU_ITEMS 15
 #define MAX_ALARMS 15
@@ -78,17 +78,18 @@ extern bool OTAEnabled;
 #define SATURDAY  6
 
 // Buzzer
-#define BUZZER_PIN 27
-//#define START_SOUND false // uncomment to enable start sound
+#define BUZZER_PIN 14
+#define START_SOUND true // uncomment to enable start sound
 
 // Battery
 #define MIN_VOLTAGE 3.40  // Minimum voltage of LiPo battery
 #define MAX_VOLTAGE 4.20  // Maximum voltage of LiPo battery
-#define NUM_SAMPLES 15   // How many samples to read to smooth the voltage out
 
 #define VOLTAGE_DIVIDER_PIN 34 
+#define ADC_VOLTAGE_DIVIDER 710.094f // 300K and 806K
+#define ADC_OFFSET 77
 
-#define FULLY_CHARGED_PIN 32
+#define FULLY_CHARGED_PIN 36
 #define CHARGING_PIN 33
 
 #define TIMER_WAKUP_TIME 15000 // In miliseconds

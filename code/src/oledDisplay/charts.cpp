@@ -82,13 +82,13 @@ void loopLightGraph()
 {
     unsigned long currentMillis = millis(); // Get the current time
     display.fillRect(20, 0, SCREEN_WIDTH, 20, SSD1306_BLACK);
-    centerText("lux: " + String(lightMeter.readLightLevel()), (SCREEN_HEIGHT / 3) - 5);
+    centerText("lux: " + String(lightMeter.readBrightnessInLux()), (SCREEN_HEIGHT / 3) - 5);
     delay(10);
     manager.oledDisplay();
     if (currentMillis - previousMillis >= interval)
     {
         display.clearDisplay();
-        centerText("lux: " + String(lightMeter.readLightLevel()), (SCREEN_HEIGHT / 3) - 5);
+        centerText("lux: " + String(lightMeter.readBrightnessInLux()), (SCREEN_HEIGHT / 3) - 5);
         chart.drawChart();
         // Draw the updated chart
         for (int i = 0; i < TEMP_CHART_READINGS; i++)
