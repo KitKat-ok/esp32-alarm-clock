@@ -79,7 +79,6 @@ void setup()
     createDimmingTask();
     createBatteryTask();
     initialzeAlarmArray();
-    readAlarms();
     createTempTask();
     createTimeTask();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);

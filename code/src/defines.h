@@ -14,8 +14,7 @@
 #include <TimeLib.h>
 #include <NTPClient.h>
 #include <Preferences.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
+#include <Adafruit_SHT4x.h>
 #include <oledManager.h>
 
 extern bool OTAEnabled;
@@ -35,6 +34,8 @@ extern bool OTAEnabled;
 #define OLED_DISABLE_THRESHOLD 45
 #define LED_DIM_THRESHOLD 30
 #define LED_DISABLE_THRESHOLD 1
+
+#define DIM_DELAY 30000
 
 #define MAX_INCREASE_OF_LIGHT_LEVEL 1000
 
@@ -87,7 +88,7 @@ extern bool OTAEnabled;
 
 #define VOLTAGE_DIVIDER_PIN 34 
 #define ADC_VOLTAGE_DIVIDER 710.094f // 300K and 806K
-#define ADC_OFFSET 77
+#define ADC_OFFSET 77 // In milivolts to calibrate it
 
 #define FULLY_CHARGED_PIN 36
 #define CHARGING_PIN 33
@@ -103,7 +104,7 @@ extern bool OTAEnabled;
 #define TEMP_SENS_PIN 5
 #define TEMP_CHART_READINGS 55 // Number of readings to keep
 
-#define TEMP_OFFSET 2.77
+#define TEMP_OFFSET 0.00
 
 
 #include "hardware/pitches.h"

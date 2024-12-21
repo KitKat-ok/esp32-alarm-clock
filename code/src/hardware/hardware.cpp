@@ -4,8 +4,7 @@
 TM1637Display LedDisplay = TM1637Display(CLK, DIO);
 LTR_F216A lightMeter;
 
-OneWire oneWire(TEMP_SENS_PIN);
-DallasTemperature tempSensor(&oneWire);
+Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
 void initOledDisplay();
 void initLedDisplay();
@@ -27,14 +26,11 @@ void initHardware()
   initButtons();
   touchSetCycles(1000, 1000);
   initBuzzer();
-  delay(100);
   initOledDisplay();
-  delay(100);
   initLedDisplay();
   initLightSensor();
-  delay(100);
+  initTempSensor();
   LowBattery();
-  delay(100);
 }
 
 void LowBattery() // Prevents battery voltage from going too low by hybernating needs reset after this happens connecting the charger wont wake it up
@@ -154,5 +150,53 @@ void initBuzzer()
 
 void initTempSensor()
 {
-  tempSensor.begin();
+   if (! sht4.begin()) {
+    Serial.println("Couldn't find SHT4x");
+    while (1) delay(1);
+  }
+  Serial.println("Found SHT4x sensor");
+  Serial.print("Serial number 0x");
+  Serial.println(sht4.readSerial(), HEX);
+
+  // You can have 3 different precisions, higher precision takes longer
+  sht4.setPrecision(SHT4X_HIGH_PRECISION);
+  switch (sht4.getPrecision()) {
+     case SHT4X_HIGH_PRECISION: 
+       Serial.println("High precision");
+       break;
+     case SHT4X_MED_PRECISION: 
+       Serial.println("Med precision");
+       break;
+     case SHT4X_LOW_PRECISION: 
+       Serial.println("Low precision");
+       break;
+  }
+
+  // You can have 6 different heater settings
+  // higher heat and longer times uses more power
+  // and reads will take longer too!
+  sht4.setHeater(SHT4X_NO_HEATER);
+  switch (sht4.getHeater()) {
+     case SHT4X_NO_HEATER: 
+       Serial.println("No heater");
+       break;
+     case SHT4X_HIGH_HEATER_1S: 
+       Serial.println("High heat for 1 second");
+       break;
+     case SHT4X_HIGH_HEATER_100MS: 
+       Serial.println("High heat for 0.1 second");
+       break;
+     case SHT4X_MED_HEATER_1S: 
+       Serial.println("Medium heat for 1 second");
+       break;
+     case SHT4X_MED_HEATER_100MS: 
+       Serial.println("Medium heat for 0.1 second");
+       break;
+     case SHT4X_LOW_HEATER_1S: 
+       Serial.println("Low heat for 1 second");
+       break;
+     case SHT4X_LOW_HEATER_100MS: 
+       Serial.println("Low heat for 0.1 second");
+       break;
+  }
 }

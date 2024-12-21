@@ -4,9 +4,18 @@ float temperature = 0.0;
 
 float readTemperature()
 {
-    tempSensor.requestTemperatures(); 
-    float temperatureC = tempSensor.getTempCByIndex(0);
-    return temperatureC;
+  sensors_event_t humidity, temp;
+  
+  uint32_t timestamp = millis();
+  sht4.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
+  timestamp = millis() - timestamp;
+
+  Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
+  Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
+
+  Serial.print("Read duration (ms): ");
+  Serial.println(timestamp);
+  return temp.temperature;
 }
 
 const unsigned long intervalTemp = 300000; 
@@ -29,7 +38,7 @@ void setTemperature(void *pvParameters)
             temperatureArray[TEMP_CHART_READINGS - 1] = temperature; // Replace with your temperature reading function
             previousMillisTemp = currentMillis;
         }
-        vTaskDelay(100);
+        vTaskDelay(1000);
     }
 }
 

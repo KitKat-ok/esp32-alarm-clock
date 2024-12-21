@@ -46,7 +46,7 @@ Submenu *menuStack[MAX_STACK_SIZE];
 int stackPointer = -1;
 
 unsigned long lastInputTime = 0;
-const unsigned long idleTimeout = 300000;
+const unsigned long idleTimeout = 3000;
 
 bool startedLoop = false;
 
@@ -319,35 +319,62 @@ void handleConfirm()
     }
 }
 
+bool condition = true;
+unsigned long startTime = 0;
+bool timerActive = false;
+
 void loopMenu()
 {
     static bool upHeld = false;
     static bool downHeld = false;
     static bool confirmHeld = false;
     static bool exitHeld = false;
-
-    if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
+    if (!(digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+          digitalRead(BUTTON_UP_PIN) == LOW ||
+          digitalRead(BUTTON_DOWN_PIN) == LOW ||
+          digitalRead(BUTTON_EXIT_PIN) == LOW))
     {
-        data.currentButton = max(data.currentButton - 1, 0);
-        showMenu();
+        if (!timerActive)
+        {
+            startTime = millis();
+            timerActive = true;
+        }
     }
 
-    if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
+    if (timerActive)
     {
-        data.currentButton = min(data.currentButton + 1, (data.isSubmenu ? data.submenuCount - 1 : data.totalMenus - 1));
-        showMenu();
-    }
+        if (millis() - startTime <= 10000)
+        {
+            if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
+            {
+                data.currentButton = max(data.currentButton - 1, 0);
+                showMenu();
+            }
 
-    if (checkButtonReleased(BUTTON_CONFIRM_PIN, confirmHeld))
-    {
-        handleConfirm();
-    }
+            if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
+            {
+                data.currentButton = min(data.currentButton + 1, (data.isSubmenu ? data.submenuCount - 1 : data.totalMenus - 1));
+                showMenu();
+            }
 
-    if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
-    {
-        exitSubmenu();
+            if (checkButtonReleased(BUTTON_CONFIRM_PIN, confirmHeld))
+            {
+                handleConfirm();
+            }
+
+            if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+            {
+                exitSubmenu();
+            }
+        }
+        else
+        {
+            timerActive = false; // Stop after 5 seconds
+            startIdleAnimation();
+        }
     }
 }
+
 
 void addMenuEntry(entryMenu entry)
 {
@@ -467,7 +494,7 @@ Submenu *createSubmenu(const String &name, int maxMenus, void (*function)() = nu
 }
 
 bool addEntryToSubmenu(Submenu *submenu, const String &text,
-                       void (*function)(),
+                       void (*function)() = nullptr,
                        void (*loopFunction)() = nullptr,
                        bool *boolPtr = nullptr,
                        void (*boolToggleFunction)(bool *) = nullptr)
@@ -478,9 +505,9 @@ bool addEntryToSubmenu(Submenu *submenu, const String &text,
         return false;
     }
     submenu->entries[submenu->count].text = text;
-    submenu->entries[submenu->count].function = nullptr;
+    submenu->entries[submenu->count].function = function;
     submenu->entries[submenu->count].loopFunction = loopFunction;
-    submenu->entries[submenu->count].submenu = nullptr;
+    submenu->entries[submenu->count].submenu = nullptr; // Initialize as no submenu
     submenu->entries[submenu->count].boolPtr = boolPtr;
     submenu->entries[submenu->count].boolToggleFunction = boolToggleFunction;
     submenu->count++;
@@ -498,7 +525,8 @@ void deleteAlarm(int index)
 void deleteAlarmStatic();
 void changeAlarmDay();
 
-void setEntryIndex() {
+void setEntryIndex()
+{
     currentEntryAlarm = data.currentButton;
     Serial.println("this function has run");
 }
@@ -508,7 +536,7 @@ Submenu *createAlarmSubmenu(int index, String menuName)
     // index--; // what the heck why is this here
     currentAlarmIndex = index; // sure? should not break anything...
 
-    Submenu *alarmSubmenu = createSubmenu(menuName, 3,setEntryIndex);
+    Submenu *alarmSubmenu = createSubmenu(menuName, 3, setEntryIndex);
 
     bool *isEnabled = &alarms[index].enabled;
 
@@ -528,15 +556,9 @@ Submenu *createAlarmsMenu()
         alarmsSubmenu = createSubmenu("Alarms", MAX_ALARMS + 2); // +2 for the managing menus mhm
 
         // Add "Add New Alarm" option
-        addEntryToSubmenu(alarmsSubmenu, "Add New Alarm", []()
-                          {
-            addNewAlarm();
-            showMenu(); });
+        addEntryToSubmenu(alarmsSubmenu, "Add New Alarm", addNewAlarm);
 
-        addEntryToSubmenu(alarmsSubmenu, "Save Alarms", []()
-                          {
-            saveAlarms();
-            showMenu(); });
+        addEntryToSubmenu(alarmsSubmenu, "Save Alarms", saveAlarms);
     }
     return alarmsSubmenu;
 }

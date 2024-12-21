@@ -7,8 +7,7 @@ extern TM1637Display LedDisplay;
 
 extern LTR_F216A lightMeter;
 
-extern OneWire oneWire;
-extern DallasTemperature tempSensor;
+extern Adafruit_SHT4x sht4;
 
 void initHardware();
 void LowBattery();

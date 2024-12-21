@@ -34,14 +34,13 @@ float lightLevel = 0.0;
 
 void dimmingFunction(void *pvParameters)
 {
-    const unsigned long intervalLight = 60000;
+    unsigned long intervalLight = 60000;
     unsigned long previousMillisLight = 0;
 
     unsigned long previousMillisDimming = 0;
     unsigned long intervalDimming = 1000;
 
     unsigned long lastActionTime = 0;
-    unsigned long delayDuration = 30000;
     while (true)
     {
         dimmingTaskRunning = true;
@@ -60,13 +59,13 @@ void dimmingFunction(void *pvParameters)
                 }
 
                 // Add the new reading to the end of the array
-                lightArray[TEMP_CHART_READINGS - 1] = removeLightNoise(); // Replace with your temperature reading function
+                lightArray[TEMP_CHART_READINGS - 1] = getLightLevel(); // Replace with your temperature reading function
                 previousMillisLight = currentMillis;
             }
 
             if (currentMillis - previousMillisDimming >= intervalDimming && charging == true)
             {
-                lightLevel = removeLightNoise();
+                lightLevel = getLightLevel();
                 dimOledDisplay();
                 maxBrightness = false;
 
@@ -100,9 +99,9 @@ void dimmingFunction(void *pvParameters)
         }
 
         vTaskDelay(pdMS_TO_TICKS(10));
-        while (millis() - lastActionTime < delayDuration)
+        while (millis() - lastActionTime < DIM_DELAY)
         {
-            lightLevel = removeLightNoise();
+            lightLevel = getLightLevel();
 
             vTaskDelay(10);
             if (checkForInput() == true)
@@ -135,7 +134,7 @@ void dimOledDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    Serial.println("raw light level: " + String(removeLightNoise()));
+    Serial.println("raw light level: " + String(getLightLevel()));
     Serial.println("smoothened light level: " + String(lightLevel));
 
     if (OLED_DISABLE_THRESHOLD > lightLevel)
@@ -168,7 +167,7 @@ void dimLedDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    Serial.println("raw light level: " + String(removeLightNoise()));
+    Serial.println("raw light level: " + String(getLightLevel()));
     Serial.println("smoothened light level: " + String(lightLevel));
     if (lightLevel < 5000)
     {
@@ -192,56 +191,11 @@ void dimLedDisplay()
     }
 }
 
-const int bufferLightSize = 30; // Adjust buffer size as needed
-float lightLevelBuffer[bufferLightSize];
-int bufferLightIndex = 0;
 
-float smoothedLightLevel = 0.0; // Initial smoothed light level
-
-// New parameters for adjustment
-float normalSmoothingFactor = 0.005;  // Normal smoothing factor (adjust as needed)
-float highChangeSmoothingFactor = 0.5;  // Smoothing factor for significant changes (adjust as needed)
-float significantChangeThreshold = 5.0; // Threshold to classify a big change (adjust as needed)
-float spikeSuppressionThreshold = MAX_INCREASE_OF_LIGHT_LEVEL; // Suppress spikes beyond this value
-
-float removeLightNoise()
+float getLightLevel()
 {
     float currentLightLevel = lightMeter.readBrightnessInLux(); // Read the current light level from BH1750 sensor
-
-    // Handle sudden spikes in light level by suppressing them
-    if (currentLightLevel - lightLevelBuffer[bufferLightIndex] > spikeSuppressionThreshold)
-    {
-        currentLightLevel = lightLevelBuffer[bufferLightIndex]; // Suppress the spike by keeping the last good value
-    }
-
-    // Store current light level in the circular buffer
-    lightLevelBuffer[bufferLightIndex] = currentLightLevel;
-
-    // Update buffer index (circular increment)
-    bufferLightIndex = (bufferLightIndex + 1) % bufferLightSize;
-
-    // Calculate simple moving average
-    float movingAverage = 0.0;
-    for (int i = 0; i < bufferLightSize; ++i)
-    {
-        movingAverage += lightLevelBuffer[i];
-    }
-    movingAverage /= bufferLightSize;
-
-    // Determine if this is a significant change
-    float lightLevelDifference = abs(currentLightLevel - smoothedLightLevel);
-    if (lightLevelDifference > significantChangeThreshold)
-    {
-        // Use the adjustable smoothing factor for significant changes
-        smoothedLightLevel = highChangeSmoothingFactor * movingAverage + (1.0 - highChangeSmoothingFactor) * smoothedLightLevel;
-    }
-    else
-    {
-        // Use the normal smoothing factor for small changes
-        smoothedLightLevel = normalSmoothingFactor * movingAverage + (1.0 - normalSmoothingFactor) * smoothedLightLevel;
-    }
-
-    return smoothedLightLevel;
+    return currentLightLevel;
 }
 
 
