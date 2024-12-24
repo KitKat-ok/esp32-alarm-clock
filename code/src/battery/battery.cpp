@@ -2,16 +2,19 @@
 
 int batteryPercentage;
 
+bool powerConnected = false;
 bool charging = false;
 
 bool wentToSleep = false;
 
-float batteryVoltage;
+bool goToSleep = false;
 
-void goToSleep();
+void enableSleep();
 void initSleep();
 
 void manageBattery(void *parameter);
+
+void controlCharger();
 
 void createBatteryTask()
 {
@@ -26,29 +29,38 @@ void createBatteryTask()
   );
 }
 
+bool checkCharging()
+{
+  int chargingState = digitalRead(POWER_STATE_PIN);
+  Serial.print("Charging State: ");
+  Serial.println(chargingState);
+  if (chargingState == HIGH)
+  {
+    powerConnected = true;
+    return true;
+  }
+  else
+  {
+    powerConnected = false;
+    return false;
+  }
+}
+
 void manageBattery(void *parameter)
 {
   while (true)
   {
-    LowBattery();
     batteryPercentage = getBatteryPercentage();
 
-    int chargingState = analogRead(CHARGING_PIN);
-    int standbyState = analogRead(FULLY_CHARGED_PIN);
-    Serial.print("Charging State: ");
-    Serial.println(chargingState);
-
-    Serial.print("Standby State: ");
-    Serial.println(standbyState);
     Serial.println("WiFi status " + wifiStatusToString(WiFi.status()));
 
     eTaskState WiFiTaskState = eTaskGetState(wifiTask);
-    WiFiTaskState = eTaskGetState(wifiTask);
-    if (standbyState > STANDBY_THRESHOLD || chargingState > CHARGING_THRESHOLD)
+    checkCharging();
+    if (powerConnected == true)
     {
-      charging = true;
       wentToSleep = false;
-      Serial.println("charging");
+      Serial.println("Power connected");
+      controlCharger();
       vTaskDelay(pdMS_TO_TICKS(500));
       if (!WiFi.isConnected() && WiFiTaskRunning == false)
       {
@@ -58,87 +70,112 @@ void manageBattery(void *parameter)
     }
     else
     {
-      charging = false;
-
+      digitalWrite(CHARGER_CONTROL_PIN, LOW); // Disable Charger when power is off
       turnOffWifi();
       vTaskDelay(pdMS_TO_TICKS(500));
-      while (wentToSleep == false)
-      {
-        vTaskDelay(pdMS_TO_TICKS(10));
-        Serial.println("Going to sleep in 50 seconds");
-        for (int i = 0; i < 50; i++)
-        {
-          chargingState = analogRead(CHARGING_PIN);
-          standbyState = analogRead(FULLY_CHARGED_PIN);
-          vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 1 second
-          if ((standbyState > STANDBY_THRESHOLD) || (chargingState > CHARGING_THRESHOLD))
-          {
-            Serial.println("Charger Connected not going to sleep");
-            vTaskDelay(pdMS_TO_TICKS(100));
-            break; // Break the loop if the condition is met
-          }
-        }
-        if ((standbyState > STANDBY_THRESHOLD) || (chargingState > CHARGING_THRESHOLD))
-        {
-          break; // Break the loop if the condition is met
-        }
 
-        Serial.println("Going to sleep");
-        vTaskDelay(pdMS_TO_TICKS(200));
-        wentToSleep = true;
-        goToSleep();
+      static unsigned long sleepStartTime = 0;
+      static bool preparingForSleep = false;
+
+      if (preparingForSleep == false)
+      {
+        Serial.println("Preparing to go to sleep in 10 seconds");
+        sleepStartTime = millis();
+        preparingForSleep = true;
       }
 
-      if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER)
+      if (preparingForSleep == false)
       {
-        Serial.println("Woke up from Timer");
-        LedDisplay.clear();
-        int currentHour = hour();
-        int currentMinute = minute();
-        static unsigned long startTime = millis();
-        if (checkForInput() == true)
+        if (millis() - sleepStartTime >= 10000)
         {
-  manager.oledEnable();          LedDisplay.setBrightness(7);
-          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+          if (powerConnected == true)
+          {
+            Serial.println("Power Connected, canceling sleep preparation");
+            preparingForSleep = false;
+          }
+          else
+          {
+            Serial.println("Requesting Sleep");
+            wentToSleep = true;
+            enableSleep();
+          }
+        }
+      }
+      if (wentToSleep == true && powerConnected == true)
+      {
+
+        // Handle wakeup cases
+        if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER)
+        {
+          Serial.println("Woke up from Timer");
+          LedDisplay.clear();
+          int currentHour = hour();
+          int currentMinute = minute();
+          static unsigned long startTime = millis();
+          if (checkForInput())
+          {
+            manager.oledEnable();
+            LedDisplay.setBrightness(7);
+            LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+          }
+
+          if (millis() - startTime >= TIMER_WAKUP_TIME && !checkCharging() && inputDetected == false)
+          {
+            LedDisplay.clear();
+            vTaskDelay(pdMS_TO_TICKS(200));
+            enableSleep();
+            startTime = millis();
+          }
         }
 
-        if (millis() - startTime >= TIMER_WAKUP_TIME)
+        unsigned long delayDuration = 30000;
+
+        if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD && goToSleep == false)
         {
-          LedDisplay.clear();
-          Serial.println("Going to sleep");
+          Serial.println("Woke up from touch button");
+          manager.oledEnable();
+          int currentHour = hour();
+          int currentMinute = minute();
+
+          LedDisplay.setBrightness(7);
+          LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+          maxBrightness = true;
+        }
+
+        static unsigned long startTime = millis();
+        if (millis() - startTime >= GPIO_WAKUP_TIME && inputDetected == false)
+        {
           vTaskDelay(pdMS_TO_TICKS(200));
-          goToSleep();
+          enableSleep();
           startTime = millis();
         }
       }
-
-      unsigned long delayDuration = 15000; // 30 seconds in milliseconds
-
-      unsigned long lastActionTime = 0;
-
-      if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD)
-      {
-        Serial.println("Woke up from touch button");
-manager.oledEnable();        int currentHour = hour();
-        int currentMinute = minute();
-
-        LedDisplay.setBrightness(7);
-        LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-
-      }
-      static unsigned long startTime = millis();
-
-      if (millis() - startTime >= GPIO_WAKUP_TIME && inputDetected == false)
-      {
-        Serial.println("Going to sleep");
-        vTaskDelay(pdMS_TO_TICKS(200));
-        goToSleep();
-        startTime = millis();
-      }
     }
-    Serial.println("Not charging");
+    vTaskDelay(pdMS_TO_TICKS(10));
   }
-  vTaskDelay(pdMS_TO_TICKS(1000));
+}
+
+void controlCharger()
+{
+  float batteryVoltage = getBatteryVoltage();
+
+  if (batteryVoltage < (BATT_TARGET_VOLTAGE - BATT_HYSTERESIS))
+  {
+    charging = true;
+    digitalWrite(CHARGER_CONTROL_PIN, HIGH); // Start charging
+    Serial.println("Charging started.");
+  }
+  else if (batteryVoltage > (BATT_TARGET_VOLTAGE + BATT_HYSTERESIS))
+  {
+    charging = false;
+    digitalWrite(CHARGER_CONTROL_PIN, LOW); // Stop charging
+    Serial.println("Charging stopped.");
+  }
+  else
+  {
+    Serial.println("Invalid");
+    digitalWrite(CHARGER_CONTROL_PIN, LOW); // Stop charging
+  }median
 }
 
 void initSleep()
@@ -148,35 +185,72 @@ void initSleep()
   esp_sleep_enable_timer_wakeup(SLEEPING_TIME);
 
   touchSleepWakeUpEnable(TOUCH_BUTTON_PIN, TOUCH_BUTTON_THRESHOLD_ON_BATTERY);
+
+  esp_sleep_enable_touchpad_wakeup();
 }
 
-void goToSleep()
+void enableSleep()
 {
-  maxBrightness == false;
-  inputDetected == false;
-  turnOffWifiMinimal();
-  manager.oledDisable();
+  goToSleep = true;
+}
 
-  manager.oledDisplay();
-  LedDisplay.clear();
-  WiFi.disconnect(true);
-  WiFi.mode(WIFI_OFF);
+void listenToSleep()
+{
+  if (goToSleep == true)
+  {
+    initSleep();
+    Serial.println("Initialized sleep");
+    Serial.println("Light Sleep");
+    Serial.flush();
+    Serial.println("Going to sleep");
+    maxBrightness = false;
+    inputDetected = false;
+    turnOffWifiMinimal();
+    manager.oledFadeOut();
+    delay(500);
+    manager.oledDisable();
+    display.ssd1306_command(SSD1306_DISPLAYOFF); // Just to make sure because manager can take a bit before reacting if many write operations are ordered
+    delay(500);
+    LedDisplay.clear();
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_OFF);
+    esp_err_t sleep_result = esp_light_sleep_start();
 
-  initSleep();
-  esp_light_sleep_start();
+    // Check the result of the sleep request
+    if (sleep_result == ESP_OK)
+    {
+      Serial.println("Light sleep entered and woke up successfully.");
+    }
+    else if (sleep_result == ESP_ERR_SLEEP_REJECT)
+    {
+      Serial.println("Sleep request rejected: Wakeup source set before the sleep request.");
+    }
+    else if (sleep_result == ESP_ERR_SLEEP_TOO_SHORT_SLEEP_DURATION)
+    {
+      Serial.println("Sleep duration too short: Minimum sleep duration not met.");
+    }
+    else
+    {
+      Serial.printf("Unexpected sleep error: %d\n", sleep_result);
+    }
+    goToSleep = false;
+  }
+}
+
+float getBatteryVoltage()
+{
+  float miliVolts = analogReadMilliVolts(VOLTAGE_DIVIDER_PIN);
+  miliVolts = miliVolts - ADC_OFFSET;
+  float batteryVoltage = miliVolts / ADC_VOLTAGE_DIVIDER;
+  Serial.println("Battery voltage: " + String(batteryVoltage));
+  Serial.println("Voltage divider mv: " + String(miliVolts));
+  return batteryVoltage;
 }
 
 int getBatteryPercentage()
 {
-  // Read the raw voltage
-  float miliVolts = analogReadMilliVolts(VOLTAGE_DIVIDER_PIN);
-  miliVolts = miliVolts - ADC_OFFSET;
-  batteryVoltage = miliVolts / ADC_VOLTAGE_DIVIDER;
-  Serial.println("Battery voltage: " + String(batteryVoltage));
-  Serial.println("Voltage divider v: " + String(miliVolts));
-
-  // Calculate and return the battery percentage
-  int percentage = ((batteryVoltage - MIN_VOLTAGE) / (MAX_VOLTAGE - MIN_VOLTAGE)) * 100.00;
+  int percentage = ((getBatteryVoltage() - MIN_VOLTAGE) / (MAX_VOLTAGE - MIN_VOLTAGE)) * 100.00;
+  percentage = min(percentage, 100);
   if (percentage < 0)
   {
     percentage = 0;

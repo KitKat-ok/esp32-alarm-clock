@@ -371,10 +371,10 @@ void loopMenu()
         {
             timerActive = false; // Stop after 5 seconds
             startIdleAnimation();
+            showMenu();
         }
     }
 }
-
 
 void addMenuEntry(entryMenu entry)
 {
@@ -663,6 +663,21 @@ void initAlarmMenus()
     }
 }
 
+void handleMenus()
+{
+    loopMenu();
+    startedLoop = true;
+}
+
+void menuTask(void *parameter)
+{
+    while (true)
+    {
+        handleMenus();
+        vTaskDelay(1); // Adjust delay as needed
+    }
+}
+
 void initMenus()
 {
     // Create sub-submenu
@@ -692,10 +707,13 @@ void initMenus()
     // Initialize the main menu
     initMenu(new entryMenu[6]{button0, button1, button2, button3, alarmsButton, newButton}, 6, "Main Menu", 1, 1);
     initAlarmMenus();
-}
-
-void handleMenus()
-{
-    loopMenu();
-    startedLoop = true;
+    xTaskCreatePinnedToCore(
+        menuTask,    // Task function
+        "Menu Task", // Task name
+        2048,        // Stack size (in bytes)
+        NULL,        // Task parameter
+        1,           // Task priority
+        NULL,        // Task handle
+        APP_CPU_NUM  // Run on App Core (core 1 for ESP32)
+    );
 }

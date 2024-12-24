@@ -83,36 +83,24 @@
         "name": "top-board.kicad_sch",
         "open": true,
         "window": {
-          "display": 1,
+          "display": 0,
           "maximized": false,
           "pos_x": 0,
           "pos_y": 0,
           "size_x": 945,
-          "size_y": 1062
+          "size_y": 1020
         }
       },
       {
         "name": "top-board.kicad_pcb",
         "open": true,
         "window": {
-          "display": 1,
-          "maximized": false,
-          "pos_x": 4967,
-          "pos_y": 196,
-          "size_x": 945,
-          "size_y": 1062
-        }
-      },
-      {
-        "name": "top-board.kicad_pro",
-        "open": false,
-        "window": {
-          "display": 1,
+          "display": 0,
           "maximized": false,
           "pos_x": 0,
           "pos_y": 0,
           "size_x": 945,
-          "size_y": 1062
+          "size_y": 1020
         }
       }
     ]

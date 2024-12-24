@@ -35,6 +35,8 @@ const long intervalFirstMenu = 1000;       // Interval at which to run the code 
 
 void showMainPage()
 {
+    if (tasksLaunched == true)
+    {
     unsigned long currentTime = millis();
     if (PageNumberToShow == 1 || PageNumberToShow == 2 || PageNumberToShow == 3 || PageNumberToShow == 4)
     {
@@ -62,7 +64,6 @@ void showMainPage()
             }
             else if (PageNumberToShow == 2 && displayedWeather == false)
             {
-                Serial.println("displaying second menu");
                 displayedWeather = true;
                 LastPageShown = 2;
                 display.clearDisplay();
@@ -80,7 +81,6 @@ void showMainPage()
             }
             else if (PageNumberToShow == 4)
             {
-                Serial.println("displaying fourth menu");
                 LastPageShown = 4;
                 if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
                 {
@@ -102,6 +102,12 @@ void showMainPage()
             showScreensaver();
         }
     }
+    } else {
+        display.clearDisplay();
+        centerText("No Data", SCREEN_HEIGHT / 2);
+        manager.oledDisplay();
+        delay(1000);
+    }
 }
 
 void turnOffScreensaver()
@@ -118,7 +124,6 @@ void turnOffScreensaver()
 
 void showFirstPage()
 {
-    Serial.println("displaying first menu");
     display.clearDisplay();
     display.setTextSize(1);
     display.setFont(&DejaVu_Sans_Bold_16);
@@ -218,7 +223,6 @@ void showInfoPage()
     display.clearDisplay();
     delay(10);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     displayWiFiSignal(0, 24);
     if (charging == true)
     {
@@ -228,6 +232,7 @@ void showInfoPage()
     {
         display.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, BLACK, WHITE);
     }
+    centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     display.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, WHITE);
     display.setCursor(48, 37);
     display.println("WiFi SSID:");
@@ -242,9 +247,9 @@ void showInfoPage()
     display.print("Channel: " + String(WiFi.channel()));
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     display.setCursor(5 + 32, 25);
-    display.println(String(batteryPercentage) + "%");
+    display.println(String(getBatteryPercentage()) + "%");
     display.setCursor(5 + 35 + 50, 25);
-    display.print(String(batteryVoltage) + "V");
+    display.print(String(getBatteryVoltage()) + "V");
     delay(10);
     manager.oledDisplay();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);

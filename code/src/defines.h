@@ -65,19 +65,6 @@ extern bool OTAEnabled;
 
 #define N_FLYERS 5  // Numver of flyers on screensaver
 
-#define fontX 6
-//5
-#define fontY 12
-
-// Alarm
-#define SUNDAY    0
-#define MONDAY    1
-#define TUESDAY   2
-#define WEDNESDAY 3
-#define THURSDAY  4
-#define FRIDAY    5
-#define SATURDAY  6
-
 // Buzzer
 #define BUZZER_PIN 14
 #define START_SOUND true // uncomment to enable start sound
@@ -90,8 +77,11 @@ extern bool OTAEnabled;
 #define ADC_VOLTAGE_DIVIDER 710.094f // 300K and 806K
 #define ADC_OFFSET 77 // In milivolts to calibrate it
 
-#define FULLY_CHARGED_PIN 36
-#define CHARGING_PIN 33
+#define POWER_STATE_PIN GPIO_NUM_36
+
+#define CHARGER_CONTROL_PIN GPIO_NUM_26
+#define BATT_TARGET_VOLTAGE 3.75   // Target voltage in volts
+#define BATT_HYSTERESIS 0.4       // Hysteresis in volts
 
 #define TIMER_WAKUP_TIME 15000 // In miliseconds
 #define GPIO_WAKUP_TIME 30000 // In miliseconds

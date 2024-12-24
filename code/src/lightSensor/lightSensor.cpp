@@ -63,7 +63,7 @@ void dimmingFunction(void *pvParameters)
                 previousMillisLight = currentMillis;
             }
 
-            if (currentMillis - previousMillisDimming >= intervalDimming && charging == true)
+            if (currentMillis - previousMillisDimming >= intervalDimming && powerConnected == true)
             {
                 lightLevel = getLightLevel();
                 dimOledDisplay();
@@ -187,6 +187,7 @@ void dimLedDisplay()
         {
             displayON = true;
             LedDisplay.setBrightness(0);
+            Serial.println("Brightness of Led display 0");
         }
     }
 }
@@ -221,7 +222,7 @@ int smoothTouchRead(int pin)
 bool checkForInput()
 {
     int threshold;
-    if (charging == false)
+    if (powerConnected == false)
     {
         threshold = TOUCH_BUTTON_THRESHOLD_ON_BATTERY;
     }

@@ -36,18 +36,18 @@ void showTimeTask(void *pvParameters)
         unsigned long currentMillis = millis(); // Get the current time
         int currentHour = hour();
         int currentMinute = minute();
-        if (currentMillis - previousMillis >= interval)
+        if (currentMillis - previousMillis >= interval && powerConnected == true)
         {
           previousMillis = currentMillis;
 
           Serial.println("Reading brightness and dimming Led display accordingly");
 
-          if (charging == true)
+          if (powerConnected == true)
           {
             dimLedDisplay();
           }
 
-          if (displayON == true && charging == true)
+          if (displayON == true && powerConnected == true)
           {
             LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
           }

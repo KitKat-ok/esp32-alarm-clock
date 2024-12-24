@@ -227,7 +227,7 @@ void generalDebugMenu()
     display.setCursor(0, 53);
     display.println("Free heap: " + String(esp_get_free_heap_size() / 1024.0, 2) + " KB");
     display.setCursor(0, 63);
-    display.println("Battery Vol: " + String(batteryVoltage));
+    display.println("Battery Vol: " + String(getBatteryVoltage()));
     if (charging == true)
     {
         display.fillCircle((SCREEN_WIDTH - 20), 60, 3, SSD1306_WHITE);

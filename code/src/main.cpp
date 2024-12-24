@@ -17,18 +17,18 @@ void setup()
   LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
 
   // Check if both buttons are pressed to enable OTA
-  int confirmButtonState = digitalRead(BUTTON_CONFIRM_PIN);
-  int exitButtonState = digitalRead(BUTTON_EXIT_PIN);
-  if (confirmButtonState == LOW && exitButtonState == LOW || OTAEnabled == true)
+  int upButtonState = digitalRead(BUTTON_UP_PIN);
+  if (upButtonState == LOW || OTAEnabled == true)
   {
     setCpuFrequencyMhz(240); // stable 160,80,240
-    Serial.println("Both buttons are pressed, enabling OTA");
+    Serial.println("button is pressed, enabling OTA");
     OTAEnabled = true;
     createWifiTask();
     display.clearDisplay();
     centerText("Connecting To WiFi", 30);
     centerText("Starting OTA", 40);
     manager.oledDisplay();
+    manager.oledFadeOut();
     // Replace "1234" with a secure OTA password
     while (WiFi.status() != WL_CONNECTED)
     {
@@ -91,5 +91,5 @@ void setup()
 
 void loop()
 {
-  handleMenus();
+  listenToSleep();
 }
