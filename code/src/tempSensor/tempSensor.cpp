@@ -26,16 +26,16 @@ void setTemperature(void *pvParameters)
     while (true)
     {
         unsigned long currentMillis = millis(); // Get the current time
-        temperature = readTemperature() - TEMP_OFFSET;
+        temperature = readTemperature();
         if (currentMillis - previousMillisTemp >= intervalTemp)
         {
-            for (int i = 0; i < TEMP_CHART_READINGS - 1; i++)
+            for (int i = 0; i < CHART_READINGS - 1; i++)
             {
                 temperatureArray[i] = temperatureArray[i + 1];
             }
 
             // Add the new reading to the end of the array
-            temperatureArray[TEMP_CHART_READINGS - 1] = temperature; // Replace with your temperature reading function
+            temperatureArray[CHART_READINGS - 1] = temperature; // Replace with your temperature reading function
             previousMillisTemp = currentMillis;
         }
         vTaskDelay(1000);
@@ -46,14 +46,14 @@ void createTempTask()
 {
     Serial.print("creating tempTask");
 
-    temperature = readTemperature() - TEMP_OFFSET;
+    temperature = readTemperature();
 
-    for (int i = 0; i < TEMP_CHART_READINGS - 1; i++)
+    for (int i = 0; i < CHART_READINGS - 1; i++)
     {
         temperatureArray[i] = temperatureArray[i + 1];
     }
 
-    temperatureArray[TEMP_CHART_READINGS - 1] = temperature; 
+    temperatureArray[CHART_READINGS - 1] = temperature; 
     xTaskCreatePinnedToCore(
         setTemperature, /* Task function. */
         "DimTask",      /* String with name of task. */

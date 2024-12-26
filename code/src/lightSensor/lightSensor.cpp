@@ -53,13 +53,13 @@ void dimmingFunction(void *pvParameters)
             unsigned long currentMillis = millis(); // Get the current time
             if (currentMillis - previousMillisLight >= intervalLight)
             {
-                for (int i = 0; i < TEMP_CHART_READINGS - 1; i++)
+                for (int i = 0; i < CHART_READINGS - 1; i++)
                 {
                     lightArray[i] = lightArray[i + 1];
                 }
 
                 // Add the new reading to the end of the array
-                lightArray[TEMP_CHART_READINGS - 1] = getLightLevel(); // Replace with your temperature reading function
+                lightArray[CHART_READINGS - 1] = getLightLevel(); // Replace with your temperature reading function
                 previousMillisLight = currentMillis;
             }
 

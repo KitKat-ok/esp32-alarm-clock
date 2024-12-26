@@ -159,24 +159,33 @@ void controlCharger()
 {
   float batteryVoltage = getBatteryVoltage();
 
-  if (batteryVoltage < (BATT_TARGET_VOLTAGE - BATT_HYSTERESIS))
+  if (charging)
   {
-    charging = true;
-    digitalWrite(CHARGER_CONTROL_PIN, HIGH); // Start charging
-    Serial.println("Charging started.");
-  }
-  else if (batteryVoltage > (BATT_TARGET_VOLTAGE + BATT_HYSTERESIS))
-  {
-    charging = false;
-    digitalWrite(CHARGER_CONTROL_PIN, LOW); // Stop charging
-    Serial.println("Charging stopped.");
+    if (batteryVoltage >= BATT_TARGET_VOLTAGE)
+    {
+      charging = false;
+      digitalWrite(CHARGER_CONTROL_PIN, LOW); // Stop charging
+      Serial.println("Charging stopped (target voltage reached).");
+    }
   }
   else
   {
-    Serial.println("Invalid");
-    digitalWrite(CHARGER_CONTROL_PIN, LOW); // Stop charging
-  }median
+    if (batteryVoltage <= (BATT_TARGET_VOLTAGE - BATT_HYSTERESIS))
+    {
+      charging = true;
+      digitalWrite(CHARGER_CONTROL_PIN, HIGH); // Start charging
+      Serial.println("Charging started (voltage dropped).");
+    }
+  }
+
+  // Debugging: Always print battery voltage for monitoring
+  Serial.print("Battery Voltage: ");
+  Serial.print(batteryVoltage);
+  Serial.print(" V - Charging: ");
+  Serial.println(charging ? "ON" : "OFF");
 }
+
+// median
 
 void initSleep()
 {
@@ -237,14 +246,40 @@ void listenToSleep()
   }
 }
 
+#include <MedianFilterLib2.h> // Include the Median Filter Library
+
+#define MEDIAN_WINDOW_SIZE 10
+
+MedianFilter2<float> medianFilter(MEDIAN_WINDOW_SIZE); // Instantiate Median Filter
+
+
+double readVoltage(byte pin) {
+  double reading = adc1_get_raw(ADC1_CHANNEL_6); 
+  Serial.println("Raw adc reading" + String(reading));
+  if (reading < 1 || reading > 4095) return 0;
+  double voltage = -0.000000000000016 * pow(reading, 4) 
+                   + 0.000000000118171 * pow(reading, 3)
+                   - 0.000000301211691 * pow(reading, 2)
+                   + 0.001109019271794 * reading 
+                   + 0.034143524634089;
+  return voltage * 1000;
+}
+
 float getBatteryVoltage()
 {
-  float miliVolts = analogReadMilliVolts(VOLTAGE_DIVIDER_PIN);
+  double miliVolts = readVoltage(VOLTAGE_DIVIDER_PIN);
   miliVolts = miliVolts - ADC_OFFSET;
   float batteryVoltage = miliVolts / ADC_VOLTAGE_DIVIDER;
-  Serial.println("Battery voltage: " + String(batteryVoltage));
-  Serial.println("Voltage divider mv: " + String(miliVolts));
-  return batteryVoltage;
+
+  // Add the value to the median filter and get the filtered result
+  float medianVoltage = medianFilter.AddValue(batteryVoltage);
+
+  Serial.print("Battery voltage (median): ");
+  Serial.println(medianVoltage, 3); // 3 decimal places
+  Serial.print("Raw Voltage Divider mV: ");
+  Serial.println(miliVolts, 3);
+
+  return medianVoltage;
 }
 
 int getBatteryPercentage()

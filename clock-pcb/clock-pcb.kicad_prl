@@ -81,26 +81,26 @@
     "files": [
       {
         "name": "clock-pcb.kicad_sch",
-        "open": true,
+        "open": false,
         "window": {
           "display": 0,
           "maximized": false,
           "pos_x": 0,
           "pos_y": 0,
-          "size_x": 945,
-          "size_y": 1020
+          "size_x": 1265,
+          "size_y": 1380
         }
       },
       {
         "name": "clock-pcb.kicad_pcb",
-        "open": true,
+        "open": false,
         "window": {
           "display": 0,
           "maximized": false,
           "pos_x": 0,
           "pos_y": 0,
-          "size_x": 945,
-          "size_y": 1020
+          "size_x": 1265,
+          "size_y": 1380
         }
       }
     ]

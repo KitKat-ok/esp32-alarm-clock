@@ -16,6 +16,7 @@
 #include <Preferences.h>
 #include <Adafruit_SHT4x.h>
 #include <oledManager.h>
+#include <esp_adc_cal.h>
 
 extern bool OTAEnabled;
 
@@ -67,7 +68,7 @@ extern bool OTAEnabled;
 
 // Buzzer
 #define BUZZER_PIN 14
-#define START_SOUND true // uncomment to enable start sound
+//#define START_SOUND true // uncomment to enable start sound
 
 // Battery
 #define MIN_VOLTAGE 3.40  // Minimum voltage of LiPo battery
@@ -79,9 +80,9 @@ extern bool OTAEnabled;
 
 #define POWER_STATE_PIN GPIO_NUM_36
 
-#define CHARGER_CONTROL_PIN GPIO_NUM_26
-#define BATT_TARGET_VOLTAGE 3.75   // Target voltage in volts
-#define BATT_HYSTERESIS 0.4       // Hysteresis in volts
+#define CHARGER_CONTROL_PIN GPIO_NUM_23
+#define BATT_TARGET_VOLTAGE 3.85   // Target voltage in volts
+#define BATT_HYSTERESIS 0.15       // charging Hysteresis in volts
 
 #define TIMER_WAKUP_TIME 15000 // In miliseconds
 #define GPIO_WAKUP_TIME 30000 // In miliseconds
@@ -90,11 +91,8 @@ extern bool OTAEnabled;
 #define CHARGING_THRESHOLD 1000
 #define STANDBY_THRESHOLD 1000
 
-// Temperature
-#define TEMP_SENS_PIN 5
-#define TEMP_CHART_READINGS 55 // Number of readings to keep
-
-#define TEMP_OFFSET 0.00
+// Charts
+#define CHART_READINGS 55 // Number of readings to keep
 
 
 #include "hardware/pitches.h"

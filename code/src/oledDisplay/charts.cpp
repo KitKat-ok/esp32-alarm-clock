@@ -1,7 +1,7 @@
 #include "charts.h"
 
-float temperatureArray[TEMP_CHART_READINGS];
-float lightArray[TEMP_CHART_READINGS];
+float temperatureArray[CHART_READINGS];
+float lightArray[CHART_READINGS];
 
 const unsigned long interval = 30000; // Interval in milliseconds (30 seconds)
 unsigned long previousMillis = 0;     // Will store last time the function was called
@@ -25,7 +25,7 @@ void initTempGraph()
     display.clearDisplay();
     chart.drawChart();
     // Draw the updated chart
-    for (int i = 0; i < TEMP_CHART_READINGS; i++)
+    for (int i = 0; i < CHART_READINGS; i++)
     {
         chart.updateChart(temperatureArray[i]);
     }
@@ -45,7 +45,7 @@ void loopTempGraph()
         centerText("Temp: " + String(temperature), (SCREEN_HEIGHT / 3) - 5);
         chart.drawChart();
         // Draw the updated chart
-        for (int i = 0; i < TEMP_CHART_READINGS; i++)
+        for (int i = 0; i < CHART_READINGS; i++)
         {
             chart.updateChart(temperatureArray[i] * 100);
         }
@@ -71,7 +71,7 @@ void initLightGraph()
     display.clearDisplay();
     chart.drawChart();
     // Draw the updated chart
-    for (int i = 0; i < TEMP_CHART_READINGS; i++)
+    for (int i = 0; i < CHART_READINGS; i++)
     {
         chart.updateChart(lightArray[i]);
     }
@@ -91,7 +91,7 @@ void loopLightGraph()
         centerText("lux: " + String(lightMeter.readBrightnessInLux()), (SCREEN_HEIGHT / 3) - 5);
         chart.drawChart();
         // Draw the updated chart
-        for (int i = 0; i < TEMP_CHART_READINGS; i++)
+        for (int i = 0; i < CHART_READINGS; i++)
         {
             chart.updateChart(lightArray[i] * 100);
         }

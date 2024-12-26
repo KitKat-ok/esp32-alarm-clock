@@ -1,5 +1,4 @@
 #include "hardware.h"
-#include <esp_adc_cal.h>
 
 TM1637Display LedDisplay = TM1637Display(CLK, DIO);
 LTR_F216A lightMeter;
@@ -18,9 +17,8 @@ void initHardware()
   setCpuFrequencyMhz(80); // stable 160,80,240
   delay(2000);
   Serial.begin(115200);
-  analogReadResolution(12);       // Set ADC resolution to 12-bit (0-4095)
-  analogSetAttenuation(ADC_11db); // Set attenuation to 11dB (0-3.9V)
-  analogSetClockDiv(80);
+  adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_12);
+  pinMode(VOLTAGE_DIVIDER_PIN, INPUT);
   adcAttachPin(VOLTAGE_DIVIDER_PIN);
   pinMode(POWER_STATE_PIN, INPUT);
   pinMode(CHARGER_CONTROL_PIN,OUTPUT);

@@ -12,5 +12,4 @@ void addNewAlarm();
 extern bool menuRunning;
 extern bool idleEnabled;
 
-
 #endif
