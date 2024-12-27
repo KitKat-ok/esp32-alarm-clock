@@ -2,7 +2,6 @@
 #define DEFINES_H
 
 #include "fonts/fonts.h"
-#include "weather/weathericons.h"
 
 #include <Arduino.h>
 #include <Adafruit_GFX.h>
@@ -17,6 +16,11 @@
 #include <Adafruit_SHT4x.h>
 #include <oledManager.h>
 #include <esp_adc_cal.h>
+
+#include "../icons/icons/icons_18x18.h"
+#include "../icons/icons/icons_24x24.h"
+#include "../icons/icons/icons_32x32.h"
+#include "../icons/icons/icons_48x48.h"
 
 extern bool OTAEnabled;
 
@@ -61,6 +65,8 @@ extern bool OTAEnabled;
 #define LOOP_FUNCTION_TIMEOUT_MS 60000 // 1 minute timeout
 #define TOTAL_NAV_BUTTONS 4
 #define MAX_DEPTH 20
+
+#define MENU_TIMEOUT 10000
 
 #define MAIN_PAGE_DURATION 60000
 #define SCREENSAVER_DURATION 30000

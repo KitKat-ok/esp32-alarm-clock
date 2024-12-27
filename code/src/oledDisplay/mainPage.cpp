@@ -35,10 +35,8 @@ const long intervalFirstMenu = 1000;       // Interval at which to run the code 
 
 void showMainPage()
 {
-    if (tasksLaunched == true)
-    {
     unsigned long currentTime = millis();
-    if (PageNumberToShow == 1 || PageNumberToShow == 2 || PageNumberToShow == 3 || PageNumberToShow == 4)
+    if (PageNumberToShow == 1 || PageNumberToShow == 2 || PageNumberToShow == 3 || PageNumberToShow == 4 || PageNumberToShow == 5)
     {
         if (currentTime - lastExecutionTime >= MAIN_PAGE_DURATION)
         {
@@ -88,6 +86,15 @@ void showMainPage()
                     showInfoPage();
                 }
             }
+            else if (PageNumberToShow == 5)
+            {
+                LastPageShown = 5;
+                if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
+                {
+                    previousMillisFirstMenu = currentTime;
+                    showSensorPage();
+                }
+            }
         }
     }
     else
@@ -101,12 +108,6 @@ void showMainPage()
         {
             showScreensaver();
         }
-    }
-    } else {
-        display.clearDisplay();
-        centerText("No Data", SCREEN_HEIGHT / 2);
-        manager.oledDisplay();
-        delay(1000);
     }
 }
 
@@ -132,7 +133,6 @@ void showFirstPage()
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(getCurrentWeekdayName(), SCREEN_HEIGHT / 2);
     centerText(getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
-    centerText("Temp: " + String(temperature) + " C", SCREEN_HEIGHT / 2 + 23);
     display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
     manager.oledDisplay();
 }
@@ -153,7 +153,6 @@ void showForecastPage()
     display.clearDisplay();
     delay(10);
 
-    centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     display.setCursor(x + 3, y);
     display.print(getShortNextDay(0));
     display.setCursor(x + 44 + 3, y);
@@ -174,12 +173,10 @@ void showForecastPage()
     display.print(formatTemperature(weatherDailyForecastData[2].minTemp, weatherDailyForecastData[2].maxTemp));
 
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     delay(10);
     manager.oledDisplay();
 }
-
-#include "../icons/icons/icons_24x24.h"
-#include "../icons/icons/icons_48x48.h"
 
 void displayWiFiSignal(int x, int y)
 {
@@ -231,6 +228,7 @@ void showInfoPage()
     else
     {
         display.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, BLACK, WHITE);
+        display.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 13), 6, SSD1306_WHITE);
     }
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     display.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, WHITE);
@@ -255,6 +253,29 @@ void showInfoPage()
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
+void showSensorPage()
+{
+    display.clearDisplay();
+    centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
+    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18, house_thermometer_24x24, 24, 24, BLACK, WHITE);
+    display.setCursor(2, 35);
+    String tempText = "Temp: " + String(readTemperature()) + "C";
+    display.print(tempText);
+    int16_t x, y;
+    uint16_t w, h;
+    display.getTextBounds(tempText, 0, 0, &x, &y, &w, &h);
+    display.drawLine(2, 26, 2 + w, 26, SSD1306_WHITE);
+    uint16_t tempLenght = w;
+    display.getTextBounds("Sensors", 0, 0, &x, &y, &w, &h);
+    display.setCursor(tempLenght/2 - w/2, 24);
+    display.print("Sensors");
+    display.setCursor(2, 35+24);
+    display.print("Hum: " + String(readHumidity()) + "%");
+    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18+24, house_raindrops_24x24, 24, 24, BLACK, WHITE);
+
+    manager.oledDisplay();
+}
+
 void cyclePages()
 {
     if (LastPageShown == 1)
@@ -270,6 +291,10 @@ void cyclePages()
         PageNumberToShow = 4;
     }
     else if (LastPageShown == 4)
+    {
+        PageNumberToShow = 5;
+    }
+    else if (LastPageShown == 5)
     {
         PageNumberToShow = 1;
     }
