@@ -32,7 +32,7 @@ extern bool OTAEnabled;
 #define CURRENT_WEATHER_INTERVAL 30 * 60 * 1000  // 30 minutes
 
 // Light Sensor
-#define OLED_DISABLE_THRESHOLD 45
+#define OLED_DISABLE_THRESHOLD 20
 #define LED_DIM_THRESHOLD 30
 #define LED_DISABLE_THRESHOLD 1
 
@@ -58,6 +58,7 @@ extern bool OTAEnabled;
 #define NUM_TOUCH_SAMPLES 10
 
 // Menus
+#define LOOP_FUNCTION_TIMEOUT_MS 60000 // 1 minute timeout
 #define TOTAL_NAV_BUTTONS 4
 #define MAX_DEPTH 20
 

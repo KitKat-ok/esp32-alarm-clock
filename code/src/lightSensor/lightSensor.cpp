@@ -71,7 +71,7 @@ void dimmingFunction(void *pvParameters)
 
                 Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
 
-                Serial.println("Reading brightness and dimming oled accordingly");
+                Serial.println("Reading brightness and dimming oled accordingly: " + String(lightLevel));
                 previousMillisDimming = currentMillis;
             }
             vTaskDelay(10);

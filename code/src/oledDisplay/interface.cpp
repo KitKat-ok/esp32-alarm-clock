@@ -55,6 +55,8 @@ bool UpHeld = false;
 
 bool menuRunning = true;
 
+bool exitLoopFunction = false;
+
 bool checkButtonReleased(int pin, bool &heldState)
 {
     bool pressed = digitalRead(pin) == LOW;
@@ -235,6 +237,7 @@ void exitSubmenu()
     {
         Serial.println("No submenu to exit.");
         idleEnabled = true;
+        currentState = IDLE;
         startIdleAnimation();
     }
 }
@@ -250,19 +253,30 @@ void pushSubmenu(Submenu *submenu)
 
 void runLoopFunction(void (*loopFunction)())
 {
-    static bool exitHeld = false;
+    unsigned long lastInputTime = millis();
+    exitLoopFunction = false;
 
     while (true)
     {
         loopFunction();
 
-        if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+        // Check for any button press (low when pressed)
+        if (digitalRead(BUTTON_UP_PIN) == LOW ||
+            digitalRead(BUTTON_DOWN_PIN) == LOW ||
+            digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+            digitalRead(BUTTON_EXIT_PIN) == LOW)
+        {
+            lastInputTime = millis();
+        }
+
+        if (millis() - lastInputTime > LOOP_FUNCTION_TIMEOUT_MS || exitLoopFunction == true)
         {
             break;
         }
 
-        delay(50);
+        delay(1);
     }
+
     showMenu();
 }
 
@@ -535,7 +549,7 @@ void deleteAlarm(int index)
     showMenu();
 }
 
-void deleteAlarmStatic();
+void deleteAlarmStatic(int index);
 void changeAlarmDay();
 
 Submenu *createAlarmsMenu()
@@ -555,26 +569,123 @@ Submenu *createAlarmsMenu()
 
 Submenu *alarmsSubmenu = createAlarmsMenu();
 
+
 void manageAlarms()
 {
-    entryMenu *currentEntry;
-    currentEntry = &alarmsSubmenu->entries[data.currentButton];
-    String entryName = currentEntry->text;
-    String a = String("current alarm entry name: ") + entryName;
-    Serial.println(a);
+    static uint8_t currentState = 0; // 0: View, 1: Set Hour, 2: Set Minute, 3: Set Day, 4: Delete
+    static bool isEditing = false, upHeld = false, downHeld = false, selectHeld = false, exitHeld = false;
 
-    uint8_t alarmIndex = 0;
+    uint8_t alarmIndex = alarmsSubmenu->entries[data.currentButton].text.toInt();
+    Serial.println(alarmIndex);
 
-    if (entryName.length() >= 2)
+    auto drawMenuOption = [&](const String &label, int16_t x, int16_t y, bool selected)
     {
-        alarmIndex = (entryName[0] - '0') * 10 + (entryName[1] - '0');
+        int16_t x1, y1;
+        uint16_t w, h;
+        display.getTextBounds(label, x, y, &x1, &y1, &w, &h);
+
+        if (selected)
+        {
+            display.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, WHITE); // Draw selection rectangle with padding
+            Serial.println(String(w));
+            display.setTextColor(BLACK, WHITE);
+        }
+        else
+        {
+            display.setTextColor(WHITE, BLACK);
+        }
+
+        display.setCursor(x, y);
+        display.print(label);
+    };
+
+    auto updateAlarmValue = [&]()
+    {
+        if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
+        {
+            if (currentState == 0)
+                alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 1) % 24;
+            else if (currentState == 1)
+                alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 1) % 60;
+            else if (currentState == 2)
+                alarms[alarmIndex].day = (alarms[alarmIndex].day + 1) % 7;
+        }
+        else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
+        {
+            if (currentState == 0)
+                alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 23) % 24;
+            else if (currentState == 1)
+                alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 59) % 60;
+            else if (currentState == 2)
+                alarms[alarmIndex].day = (alarms[alarmIndex].day + 6) % 7;
+        }
+    };
+
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    centerText(":",16);
+
+    if (!isEditing)
+    {
+        // Use formatWithLeadingZero to add leading zeros to hours and minutes
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), ((SCREEN_WIDTH/2)-9)-14, 16, currentState == 0);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), ((SCREEN_WIDTH/2)+9)-14, 16, currentState == 1);
+        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 0, 36, currentState == 2);
+        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 0, 46, currentState == 3);
+        drawMenuOption("Delete Alarm", 0, 56, currentState == 4);
+
+        if (checkButtonReleased(BUTTON_CONFIRM_PIN, selectHeld))
+        {
+            if (currentState == 3)
+                alarms[alarmIndex].enabled = !alarms[alarmIndex].enabled;
+            else if (currentState == 4)
+                deleteAlarmStatic(alarmIndex);
+            else
+                isEditing = true;
+        }
+        else if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+        {
+            exitLoopFunction = true;
+            editCurrentMenuEntry(String(alarmIndex) + " " +
+                                 getWeekdayName(alarms[alarmIndex].day + 1) + " " +
+                                 String(alarms[alarmIndex].hours) + ":" +
+                                 String(alarms[alarmIndex].minutes));
+        }
+        else if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
+        {
+            currentState = (currentState + 4) % 5;
+        }
+        else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
+        {
+            currentState = (currentState + 1) % 5;
+        }
     }
-    a = String("current alarm index: ") + String(alarmIndex);
-    Serial.println(a);
+    else
+    {
+        // Use formatWithLeadingZero to add leading zeros to hours and minutes
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), (SCREEN_WIDTH/2)-16, 16, currentState == 0);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), ((SCREEN_WIDTH/2)+9)-14, 16, currentState == 1);
+        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 0, 36, currentState == 2);
+        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 0, 46, currentState == 3);
+
+        updateAlarmValue();
+
+        if (checkButtonReleased(BUTTON_CONFIRM_PIN, selectHeld) || checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+        {
+            isEditing = false;
+        }
+    }
+
+    display.setTextColor(WHITE, BLACK);
+    display.display();
 }
 
-void deleteAlarmStatic()
+void deleteAlarmStatic(int index)
 {
+    Serial.println("delete: " + String(index));
+    alarms[index].exists = false;
+    removeMenuEntry(data.currentButton);
+    exitLoopFunction = true;
 }
 
 void addNewAlarm()
@@ -589,7 +700,7 @@ void addNewAlarm()
             data.currentSubmenu = alarmsSubmenu->entries;
             data.submenuCount = alarmsSubmenu->count;
 
-            addEntryToSubmenu(alarmsSubmenu, String(i + 1) + " " + getWeekdayName(alarms[i].day + 1) + " " + String(alarms[i].hours) + ":" + String(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
+            addEntryToSubmenu(alarmsSubmenu, String(i) + " " + getWeekdayName(alarms[i].day + 1) + " " + String(alarms[i].hours) + ":" + String(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
 
             // alarmsSubmenu->name = menuName;
             data.submenuCount++;
@@ -612,7 +723,7 @@ void initAlarmMenus()
         {
             Serial.println("New alarm added. " + String(i));
 
-            addEntryToSubmenu(alarmsSubmenu, String(i + 1) + " " + getWeekdayName(alarms[i].day + 1) + " " + String(alarms[i].hours) + ":" + String(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
+            addEntryToSubmenu(alarmsSubmenu, String(i) + " " + getWeekdayName(alarms[i].day + 1) + " " + String(alarms[i].hours) + ":" + String(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
 
             // alarmsSubmenu->name = menuName;
             delay(1);
