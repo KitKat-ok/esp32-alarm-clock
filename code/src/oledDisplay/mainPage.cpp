@@ -133,6 +133,7 @@ void showFirstPage()
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(getCurrentWeekdayName(), SCREEN_HEIGHT / 2);
     centerText(getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
+    centerText("Light: " + String(getLightLevel()) + " lux", SCREEN_HEIGHT / 2 + 23);
     display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
     manager.oledDisplay();
 }
@@ -266,9 +267,9 @@ void showSensorPage()
     display.getTextBounds(tempText, 0, 0, &x, &y, &w, &h);
     display.drawLine(2, 26, 2 + w, 26, SSD1306_WHITE);
     uint16_t tempLenght = w;
-    display.getTextBounds("Sensors", 0, 0, &x, &y, &w, &h);
+    display.getTextBounds("SHT40 Sens", 0, 0, &x, &y, &w, &h);
     display.setCursor(tempLenght/2 - w/2, 24);
-    display.print("Sensors");
+    display.print("SHT40 Sens");
     display.setCursor(2, 35+24);
     display.print("Hum: " + String(readHumidity()) + "%");
     display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18+24, house_raindrops_24x24, 24, 24, BLACK, WHITE);

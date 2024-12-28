@@ -683,6 +683,7 @@ void deleteAlarmStatic(int index)
     Serial.println("delete: " + String(index));
     alarms[index].exists = false;
     removeMenuEntry(data.currentButton);
+    alarmsSubmenu->count = alarmsSubmenu->count - 1;
     exitLoopFunction = true;
 }
 
