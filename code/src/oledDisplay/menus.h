@@ -8,6 +8,8 @@ void displayWeatherCast(int dayIndex);
 
 String convertWindDirection(uint16_t degrees);
 
+void checkExit();
+
 void initWeatherMenu();
 void currentWeatherMenu();
 void wifiDebugMenu();

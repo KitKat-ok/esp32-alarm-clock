@@ -16,6 +16,10 @@ TaskHandle_t dimmingTask;
 
 void createDimmingTask()
 {
+    for (int i = 0; i < CHART_READINGS; i++)
+    {
+        lightArray[i] = getLightLevel();
+    }
     Serial.print("creating dimmingTask");
     xTaskCreatePinnedToCore(
         dimmingFunction, /* Task function. */
@@ -192,15 +196,11 @@ void dimLedDisplay()
     }
 }
 
-
 float getLightLevel()
 {
     float currentLightLevel = lightMeter.readBrightnessInLux(); // Read the current light level from BH1750 sensor
     return currentLightLevel;
 }
-
-
-
 
 int touchSamples[NUM_TOUCH_SAMPLES];
 int touchSampleIndex = 0;

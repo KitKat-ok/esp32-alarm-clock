@@ -15,6 +15,7 @@
 #include <Preferences.h>
 #include <Adafruit_SHT4x.h>
 #include <oledManager.h>
+#include <Grafici.h>
 #include <esp_adc_cal.h>
 
 #include "../icons/icons/icons_18x18.h"
@@ -100,6 +101,8 @@ extern bool OTAEnabled;
 
 // Charts
 #define CHART_READINGS 55 // Number of readings to keep
+#define INTERVAL_CHARTS 300000
+#define BOOL_STR(b) ((b) ? String("True") : String("False"))
 
 
 #include "hardware/pitches.h"

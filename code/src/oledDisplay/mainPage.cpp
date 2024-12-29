@@ -229,7 +229,7 @@ void showInfoPage()
     else
     {
         display.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, BLACK, WHITE);
-        display.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 13), 6, SSD1306_WHITE);
+        display.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 14), 6, SSD1306_WHITE);
     }
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     display.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, WHITE);
