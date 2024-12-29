@@ -748,29 +748,26 @@ void menuTask(void *parameter)
 
 void initMenus()
 {
-    // Create sub-submenu
-    entryMenu *subSubmenuItems = new entryMenu[MAX_MENU_ITEMS]{
-        {"SubSubItem 1", nullptr, nullptr, nullptr, nullptr},
-        {"SubSubItem 2", nullptr, nullptr, nullptr, nullptr}};
-
-    Submenu *subSubmenu = new Submenu{"SubSubmenu", subSubmenuItems, 2, MAX_MENU_ITEMS};
-
-    // Create submenu
     entryMenu *submenuItems = new entryMenu[MAX_MENU_ITEMS]{
-        {"SubItem 1", nullptr, nullptr, subSubmenu, nullptr},
-        {"SubItem 2", nullptr, nullptr, nullptr, nullptr}};
+        {"Current Weather", initWeatherMenu,
+         currentWeatherMenu, nullptr, nullptr},
+        {"Today's cast", initWeatherMenu, []()
+         { displayWeatherCast(0); }, nullptr, nullptr},
+        {"Tomorrow's cast", initWeatherMenu, []()
+         { displayWeatherCast(1); }, nullptr, nullptr},
+        {"Day After's Cast", initWeatherMenu, []()
+         { displayWeatherCast(2); }, nullptr, nullptr}};
 
-    Submenu *submenu = new Submenu{"Submenu", submenuItems, 2, MAX_MENU_ITEMS};
+    Submenu *weatherSubmenu = new Submenu{"Submenu", submenuItems, 4, MAX_MENU_ITEMS};
 
     // Initialize main menu buttons
-    entryMenu button1 = {"Text 1", nullptr, nullptr, nullptr, nullptr};
-    entryMenu button3 = {"Submenu", nullptr, nullptr, submenu, nullptr};
+    entryMenu weatherButton = {"Weather", nullptr, nullptr, weatherSubmenu, nullptr};
 
     // Initialize new button for the alarms menu
     alarmsSubmenu = createAlarmsMenu();                                                   // Call the function to get the Submenu*
     entryMenu alarmsButton = {"Manage Alarms", nullptr, nullptr, alarmsSubmenu, nullptr}; // Use alarmsSubmenu
 
     // Initialize the main menu
-    initMenu(new entryMenu[3]{button1, button3, alarmsButton}, 3, "Main Menu", 1, 1);
+    initMenu(new entryMenu[3]{alarmsButton,weatherButton,},3, "Main Menu", 1, 1);
     initAlarmMenus();
 }

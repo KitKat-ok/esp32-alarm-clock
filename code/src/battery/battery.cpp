@@ -48,6 +48,7 @@ bool checkCharging()
 
 void manageBattery(void *parameter)
 {
+  static bool preparingForSleep = false;
   while (true)
   {
     batteryPercentage = getBatteryPercentage();
@@ -59,6 +60,7 @@ void manageBattery(void *parameter)
     if (powerConnected == true)
     {
       wentToSleep = false;
+      preparingForSleep = false;
       Serial.println("Power connected");
       controlCharger();
       vTaskDelay(pdMS_TO_TICKS(500));
@@ -75,16 +77,15 @@ void manageBattery(void *parameter)
       vTaskDelay(pdMS_TO_TICKS(500));
 
       static unsigned long sleepStartTime = 0;
-      static bool preparingForSleep = false;
 
-      if (preparingForSleep == false)
+      if (preparingForSleep == false && wentToSleep == false)
       {
         Serial.println("Preparing to go to sleep in 10 seconds");
         sleepStartTime = millis();
         preparingForSleep = true;
       }
 
-      if (preparingForSleep == false)
+      if (preparingForSleep == true && wentToSleep == false)
       {
         if (millis() - sleepStartTime >= 10000)
         {
@@ -101,7 +102,8 @@ void manageBattery(void *parameter)
           }
         }
       }
-      if (wentToSleep == true && powerConnected == true)
+      checkCharging();
+      if (wentToSleep == true && powerConnected == false)
       {
 
         // Handle wakeup cases
@@ -143,7 +145,7 @@ void manageBattery(void *parameter)
         }
 
         static unsigned long startTime = millis();
-        if (millis() - startTime >= GPIO_WAKUP_TIME && inputDetected == false)
+        if (millis() - startTime >= GPIO_WAKUP_TIME && inputDetected == false && !checkCharging())
         {
           vTaskDelay(pdMS_TO_TICKS(200));
           enableSleep();

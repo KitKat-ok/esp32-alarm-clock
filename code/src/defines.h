@@ -78,7 +78,7 @@ extern bool OTAEnabled;
 //#define START_SOUND true // uncomment to enable start sound
 
 // Battery
-#define MIN_VOLTAGE 3.40  // Minimum voltage of LiPo battery
+#define MIN_VOLTAGE 3.30  // Minimum voltage of LiPo battery
 #define MAX_VOLTAGE 4.20  // Maximum voltage of LiPo battery
 
 #define VOLTAGE_DIVIDER_PIN 34 
