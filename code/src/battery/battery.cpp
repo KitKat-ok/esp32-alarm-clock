@@ -107,49 +107,69 @@ void manageBattery(void *parameter)
       {
 
         // Handle wakeup cases
+        // Handle wakeup cases
         if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER)
         {
           Serial.println("Woke up from Timer");
           LedDisplay.clear();
           int currentHour = hour();
           int currentMinute = minute();
-          static unsigned long startTime = millis();
-          if (checkForInput())
-          {
-            manager.oledEnable();
-            LedDisplay.setBrightness(7);
-            LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-          }
+          unsigned long startTime = millis();
 
-          if (millis() - startTime >= TIMER_WAKUP_TIME && !checkCharging() && inputDetected == false)
+          while (checkCharging() == false && goToSleep == false)
           {
-            LedDisplay.clear();
             vTaskDelay(pdMS_TO_TICKS(200));
-            enableSleep();
-            startTime = millis();
+
+            if (checkForInput())
+            {
+              manager.oledEnable();
+              LedDisplay.setBrightness(0);
+              LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+              LedDisplay.setBrightness(0);
+              startTime = millis(); // Reset the timer on input
+            }
+
+            if (millis() - startTime >= TIMER_WAKUP_TIME && !checkCharging() && !inputDetected)
+            {
+              Serial.println("No input detected, going back to sleep...");
+              LedDisplay.clear();
+              vTaskDelay(pdMS_TO_TICKS(200));
+              enableSleep();
+              break; // Exit the loop to allow sleep
+            }
           }
         }
 
-        unsigned long delayDuration = 30000;
-
-        if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD && goToSleep == false)
+        if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD && !goToSleep)
         {
           Serial.println("Woke up from touch button");
           manager.oledEnable();
           int currentHour = hour();
           int currentMinute = minute();
+          unsigned long startTime = millis();
 
-          LedDisplay.setBrightness(7);
+          LedDisplay.setBrightness(0);
           LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-          maxBrightness = true;
-        }
+          LedDisplay.setBrightness(0);
+          maxBrightness = false;
 
-        static unsigned long startTime = millis();
-        if (millis() - startTime >= GPIO_WAKUP_TIME && inputDetected == false && !checkCharging())
-        {
-          vTaskDelay(pdMS_TO_TICKS(200));
-          enableSleep();
-          startTime = millis();
+          while (checkCharging() == false && goToSleep == false)
+          {
+            vTaskDelay(pdMS_TO_TICKS(10));
+
+            if (checkForInput() == true)
+            {
+              startTime = millis(); // Reset the timer on input
+            }
+
+            if (millis() - startTime >= GPIO_WAKUP_TIME && !inputDetected && !checkCharging())
+            {
+              Serial.println("No input detected, going back to sleep...");
+              vTaskDelay(pdMS_TO_TICKS(200));
+              enableSleep();
+              break; // Exit the loop to allow sleep
+            }
+          }
         }
       }
     }
@@ -222,6 +242,8 @@ void listenToSleep()
     manager.oledDisable();
     display.ssd1306_command(SSD1306_DISPLAYOFF); // Just to make sure because manager can take a bit before reacting if many write operations are ordered
     delay(500);
+    LedDisplay.setBrightness(0);
+    delay(100);
     LedDisplay.clear();
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
@@ -254,16 +276,13 @@ void listenToSleep()
 
 MedianFilter2<float> medianFilter(MEDIAN_WINDOW_SIZE); // Instantiate Median Filter
 
-
-double readVoltage(byte pin) {
-  double reading = adc1_get_raw(ADC1_CHANNEL_6); 
+double readVoltage(byte pin)
+{
+  double reading = adc1_get_raw(ADC1_CHANNEL_6);
   Serial.println("Raw adc reading" + String(reading));
-  if (reading < 1 || reading > 4095) return 0;
-  double voltage = -0.000000000000016 * pow(reading, 4) 
-                   + 0.000000000118171 * pow(reading, 3)
-                   - 0.000000301211691 * pow(reading, 2)
-                   + 0.001109019271794 * reading 
-                   + 0.034143524634089;
+  if (reading < 1 || reading > 4095)
+    return 0;
+  double voltage = -0.000000000000016 * pow(reading, 4) + 0.000000000118171 * pow(reading, 3) - 0.000000301211691 * pow(reading, 2) + 0.001109019271794 * reading + 0.034143524634089;
   return voltage * 1000;
 }
 

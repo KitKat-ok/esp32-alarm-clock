@@ -92,7 +92,7 @@ extern bool OTAEnabled;
 #define BATT_TARGET_VOLTAGE 3.85   // Target voltage in volts
 #define BATT_HYSTERESIS 0.15       // charging Hysteresis in volts
 
-#define TIMER_WAKUP_TIME 15000 // In miliseconds
+#define TIMER_WAKUP_TIME 10000 // In miliseconds
 #define GPIO_WAKUP_TIME 30000 // In miliseconds
 #define SLEEPING_TIME 60 * 1000000 
 
