@@ -87,59 +87,65 @@ void dimmingFunction(void *pvParameters)
                 break;
             }
         }
-        Serial.println("Button pressed");
-        Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
-
-        Serial.println("setting max brightness");
-        vTaskDelay(pdMS_TO_TICKS(20));
-
-        maxBrightness = true;
-        lastActionTime = millis();
-        vTaskDelay(pdMS_TO_TICKS(350));
-        if (dimmed == true)
+        if (checkPower() == true)
         {
-            manager.oledFadeIn();
-            dimmed = false;
-        }
+            Serial.println("Button pressed");
+            Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
 
-        vTaskDelay(pdMS_TO_TICKS(10));
-        while (millis() - lastActionTime < DIM_DELAY)
-        {
-            lightLevel = getLightLevel();
+            Serial.println("setting max brightness");
+            vTaskDelay(pdMS_TO_TICKS(20));
 
-            vTaskDelay(10);
-            if (checkForInput() == true)
+            maxBrightness = true;
+            lastActionTime = millis();
+            vTaskDelay(pdMS_TO_TICKS(350));
+            if (dimmed == true)
             {
-                lastActionTime = millis();
-                if (menuRunning == false)
-                {
-                    turnOffScreensaver();
-                }
-                if (dimmed == true)
-                {
-                    manager.oledFadeIn();
-                    dimmed = false;
-                }
+                manager.oledFadeIn();
+                dimmed = false;
+            }
+
+            vTaskDelay(pdMS_TO_TICKS(10));
+            while (millis() - lastActionTime < DIM_DELAY)
+            {
 
                 vTaskDelay(10);
-                while (checkForInput() == true)
+                if (checkForInput() == true)
                 {
                     lastActionTime = millis();
+                    if (menuRunning == false)
+                    {
+                        turnOffScreensaver();
+                    }
+                    if (dimmed == true)
+                    {
+                        manager.oledFadeIn();
+                        dimmed = false;
+                    }
+
+                    vTaskDelay(10);
+                    while (checkForInput() == true)
+                    {
+                        lastActionTime = millis();
+                    }
                 }
             }
+            inputDetected = false;
         }
-        inputDetected = false;
     }
 }
 
-bool shouldTurnOffDisplay(int lux) {
-    static const int offThreshold = OLED_DISABLE_THRESHOLD;  // Lux threshold to turn off
-    static const int onThreshold = OLED_DISABLE_THRESHOLD + 10;   // Lux threshold to turn back on
+bool shouldTurnOffDisplay(int lux)
+{
+    static const int offThreshold = OLED_DISABLE_THRESHOLD;     // Lux threshold to turn off
+    static const int onThreshold = OLED_DISABLE_THRESHOLD + 10; // Lux threshold to turn back on
     static bool isDisplayOff = false;
 
-    if (isDisplayOff && lux >= onThreshold) {
+    if (isDisplayOff && lux >= onThreshold)
+    {
         isDisplayOff = false; // Turn on when lux exceeds onThreshold
-    } else if (!isDisplayOff && lux < offThreshold) {
+    }
+    else if (!isDisplayOff && lux < offThreshold)
+    {
         isDisplayOff = true; // Turn off when lux drops below offThreshold
     }
 

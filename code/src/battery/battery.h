@@ -9,6 +9,8 @@ void createBatteryTask();
 
 void listenToSleep();
 
+bool checkPower();
+
 extern int batteryPercentage;
 extern bool powerConnected;
 extern bool charging;

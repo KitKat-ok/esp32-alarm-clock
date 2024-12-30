@@ -29,7 +29,7 @@ void createBatteryTask()
   );
 }
 
-bool checkCharging()
+bool checkPower()
 {
   int chargingState = digitalRead(POWER_STATE_PIN);
   Serial.print("Charging State: ");
@@ -56,7 +56,7 @@ void manageBattery(void *parameter)
     Serial.println("WiFi status " + wifiStatusToString(WiFi.status()));
 
     eTaskState WiFiTaskState = eTaskGetState(wifiTask);
-    checkCharging();
+    checkPower();
     if (powerConnected == true)
     {
       wentToSleep = false;
@@ -102,7 +102,7 @@ void manageBattery(void *parameter)
           }
         }
       }
-      checkCharging();
+      checkPower();
       if (wentToSleep == true && powerConnected == false)
       {
 
@@ -116,20 +116,23 @@ void manageBattery(void *parameter)
           int currentMinute = minute();
           unsigned long startTime = millis();
 
-          while (checkCharging() == false && goToSleep == false)
+          while (checkPower() == false && goToSleep == false)
           {
             vTaskDelay(pdMS_TO_TICKS(200));
 
             if (checkForInput())
             {
+              inputDetected = true;
               manager.oledEnable();
               LedDisplay.setBrightness(0);
               LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
               LedDisplay.setBrightness(0);
               startTime = millis(); // Reset the timer on input
+            } else {
+              inputDetected = false;
             }
 
-            if (millis() - startTime >= TIMER_WAKUP_TIME && !checkCharging() && !inputDetected)
+            if (millis() - startTime >= TIMER_WAKUP_TIME && !checkPower() && !inputDetected)
             {
               Serial.println("No input detected, going back to sleep...");
               LedDisplay.clear();
@@ -153,16 +156,21 @@ void manageBattery(void *parameter)
           LedDisplay.setBrightness(0);
           maxBrightness = false;
 
-          while (checkCharging() == false && goToSleep == false)
+          while (checkPower() == false && goToSleep == false)
           {
             vTaskDelay(pdMS_TO_TICKS(10));
 
             if (checkForInput() == true)
             {
-              startTime = millis(); // Reset the timer on input
+              startTime = millis();
+              inputDetected = true;
+            }
+            else
+            {
+              inputDetected = false;
             }
 
-            if (millis() - startTime >= GPIO_WAKUP_TIME && !inputDetected && !checkCharging())
+            if (millis() - startTime >= GPIO_WAKUP_TIME && !inputDetected && !checkPower())
             {
               Serial.println("No input detected, going back to sleep...");
               vTaskDelay(pdMS_TO_TICKS(200));
