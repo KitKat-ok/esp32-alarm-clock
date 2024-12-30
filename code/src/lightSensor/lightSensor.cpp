@@ -132,6 +132,20 @@ void dimmingFunction(void *pvParameters)
     }
 }
 
+bool shouldTurnOffDisplay(int lux) {
+    static const int offThreshold = OLED_DISABLE_THRESHOLD;  // Lux threshold to turn off
+    static const int onThreshold = OLED_DISABLE_THRESHOLD + 10;   // Lux threshold to turn back on
+    static bool isDisplayOff = false;
+
+    if (isDisplayOff && lux >= onThreshold) {
+        isDisplayOff = false; // Turn on when lux exceeds onThreshold
+    } else if (!isDisplayOff && lux < offThreshold) {
+        isDisplayOff = true; // Turn off when lux drops below offThreshold
+    }
+
+    return isDisplayOff;
+}
+
 float previousLightLevel = 0.0;
 
 void dimOledDisplay()
@@ -141,7 +155,7 @@ void dimOledDisplay()
     Serial.println("raw light level: " + String(getLightLevel()));
     Serial.println("smoothened light level: " + String(lightLevel));
 
-    if (OLED_DISABLE_THRESHOLD > lightLevel)
+    if (shouldTurnOffDisplay(getLightLevel()) == true)
     {
         manager.oledDisable();
 
