@@ -112,10 +112,6 @@ void dimmingFunction(void *pvParameters)
                 if (checkForInput() == true)
                 {
                     lastActionTime = millis();
-                    if (menuRunning == false)
-                    {
-                        turnOffScreensaver();
-                    }
                     if (dimmed == true)
                     {
                         manager.oledFadeIn();

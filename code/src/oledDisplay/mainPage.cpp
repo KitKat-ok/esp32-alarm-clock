@@ -33,8 +33,16 @@ bool displayedWeather = false;
 unsigned long previousMillisFirstMenu = 0; // Store the last time the display was updated
 const long intervalFirstMenu = 1000;       // Interval at which to run the code (15 seconds)
 
+bool previousInputState = false;
+
 void showMainPage()
 {
+    bool currentInputState = checkForInput();
+    if (currentInputState == true && previousInputState == false)
+    {
+        turnOffScreensaver();
+    }
+    previousInputState = currentInputState;
     unsigned long currentTime = millis();
     if (PageNumberToShow == 1 || PageNumberToShow == 2 || PageNumberToShow == 3 || PageNumberToShow == 4 || PageNumberToShow == 5)
     {
@@ -268,11 +276,11 @@ void showSensorPage()
     display.drawLine(2, 26, 2 + w, 26, SSD1306_WHITE);
     uint16_t tempLenght = w;
     display.getTextBounds("SHT40 Sens", 0, 0, &x, &y, &w, &h);
-    display.setCursor(tempLenght/2 - w/2, 24);
+    display.setCursor(tempLenght / 2 - w / 2, 24);
     display.print("SHT40 Sens");
-    display.setCursor(2, 35+24);
+    display.setCursor(2, 35 + 24);
     display.print("Hum: " + String(readHumidity()) + "%");
-    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18+24, house_raindrops_24x24, 24, 24, BLACK, WHITE);
+    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, house_raindrops_24x24, 24, 24, BLACK, WHITE);
 
     manager.oledDisplay();
 }
