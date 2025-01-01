@@ -230,10 +230,6 @@ void wifiDebugMenu()
     manager.oledDisplay();
 }
 
-esp_chip_info_t chip_info;
-
-#include "hal/efuse_hal.h"
-
 void CPUDebugMenu()
 {
     checkExit();
@@ -246,7 +242,6 @@ void CPUDebugMenu()
     display.setCursor(0, 34);
     display.println("XTAL freq: " + String(getXtalFrequencyMhz()) + " Mhz");
     centerText("Chip model:", 44);
-    centerText(String(ESP.getChipModel()), 54);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     manager.oledDisplay();
 }

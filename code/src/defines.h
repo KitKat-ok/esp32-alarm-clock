@@ -16,7 +16,8 @@
 #include <Adafruit_SHT4x.h>
 #include <oledManager.h>
 #include <Grafici.h>
-#include <esp_adc_cal.h>
+
+#include "esp_pm.h"
 
 #include "../icons/icons/icons_18x18.h"
 #include "../icons/icons/icons_24x24.h"

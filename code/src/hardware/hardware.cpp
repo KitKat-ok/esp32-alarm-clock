@@ -15,13 +15,17 @@ void initTempSensor();
 void initHardware()
 {
   setCpuFrequencyMhz(80); // stable 160,80,240
+  esp_pm_config_t pm_config = {
+      .max_freq_mhz = 80,
+      .min_freq_mhz = 10,
+      .light_sleep_enable = true,
+  };
+  esp_pm_configure(&pm_config);
   delay(2000);
   Serial.begin(115200);
-  adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_12);
   pinMode(VOLTAGE_DIVIDER_PIN, INPUT);
-  adcAttachPin(VOLTAGE_DIVIDER_PIN);
   pinMode(POWER_STATE_PIN, INPUT);
-  pinMode(CHARGER_CONTROL_PIN,OUTPUT);
+  pinMode(CHARGER_CONTROL_PIN, OUTPUT);
   initButtons();
   touchSetCycles(1000, 1000);
   initBuzzer();
@@ -85,8 +89,7 @@ int noteDurations[] = {
 void initBuzzer()
 {
   pinMode(BUZZER_PIN, OUTPUT);
-  ledcSetup(0, 2000, 8);
-  ledcAttachPin(BUZZER_PIN, 0);
+  ledcAttach(BUZZER_PIN, 2000, 8);
 #ifdef START_SOUND
   Serial.println("Buzzer initialized");
   for (int i = 0; i < sizeof(melody) / sizeof(melody[0]); i++)

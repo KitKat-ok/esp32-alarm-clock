@@ -49,6 +49,7 @@ bool checkPower()
 void manageBattery(void *parameter)
 {
   static bool preparingForSleep = false;
+  static bool previousPowerConnected = false;
   while (true)
   {
     batteryPercentage = getBatteryPercentage();
@@ -59,6 +60,19 @@ void manageBattery(void *parameter)
     checkPower();
     if (powerConnected == true)
     {
+      if (powerConnected && !previousPowerConnected)
+      {
+        esp_pm_config_t pm_config = {
+            .max_freq_mhz = 80,
+            .min_freq_mhz = 10,
+            .light_sleep_enable = true,
+        };
+        esp_pm_configure(&pm_config);
+        Serial.println("Set pm config");
+      }
+
+      // Update the previous state
+      previousPowerConnected = powerConnected;
       wentToSleep = false;
       preparingForSleep = false;
       Serial.println("Power connected");
@@ -98,6 +112,7 @@ void manageBattery(void *parameter)
           {
             Serial.println("Requesting Sleep");
             wentToSleep = true;
+            syncESP32RTC();
             enableSleep();
           }
         }
@@ -112,23 +127,25 @@ void manageBattery(void *parameter)
         {
           Serial.println("Woke up from Timer");
           LedDisplay.clear();
-          int currentHour = hour();
-          int currentMinute = minute();
           unsigned long startTime = millis();
 
           while (checkPower() == false && goToSleep == false)
           {
-            vTaskDelay(pdMS_TO_TICKS(200));
+            vTaskDelay(pdMS_TO_TICKS(500));
 
             if (checkForInput())
             {
               inputDetected = true;
               manager.oledEnable();
               LedDisplay.setBrightness(0);
+              int currentHour = hour();
+              int currentMinute = minute();
               LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
               LedDisplay.setBrightness(0);
               startTime = millis(); // Reset the timer on input
-            } else {
+            }
+            else
+            {
               inputDetected = false;
             }
 
@@ -173,7 +190,8 @@ void manageBattery(void *parameter)
             if (millis() - startTime >= GPIO_WAKUP_TIME && !inputDetected && !checkPower())
             {
               Serial.println("No input detected, going back to sleep...");
-              vTaskDelay(pdMS_TO_TICKS(200));
+              vTaskDelay(pdMS_TO_TICKS(500));
+              syncESP32RTC();
               enableSleep();
               break; // Exit the loop to allow sleep
             }
@@ -253,6 +271,12 @@ void listenToSleep()
     LedDisplay.setBrightness(0);
     delay(100);
     LedDisplay.clear();
+    esp_pm_config_t pm_config = {
+        .max_freq_mhz = 40,
+        .min_freq_mhz = 10,
+        .light_sleep_enable = true,
+    };
+    esp_pm_configure(&pm_config);
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
     esp_err_t sleep_result = esp_light_sleep_start();
@@ -274,19 +298,20 @@ void listenToSleep()
     {
       Serial.printf("Unexpected sleep error: %d\n", sleep_result);
     }
+    syncTimeLibWithRTC();
+    pm_config = {
+        .max_freq_mhz = 40,
+        .min_freq_mhz = 10,
+        .light_sleep_enable = false,
+    };
+    esp_pm_configure(&pm_config);
     goToSleep = false;
   }
 }
 
-#include <MedianFilterLib2.h> // Include the Median Filter Library
-
-#define MEDIAN_WINDOW_SIZE 10
-
-MedianFilter2<float> medianFilter(MEDIAN_WINDOW_SIZE); // Instantiate Median Filter
-
 double readVoltage(byte pin)
 {
-  double reading = adc1_get_raw(ADC1_CHANNEL_6);
+  double reading = analogRead(VOLTAGE_DIVIDER_PIN);
   Serial.println("Raw adc reading" + String(reading));
   if (reading < 1 || reading > 4095)
     return 0;
@@ -300,15 +325,12 @@ float getBatteryVoltage()
   miliVolts = miliVolts - ADC_OFFSET;
   float batteryVoltage = miliVolts / ADC_VOLTAGE_DIVIDER;
 
-  // Add the value to the median filter and get the filtered result
-  float medianVoltage = medianFilter.AddValue(batteryVoltage);
-
   Serial.print("Battery voltage (median): ");
-  Serial.println(medianVoltage, 3); // 3 decimal places
+  Serial.println(batteryVoltage, 3); // 3 decimal places
   Serial.print("Raw Voltage Divider mV: ");
   Serial.println(miliVolts, 3);
 
-  return medianVoltage;
+  return batteryVoltage;
 }
 
 int getBatteryPercentage()

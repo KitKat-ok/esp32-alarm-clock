@@ -41,36 +41,38 @@ void initWifi()
 void connectToWiFi(void *parameter)
 {
   WifiOn = true;
+  wifiMulti.addAP(SSID1, PASSWORD1);
+  wifiMulti.addAP(SSID2, PASSWORD2);
+  wifiMulti.addAP(SSID3, PASSWORD3);
   while (WifiOn == true)
   {
-  WiFiTaskRunning = true;
-  WiFi.mode(WIFI_STA);
-  WiFi.setSleep(WIFI_PS_MAX_MODEM);
-  WiFi.setAutoConnect(true);
-  WiFi.setAutoReconnect(true);
+    WiFiTaskRunning = true;
+    WiFi.mode(WIFI_STA);
+    WiFi.setSleep(WIFI_PS_MAX_MODEM);
+    WiFi.setAutoReconnect(true);
 
-  if (OTAEnabled == false)
-  {
-    WiFi.onEvent(WiFiEvent);
-  }
+    if (OTAEnabled == false)
+    {
+      WiFi.onEvent(WiFiEvent);
+    }
 
-  Serial.println("Connecting to WiFi");
-  initWifi();
-  while (wifiMulti.run(17000) != WL_CONNECTED && WifiOn == true)
-  {
-    Serial.print(".");
-    vTaskDelay(30);
-  }
+    Serial.println("Connecting to WiFi");
+    initWifi();
+    while (wifiMulti.run(17000) != WL_CONNECTED && WifiOn == true)
+    {
+      Serial.print(".");
+      vTaskDelay(30);
+    }
 
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    Serial.println("\nConnected to WiFi");
-    Serial.print("Got ip: ");
-    Serial.println(WiFi.localIP());
-    Serial.println("Mac Address: " + String(WiFi.macAddress()));
-  }
+    if (WiFi.status() == WL_CONNECTED)
+    {
+      Serial.println("\nConnected to WiFi");
+      Serial.print("Got ip: ");
+      Serial.println(WiFi.localIP());
+      Serial.println("Mac Address: " + String(WiFi.macAddress()));
+    }
 
-  break;
+    break;
   }
   WiFiTaskRunning = false;
   vTaskDelete(NULL);
@@ -120,7 +122,7 @@ void turnOffWifi()
       vTaskDelay(30);
       Serial.println("WiFi Task running watiting for it to complete");
     }
-    
+
     while (WiFi.scanComplete() == WIFI_SCAN_RUNNING)
     {
       Serial.println("WiFi Scan running watiting for it to complete");
@@ -134,17 +136,17 @@ void turnOffWifi()
 
 void WiFiEvent(WiFiEvent_t event)
 {
+  Serial.println("WiFi event");
   switch (event)
   {
-  case SYSTEM_EVENT_STA_GOT_IP:
-    Serial.println("WiFi connected");
+  case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+    Serial.println("WiFi got IP");
     if (tasksLaunched == false)
     {
       delay(4000);
       Serial.println("Launching Tasks");
       synchronizeAndSetTime();
       Serial.println("Synchronized Time");
-      synchronizeAndSetTime();
       delay(1000);
       createWeatherTask();
       int currentHour = hour();
@@ -154,12 +156,11 @@ void WiFiEvent(WiFiEvent_t event)
     }
     break;
 
-  case SYSTEM_EVENT_STA_DISCONNECTED:
+  case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
     delay(4000);
     Serial.println("WiFi disconnected");
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
-
     break;
 
   default:
