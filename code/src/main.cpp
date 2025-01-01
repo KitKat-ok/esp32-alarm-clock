@@ -10,6 +10,7 @@ void setup()
   Serial.println("Initializing Hardware");
 
   initHardware();
+  WiFi.mode(WIFI_STA);
   initWifi();
   readOtaValue();
 
@@ -92,6 +93,6 @@ void setup()
 
 void loop()
 {
-  handleMenus();
-  listenToSleep();
+  Serial.println("TaskRunning");
+  vTaskDelay(1);
 }

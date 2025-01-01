@@ -277,7 +277,7 @@ void runLoopFunction(void (*loopFunction)())
             break;
         }
 
-        delay(1);
+        delay(10);
     }
 
     showMenu();
@@ -741,8 +741,11 @@ void menuTask(void *parameter)
 {
     while (true)
     {
+        if (goToSleep == false)
+        {
         handleMenus();
-        vTaskDelay(1); // Adjust delay as needed
+        }
+        vTaskDelay(10); // Adjust delay as needed
     }
 }
 
@@ -764,10 +767,10 @@ void initMenus()
     entryMenu weatherButton = {"Weather", nullptr, nullptr, weatherSubmenu, nullptr};
 
     entryMenu *chartItems = new entryMenu[MAX_MENU_ITEMS]{
-        {"Temp Chart", initTempGraph,loopTempGraph, nullptr, nullptr},
-        {"Humidity Chart", initHumidityGraph,loopHumidityGraph, nullptr, nullptr},
-        {"Light Chart", initLightGraph,loopLightGraph, nullptr, nullptr},
-        };
+        {"Temp Chart", initTempGraph, loopTempGraph, nullptr, nullptr},
+        {"Humidity Chart", initHumidityGraph, loopHumidityGraph, nullptr, nullptr},
+        {"Light Chart", initLightGraph, loopLightGraph, nullptr, nullptr},
+    };
 
     Submenu *chartSubmenu = new Submenu{"Sensor Charts", chartItems, 4, MAX_MENU_ITEMS};
 
@@ -786,4 +789,13 @@ void initMenus()
              },
              4, "Main Menu", 1, 1);
     initAlarmMenus();
+    xTaskCreatePinnedToCore(
+        menuTask,    // Task function
+        "Menu Task", // Task name
+        2048,        // Stack size in bytes
+        NULL,        // Task parameter
+        3,           // Task priority
+        NULL,        // Task handle
+        0            // Core number (0 or 1 for ESP32)
+    );
 }

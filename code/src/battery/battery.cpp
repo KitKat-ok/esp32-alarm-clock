@@ -25,7 +25,7 @@ void createBatteryTask()
       NULL,          // Task input parameter
       2,             // Priority (0 is lowest)
       NULL,          // Task handle
-      1              // Core to run the task on (0 or 1)
+      0              // Core to run the task on (0 or 1)
   );
 }
 
@@ -60,16 +60,13 @@ void manageBattery(void *parameter)
     checkPower();
     if (powerConnected == true)
     {
-      if (powerConnected && !previousPowerConnected)
-      {
-        esp_pm_config_t pm_config = {
-            .max_freq_mhz = 80,
-            .min_freq_mhz = 10,
-            .light_sleep_enable = true,
-        };
-        esp_pm_configure(&pm_config);
-        Serial.println("Set pm config");
-      }
+      esp_pm_config_t pm_config = {
+          .max_freq_mhz = 80,
+          .min_freq_mhz = 10,
+          .light_sleep_enable = true,
+      };
+      esp_pm_configure(&pm_config);
+      Serial.println("Set pm config");
 
       // Update the previous state
       previousPowerConnected = powerConnected;
@@ -80,6 +77,7 @@ void manageBattery(void *parameter)
       vTaskDelay(pdMS_TO_TICKS(500));
       if (!WiFi.isConnected() && WiFiTaskRunning == false)
       {
+        esp_wifi_start();
         Serial.println("launching WiFi task");
         createWifiTask();
       }
@@ -129,12 +127,18 @@ void manageBattery(void *parameter)
           LedDisplay.clear();
           unsigned long startTime = millis();
 
-          while (checkPower() == false && goToSleep == false)
+          while (checkPower() == false && goToSleep == false && ringing == false)
           {
             vTaskDelay(pdMS_TO_TICKS(500));
 
             if (checkForInput())
             {
+              esp_pm_config_t pm_config = {
+                  .max_freq_mhz = 80,
+                  .min_freq_mhz = 10,
+                  .light_sleep_enable = true,
+              };
+              esp_pm_configure(&pm_config);
               inputDetected = true;
               manager.oledEnable();
               LedDisplay.setBrightness(0);
@@ -162,6 +166,12 @@ void manageBattery(void *parameter)
 
         if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD && !goToSleep)
         {
+          esp_pm_config_t pm_config = {
+              .max_freq_mhz = 80,
+              .min_freq_mhz = 10,
+              .light_sleep_enable = true,
+          };
+          esp_pm_configure(&pm_config);
           Serial.println("Woke up from touch button");
           manager.oledEnable();
           int currentHour = hour();
@@ -173,12 +183,21 @@ void manageBattery(void *parameter)
           LedDisplay.setBrightness(0);
           maxBrightness = false;
 
-          while (checkPower() == false && goToSleep == false)
+          while (checkPower() == false && goToSleep == false && ringing == false)
           {
-            vTaskDelay(pdMS_TO_TICKS(10));
+            vTaskDelay(pdMS_TO_TICKS(500));
+
+            int currentHour = hour();
+            int currentMinute = minute();
+
+            LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
 
             if (checkForInput() == true)
             {
+              LedDisplay.setBrightness(0);
+              currentHour = hour();
+              currentMinute = minute();
+              LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
               startTime = millis();
               inputDetected = true;
             }
@@ -235,6 +254,8 @@ void controlCharger()
 
 // median
 
+bool initializedSleep = false;
+
 void initSleep()
 {
   esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
@@ -244,11 +265,13 @@ void initSleep()
   touchSleepWakeUpEnable(TOUCH_BUTTON_PIN, TOUCH_BUTTON_THRESHOLD_ON_BATTERY);
 
   esp_sleep_enable_touchpad_wakeup();
+  initializedSleep = true;
 }
 
 void enableSleep()
 {
   goToSleep = true;
+  listenToSleep();
 }
 
 void listenToSleep()
@@ -262,8 +285,6 @@ void listenToSleep()
     Serial.println("Going to sleep");
     maxBrightness = false;
     inputDetected = false;
-    turnOffWifiMinimal();
-    manager.oledFadeOut();
     delay(500);
     manager.oledDisable();
     display.ssd1306_command(SSD1306_DISPLAYOFF); // Just to make sure because manager can take a bit before reacting if many write operations are ordered
@@ -271,15 +292,10 @@ void listenToSleep()
     LedDisplay.setBrightness(0);
     delay(100);
     LedDisplay.clear();
-    esp_pm_config_t pm_config = {
-        .max_freq_mhz = 40,
-        .min_freq_mhz = 10,
-        .light_sleep_enable = true,
-    };
-    esp_pm_configure(&pm_config);
-    WiFi.disconnect(true);
-    WiFi.mode(WIFI_OFF);
+    esp_wifi_stop();
+    initSleep();
     esp_err_t sleep_result = esp_light_sleep_start();
+    Serial.println("Sleep aaa");
 
     // Check the result of the sleep request
     if (sleep_result == ESP_OK)
@@ -298,14 +314,34 @@ void listenToSleep()
     {
       Serial.printf("Unexpected sleep error: %d\n", sleep_result);
     }
-    syncTimeLibWithRTC();
-    pm_config = {
+    esp_pm_config_t pm_config = {
         .max_freq_mhz = 40,
         .min_freq_mhz = 10,
-        .light_sleep_enable = false,
+        .light_sleep_enable = true,
     };
     esp_pm_configure(&pm_config);
+    syncTimeLibWithRTC();
+    esp_wifi_start();
     goToSleep = false;
+    initializedSleep = false;
+    checkPower();
+    delay(200);
+    if (checkForInput())
+    {
+      esp_pm_config_t pm_config = {
+          .max_freq_mhz = 80,
+          .min_freq_mhz = 10,
+          .light_sleep_enable = true,
+      };
+      esp_pm_configure(&pm_config);
+      inputDetected = true;
+      manager.oledEnable();
+      LedDisplay.setBrightness(0);
+      int currentHour = hour();
+      int currentMinute = minute();
+      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      LedDisplay.setBrightness(0);
+    }
   }
 }
 

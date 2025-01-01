@@ -101,6 +101,7 @@ void dimmingFunction(void *pvParameters)
             if (dimmed == true)
             {
                 manager.oledFadeIn();
+                manager.oledEnable();
                 dimmed = false;
             }
 

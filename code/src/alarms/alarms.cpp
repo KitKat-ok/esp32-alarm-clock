@@ -14,8 +14,10 @@ void sendOffPostRequest();
 void checkAlarm(int alarmHours, int alarmMinutes);
 void checkAllAlarms(void *pvParameters);
 
-void initialzeAlarmArray() {
-    for (int i = 0; i < MAX_ALARMS; i++) {
+void initialzeAlarmArray()
+{
+  for (int i = 0; i < MAX_ALARMS; i++)
+  {
     alarms[i] = {false, false, 0, 0, 0, true};
   }
 }
@@ -46,7 +48,14 @@ void checkAllAlarms(void *pvParameters)
         checkAlarm(alarms[i].hours, alarms[i].minutes);
       }
     }
-    vTaskDelay(pdMS_TO_TICKS(1 * 1000));
+    if (powerConnected == true)
+    {
+      vTaskDelay(pdMS_TO_TICKS(1 * 1000));
+    }
+    else
+    {
+      vTaskDelay(pdMS_TO_TICKS(500));
+    }
   }
 }
 
@@ -223,7 +232,7 @@ void sendOffPostRequest()
       HTTPClient http;
 
       http.begin("http://192.168.88.74/gateways/4276/RGB/command"); // Specify destination for HTTP request
-      http.addHeader("Content-Type", "application/json");          // Specify content-type header
+      http.addHeader("Content-Type", "application/json");           // Specify content-type header
 
       int httpResponseCode = http.POST("{\"state\": \"OFF\", \"transition\": 30}"); // Send the actual POST request
 
