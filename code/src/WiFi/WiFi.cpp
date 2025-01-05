@@ -58,63 +58,39 @@ void setWifiCountryCode()
 
 void tryToConnectWifi()
 {
-
+  Serial.println("sizeof(wifiCredStatic): " + String(SIZE_WIFI_CRED_STAT));
   for (int i = 0; i < SIZE_WIFI_CRED_STAT; i++)
   {
     if (wifiCredStatic[i] == NULL || wifiCredStatic[i]->ssid == NULL || wifiCredStatic[i]->password == NULL)
     {
+      Serial.println("Skipping wifi id: " + String(i) + " because of null");
       continue;
     }
     else if (strlen(wifiCredStatic[i]->ssid) == 0 || strlen(wifiCredStatic[i]->password) < 8)
     {
+      Serial.println("Skipping wifi id: " + String(i) + " because bad length");
       continue;
     }
-
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-
-    // Configure Wi-Fi with the current credentials
-    wifi_config_t wifi_config = {};
-    strncpy((char *)wifi_config.sta.ssid, wifiCredStatic[i]->ssid, sizeof(wifi_config.sta.ssid));
-    strncpy((char *)wifi_config.sta.password, wifiCredStatic[i]->password, sizeof(wifi_config.sta.password));
-
+    Serial.println("Trying to connect to wifi number: " + String(i) + " so: " + String(wifiCredStatic[i]->ssid) + " " + String(wifiCredStatic[i]->password));
+    delay(100);
+    setWifiCountryCode();
+    WiFi.begin(wifiCredStatic[i]->ssid, wifiCredStatic[i]->password);
     setWifiCountryCode();
 
-    wifi_scan_config_t scan_config = {};
-    scan_config.scan_time.active.min = 500;  // Increase minimum active scan time (ms)
-    scan_config.scan_time.active.max = 2000; // Increase maximum active scan time (ms)
-
-    esp_wifi_scan_start(&scan_config, false);
-    // Disconnect any existing connections before attempting to connect with new credentials
-    esp_wifi_disconnect();
-
-    // Set the Wi-Fi configuration
-    esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
-
-    // Connect to the Wi-Fi network
-    esp_wifi_connect();
-
-    int attempts = WIFI_SYNC_TIME / 1000;
-    for (int j = 0; j < attempts; j++)
+    for (int i = 0; i < WIFI_SYNC_TIME / 1000; i++)
     {
-      vTaskDelay(1000 / portTICK_PERIOD_MS);
-      wifi_ap_record_t ap_info;
-      esp_wifi_sta_get_ap_info(&ap_info);
-      if (ap_info.rssi != 0)
+      delay(1000);
+      if (WiFi.status() == WL_CONNECTED)
       {
-        Serial.println("Connected to WiFi");
         return;
       }
       else
       {
-        Serial.println("Failed to connect to WiFi...");
+        Serial.println("Failed to connect to wifi...");
       }
     }
-
-    wifi_ap_record_t ap_info;
-    esp_wifi_sta_get_ap_info(&ap_info);
-    if (ap_info.rssi != 0)
+    if (WiFi.status() == WL_CONNECTED)
     {
-      Serial.println("Connected to WiFi");
       return;
     }
   }

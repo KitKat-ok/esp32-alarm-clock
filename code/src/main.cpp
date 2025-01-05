@@ -91,8 +91,9 @@ void setup()
   delay(100);
 }
 
+
 void loop()
 {
   Serial.println("TaskRunning");
-  vTaskDelay(1);
+  vTaskDelay(100);
 }

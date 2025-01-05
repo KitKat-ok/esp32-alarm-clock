@@ -127,6 +127,8 @@ void manageBattery(void *parameter)
           LedDisplay.clear();
           unsigned long startTime = millis();
 
+          int sleepTime = TIMER_WAKUP_TIME;
+
           while (checkPower() == false && goToSleep == false && ringing == false)
           {
             vTaskDelay(pdMS_TO_TICKS(500));
@@ -146,6 +148,7 @@ void manageBattery(void *parameter)
               int currentMinute = minute();
               LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
               LedDisplay.setBrightness(0);
+              sleepTime = GPIO_WAKUP_TIME;
               startTime = millis(); // Reset the timer on input
             }
             else
@@ -153,7 +156,7 @@ void manageBattery(void *parameter)
               inputDetected = false;
             }
 
-            if (millis() - startTime >= TIMER_WAKUP_TIME && !checkPower() && !inputDetected)
+            if (millis() - startTime >= sleepTime && !checkPower() && !inputDetected)
             {
               Serial.println("No input detected, going back to sleep...");
               LedDisplay.clear();

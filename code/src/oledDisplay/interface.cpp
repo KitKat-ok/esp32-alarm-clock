@@ -743,7 +743,7 @@ void menuTask(void *parameter)
     {
         if (goToSleep == false)
         {
-        handleMenus();
+            handleMenus();
         }
         vTaskDelay(10); // Adjust delay as needed
     }
@@ -772,10 +772,22 @@ void initMenus()
         {"Light Chart", initLightGraph, loopLightGraph, nullptr, nullptr},
     };
 
-    Submenu *chartSubmenu = new Submenu{"Sensor Charts", chartItems, 4, MAX_MENU_ITEMS};
+    Submenu *chartSubmenu = new Submenu{"Charts", chartItems, 3, MAX_MENU_ITEMS};
 
     // Initialize main menu buttons
-    entryMenu chartButton = {"Sensor Charts", nullptr, nullptr, chartSubmenu, nullptr};
+    entryMenu chartButton = {"Charts", nullptr, nullptr, chartSubmenu, nullptr};
+
+    entryMenu *debugItems = new entryMenu[MAX_MENU_ITEMS]{
+        {"General Debug", nullptr, generalDebugMenu, nullptr, nullptr},
+        {"Cpu Debug", nullptr, CPUDebugMenu, nullptr, nullptr},
+        {"WiFi Debug", nullptr, wifiDebugMenu, nullptr, nullptr},
+        {"FPS calc", nullptr, fpsCalc, nullptr, nullptr},
+    };
+
+    Submenu *debugSubmenu = new Submenu{"Debug", debugItems, 4, MAX_MENU_ITEMS};
+
+    // Initialize main menu buttons
+    entryMenu debugButton = {"Debug", nullptr, nullptr, debugSubmenu, nullptr};
 
     // Initialize new button for the alarms menu
     alarmsSubmenu = createAlarmsMenu();                                                   // Call the function to get the Submenu*
@@ -786,7 +798,7 @@ void initMenus()
                  alarmsButton,
                  weatherButton,
                  chartButton,
-             },
+                 debugButton,},
              4, "Main Menu", 1, 1);
     initAlarmMenus();
     xTaskCreatePinnedToCore(
