@@ -646,7 +646,7 @@ void manageAlarms()
         else if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
         {
             exitLoopFunction = true;
-            editCurrentMenuEntry(String(alarmIndex) + " " + getWeekdayName(alarms[alarmIndex].day + 1) + " " + formatWithLeadingZero(alarms[alarmIndex].hours) + ":" + formatWithLeadingZero(alarms[alarmIndex].minutes));
+            editCurrentMenuEntry(String(alarmIndex) + " " + String(alarms[alarmIndex].enabled ? "On" : "Off") + " " + getShortWeekdayName(alarms[alarmIndex].day + 1) + " " + formatWithLeadingZero(alarms[alarmIndex].hours) + ":" + formatWithLeadingZero(alarms[alarmIndex].minutes));
         }
         else if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
         {
@@ -699,7 +699,7 @@ void addNewAlarm()
             data.currentSubmenu = alarmsSubmenu->entries;
             data.submenuCount = alarmsSubmenu->count;
 
-            addEntryToSubmenu(alarmsSubmenu, String(i) + " " + getWeekdayName(alarms[i].day + 1) + " " + formatWithLeadingZero(alarms[i].hours) + ":" + formatWithLeadingZero(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
+            addEntryToSubmenu(alarmsSubmenu, String(i) + " " + String(alarms[i].enabled ? "On" : "Off") + " " + getShortWeekdayName(alarms[i].day + 1) + " " + formatWithLeadingZero(alarms[i].hours) + ":" + formatWithLeadingZero(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
 
             // alarmsSubmenu->name = menuName;
             data.submenuCount++;
@@ -722,7 +722,7 @@ void initAlarmMenus()
         {
             Serial.println("New alarm added. " + String(i));
 
-            addEntryToSubmenu(alarmsSubmenu, String(i) + " " + getWeekdayName(alarms[i].day + 1) + " " + formatWithLeadingZero(alarms[i].hours) + ":" + formatWithLeadingZero(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
+            addEntryToSubmenu(alarmsSubmenu, String(i) + " " + String(alarms[i].enabled ? "On" : "Off") + " " + getShortWeekdayName(alarms[i].day + 1) + " " + formatWithLeadingZero(alarms[i].hours) + ":" + formatWithLeadingZero(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
 
             // alarmsSubmenu->name = menuName;
             delay(1);
@@ -734,14 +734,14 @@ void initAlarmMenus()
 void handleMenus()
 {
     loopMenu();
-    startedLoop = true;
 }
 
 void menuTask(void *parameter)
 {
+    startedLoop = true;
     while (true)
     {
-        if (goToSleep == false)
+        if (goToSleep == false && (manager.ScreenEnabled == true || inputDetected == true))
         {
             handleMenus();
         }
@@ -798,7 +798,8 @@ void initMenus()
                  alarmsButton,
                  weatherButton,
                  chartButton,
-                 debugButton,},
+                 debugButton,
+             },
              4, "Main Menu", 1, 1);
     initAlarmMenus();
     xTaskCreatePinnedToCore(

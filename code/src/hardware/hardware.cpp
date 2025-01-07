@@ -48,6 +48,7 @@ void initOledDisplay()
   centerText((resetReasonToString(esp_reset_reason())), 10);
 
   manager.oledDisplay();
+  manager.oledEnable();
   display.ssd1306_command(0x81);
   display.ssd1306_command(130);
   delay(100);

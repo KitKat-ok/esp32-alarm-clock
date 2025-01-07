@@ -40,6 +40,7 @@ void checkAllAlarms(void *pvParameters)
   while (true)
   {
     int currentDay = weekday() - 1; // Adjust to 0-based index
+    Serial.println("current day:" + String(currentDay));
 
     for (int i = 0; i < MAX_ALARMS; ++i)
     {
