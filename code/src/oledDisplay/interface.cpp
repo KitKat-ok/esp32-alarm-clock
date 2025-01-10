@@ -693,7 +693,7 @@ void addNewAlarm()
     {
         if (!alarms[i].exists)
         {
-            alarms[i] = {true, true, 0, 0, 0, false}; // probably should do it instead of letting random data in there
+            alarms[i] = {true, false, 0, 0, 0, false}; // probably should do it instead of letting random data in there
             alarms[i].exists = true;
             Serial.println("New alarm added. " + String(i));
             data.currentSubmenu = alarmsSubmenu->entries;

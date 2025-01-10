@@ -90,7 +90,6 @@ int noteDurations[] = {
 void initBuzzer()
 {
   pinMode(BUZZER_PIN, OUTPUT);
-  ledcAttach(BUZZER_PIN, 2000, 8);
 #ifdef START_SOUND
   Serial.println("Buzzer initialized");
   for (int i = 0; i < sizeof(melody) / sizeof(melody[0]); i++)

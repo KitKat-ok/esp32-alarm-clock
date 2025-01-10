@@ -30,6 +30,37 @@ void sortList(float *numbers, int size)
     }
 }
 
+void createScaledArray(const float *inputArray, int size, int cellVerticalCount, float *outputArray)
+{
+    if (cellVerticalCount < 1 || size < cellVerticalCount)
+        return;
+
+    // Create a local copy of the input array for sorting
+    float sortedArray[size];
+    memcpy(sortedArray, inputArray, size * sizeof(float));
+
+    // Sort the array in descending order
+    for (int i = 0; i < size - 1; ++i)
+    {
+        for (int j = i + 1; j < size; ++j)
+        {
+            if (sortedArray[i] < sortedArray[j])
+            {
+                float temp = sortedArray[i];
+                sortedArray[i] = sortedArray[j];
+                sortedArray[j] = temp;
+            }
+        }
+    }
+
+    // Assign evenly spaced values from the sorted array to the output
+    for (int i = 0; i < cellVerticalCount; ++i)
+    {
+        int index = (i * (size - 1)) / (cellVerticalCount - 1);
+        outputArray[i] = sortedArray[index];
+    }
+}
+
 const ColorMapArray<2> really_black{
     white,
     white};
@@ -70,15 +101,18 @@ void showSideText(float *bothList, int bothSize)
 {
     display.setFont(&DejaVu_LGC_Sans_Bold_8);
 
+    // Sort the input list
     sortList(bothList, bothSize);
 
-    Serial.println(String(bothList[0]));
-    Serial.println(String(bothList[bothSize - 1]));
+    // Debugging sorted list
+    Serial.println("Sorted List:");
+    Serial.println(String(bothList[0]));            // Highest
+    Serial.println(String(bothList[bothSize - 1])); // Lowest
 
-    float stepper = float((bothSize)) / float(CELL_VERTICAL_COUNT);
+    float stepper = float(bothSize) / float(CELL_VERTICAL_COUNT);
     if (int(round(stepper)) == 0)
     {
-        stepper = 1; // We can't divide by zero!
+        stepper = 1; // Avoid division by zero
     }
 
     Serial.println("Stepper: " + String(stepper));
@@ -86,12 +120,13 @@ void showSideText(float *bothList, int bothSize)
 
     int valuesCount = -1;
     float values[CELL_VERTICAL_COUNT] = {0};
+
+    // Populate `values` from `bothList` based on `stepper`
     for (float i = 0; i < bothSize; i += stepper)
     {
-        Serial.println("Iterating: " + String(i));
-        // Insanity
         int ti = int(floor(i));
-        if (String(bothList[ti]) != "0.00" && String(bothList[ti]) != "-0.00" && String(bothList[ti]) != "0" && String(bothList[ti]) != "-0")
+        if (String(bothList[ti]) != "0.00" && String(bothList[ti]) != "-0.00" &&
+            String(bothList[ti]) != "0" && String(bothList[ti]) != "-0")
         {
             bool contains = false;
             for (int j = 0; j < valuesCount + 1; j++)
@@ -101,15 +136,15 @@ void showSideText(float *bothList, int bothSize)
                     contains = true;
                 }
             }
-            if (contains == false)
+            if (!contains)
             {
-                valuesCount = valuesCount + 1;
+                valuesCount++;
                 Serial.println("Value to show is: " + String(bothList[ti]) + " at value: " + String(valuesCount));
                 values[valuesCount] = bothList[ti];
             }
             else
             {
-                Serial.println("duplicate");
+                Serial.println("Duplicate");
             }
         }
         else
@@ -117,24 +152,31 @@ void showSideText(float *bothList, int bothSize)
             Serial.println("Weird 0");
         }
     }
-    valuesCount = valuesCount + 1; // To show actually the count
+    valuesCount++;
+
+    // Sort the selected values
     sortList(values, valuesCount);
 
-#if DEBUG
-    for (int i = 0; i < valuesCount; i++)
+    // Create a scaled array from the values
+    float scaledValues[CELL_VERTICAL_COUNT] = {0};
+    createScaledArray(values, valuesCount, CELL_VERTICAL_COUNT, scaledValues);
+
+    // Debugging scaled array
+    Serial.println("Scaled Values:");
+    for (int i = 0; i < CELL_VERTICAL_COUNT; i++)
     {
-        Serial.println("for i: " + String(i) + " is: " + String(values[i]));
+        Serial.println(scaledValues[i]);
     }
-#endif
+
     display.setFont(&DejaVu_Sans_Condensed_Bold_7);
 
-    Serial.println("valuesCount: " + String(valuesCount));
-    Serial.println("Highest value: " + String(values[valuesCount - 1]));
     float currentHeightDown = display.height() - 7;
     float currentHeightUp = SIDE_TEXT_OFFSET;
 
-    float offset = (display.height() - (SIDE_TEXT_OFFSET - SIDE_TEXT_REPAIR)) / valuesCount;
+    float offset = (display.height() - (SIDE_TEXT_OFFSET - SIDE_TEXT_REPAIR)) / CELL_VERTICAL_COUNT;
     bool down = false;
+
+    // Display the scaled values
     for (float i = 0; i < float(valuesCount) / 2; i += 0.5)
     {
         int ji = int(floor(i));
@@ -213,18 +255,9 @@ void showSideText(float *bothList, int bothSize)
         display.print("0");
     }
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
+
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
-
-float cambridge_max_temp_22[] = {8.4, 10.9, 12.9, 15.1, 18.9, 21.6, 26.1, 26.6, 20.4, 18.3, 12.6, 7.0};
-float cambridge_min_temp_22[] = {1.2, 3.6, 3.7, 4.3, 8.9, 10.2, 13.3, 13.4, 10.7, 9.4, 7.0, 0.1};
-
-// create dataset from raw data and set minimum (0) and maximum (30) temperature values
-DataArray<float> max_temps{cambridge_max_temp_22, 12, {0, 30}};
-DataArray<float> min_temps{cambridge_min_temp_22, 12, {0, 30}};
-
-// x values in [0,11] (position of the bar horizzontal center)
-// range in [-0.5,11.5] to fully show the first and last bars
-DataLinear x{12, {-0.5, 11.5}};
 
 // Show the chart with the given title and data
 void showChart(float *data, uint dataCount, String chartName)
@@ -249,7 +282,7 @@ void showChart(float *data, uint dataCount, String chartName)
     PlotOptions opts = plot_options.thickness(0.0).bar_filled(true);
 
     // Define the plotting window
-    Window size = Window({0.11, 0.999}, {0, 0.999});
+    Window size = Window({0.11, 0.999}, {0, 1.0 - 0.03});
 
     // Plot the bar chart
     plot.bar(x, dataArr, white, size, opts);

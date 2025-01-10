@@ -1,8 +1,6 @@
 #include "alarms.h"
 #include <HTTPClient.h>
 
-bool ringing = false;
-
 Alarm alarms[MAX_ALARMS];
 
 void ringAlarm(void *parameter);
@@ -12,7 +10,7 @@ void sendOnPostRequest();
 void sendOffPostRequest();
 
 void checkAlarm(int alarmHours, int alarmMinutes);
-void checkAllAlarms(void *pvParameters);
+void checkAlarmsTask(void *pvParameters);
 
 void initialzeAlarmArray()
 {
@@ -25,38 +23,43 @@ void initialzeAlarmArray()
 void createAlarmTask()
 {
   xTaskCreatePinnedToCore(
-      checkAllAlarms, // Function to implement the task
-      "Alarms",       // Task name
-      10000,          // Stack size (words)
-      NULL,           // Task input parameter
-      1,              // Priority (0 is lowest)
-      NULL,           // Task handle
-      0               // Core to run the task on (0 or 1)
+      checkAlarmsTask, // Function to implement the task
+      "Alarms",        // Task name
+      10000,           // Stack size (words)
+      NULL,            // Task input parameter
+      1,               // Priority (0 is lowest)
+      NULL,            // Task handle
+      0                // Core to run the task on (0 or 1)
   );
 }
 
-void checkAllAlarms(void *pvParameters)
+void checkAlarms()
+{
+  int currentDay = weekday() - 1; // Adjust to 0-based index
+  Serial.println("current day:" + String(currentDay));
+
+  for (int i = 0; i < MAX_ALARMS; ++i)
+  {
+    if (alarms[i].day == currentDay && alarms[i].enabled == true && alarms[i].exists == true)
+    {
+      checkAlarm(alarms[i].hours, alarms[i].minutes);
+    }
+  }
+  if (powerConnected == true)
+  {
+    vTaskDelay(pdMS_TO_TICKS(1 * 1000));
+  }
+  else
+  {
+    vTaskDelay(pdMS_TO_TICKS(500));
+  }
+}
+
+void checkAlarmsTask(void *pvParameters)
 {
   while (true)
   {
-    int currentDay = weekday() - 1; // Adjust to 0-based index
-    Serial.println("current day:" + String(currentDay));
-
-    for (int i = 0; i < MAX_ALARMS; ++i)
-    {
-      if (alarms[i].day == weekday() && alarms[i].enabled == true && alarms[i].exists == true)
-      {
-        checkAlarm(alarms[i].hours, alarms[i].minutes);
-      }
-    }
-    if (powerConnected == true)
-    {
-      vTaskDelay(pdMS_TO_TICKS(1 * 1000));
-    }
-    else
-    {
-      vTaskDelay(pdMS_TO_TICKS(500));
-    }
+    checkAlarms();
   }
 }
 
@@ -79,18 +82,26 @@ void enableAllAlarms()
   }
 }
 
+int lastRingingMinute = -1; // Initialized to an invalid minute
+int lastRingingHour = -1;   // Initialized to an invalid hour
+bool ringing = false;
+
 void checkAlarm(int alarmHours, int alarmMinutes)
 {
   // Get the current time
   int currentHours = hour();
   int currentMinutes = minute();
+  Serial.print("Check Alarm Function");
 
   // Check if it's time for the alarm
-  if (currentHours == alarmHours && currentMinutes == alarmMinutes && ringing == false)
+  if (currentHours == alarmHours && currentMinutes == alarmMinutes && (ringing == false || lastRingingMinute != currentMinutes || lastRingingHour != currentHours))
   {
     Serial.print("Alarm! It's time to wake up on ");
-    ringing == true;
     createRiningingTask();
+
+    lastRingingMinute = currentMinutes;
+    lastRingingHour = currentHours;
+    ringing = true;
   }
 }
 
@@ -115,6 +126,7 @@ void touchStopAlarm(int hour, bool ringOn)
   {
     if (!(hour >= 11 && hour <= 21) || ringOn == false)
     {
+      Serial.println("stopping alarm");
       vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
       sendOffPostRequest();
       ringing = false;
@@ -144,23 +156,10 @@ void ringAlarm(void *parameter)
   {
     sendOnPostRequest();
   }
+
   while (true)
   {
-
-    currentHour = hour();
-    currentMinute = minute();
-    manager.oledEnable();
-    currentTime = millis();
-    if (currentTime - previousMillisLowBrightness >= intervalBrightness)
-    {
-
-      previousMillisLowBrightness = currentTime;
-
-      manager.oledEnable();
-
-      LedDisplay.setBrightness(0);
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-    }
+    Serial.println("ringin Alarm");
     currentTime = millis();
 
     if ((currentTime >= startTime || WiFi.SSID() != "dragonn2" || WiFi.status() != WL_CONNECTED || (currentHour >= 11 && currentHour <= 21)) && ringOn == true)
@@ -176,20 +175,9 @@ void ringAlarm(void *parameter)
       }
       vTaskDelay(100);
     }
-
-    currentTime = millis();
-    if (currentTime - previousMillisMaxBrightness >= intervalBrightness)
-    {
-
-      previousMillisMaxBrightness = currentTime;
-
-      LedDisplay.setBrightness(7);
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
-    }
-
     touchStopAlarm(currentHour, ringOn);
 
-    vTaskDelay(pdMS_TO_TICKS(1));
+    vTaskDelay(pdMS_TO_TICKS(10));
   }
 }
 

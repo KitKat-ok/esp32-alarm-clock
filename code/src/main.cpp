@@ -94,6 +94,5 @@ void setup()
 
 void loop()
 {
-  Serial.println("TaskRunning");
   vTaskDelay(100);
 }

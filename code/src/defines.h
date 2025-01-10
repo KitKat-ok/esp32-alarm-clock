@@ -78,7 +78,7 @@ extern bool OTAEnabled;
 
 // Buzzer
 #define BUZZER_PIN 14
-//#define START_SOUND true // uncomment to enable start sound
+#define START_SOUND true // uncomment to enable start sound
 
 // Battery
 #define MIN_VOLTAGE 3.30  // Minimum voltage of LiPo battery
