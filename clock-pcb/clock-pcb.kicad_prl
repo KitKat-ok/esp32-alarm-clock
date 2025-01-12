@@ -78,6 +78,19 @@
     "version": 3
   },
   "project": {
-    "files": []
+    "files": [
+      {
+        "name": "clock-pcb.kicad_pcb",
+        "open": false,
+        "window": {
+          "display": 0,
+          "maximized": false,
+          "pos_x": 0,
+          "pos_y": 0,
+          "size_x": 1265,
+          "size_y": 1380
+        }
+      }
+    ]
   }
 }

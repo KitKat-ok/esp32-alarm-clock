@@ -264,10 +264,7 @@ void runLoopFunction(void (*loopFunction)())
         loopFunction();
 
         // Check for any button press (low when pressed)
-        if (digitalRead(BUTTON_UP_PIN) == LOW ||
-            digitalRead(BUTTON_DOWN_PIN) == LOW ||
-            digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-            digitalRead(BUTTON_EXIT_PIN) == LOW)
+        if (inputDetected == true)
         {
             lastInputTime = millis();
         }
@@ -571,22 +568,25 @@ Submenu *alarmsSubmenu = createAlarmsMenu();
 
 void manageAlarms()
 {
-    static uint8_t currentState = 0; // 0: View, 1: Set Hour, 2: Set Minute, 3: Set Day, 4: Delete
+    static uint8_t currentState = 0; // 0: View Hour, 1: View Minute, 2: View Day, 3: Toggle Enabled, 4: Toggle SoundOn, 5: Delete Alarm
     static bool isEditing = false, upHeld = false, downHeld = false, selectHeld = false, exitHeld = false;
 
     uint8_t alarmIndex = alarmsSubmenu->entries[data.currentButton].text.toInt();
     Serial.println(alarmIndex);
 
-    auto drawMenuOption = [&](const String &label, int16_t x, int16_t y, bool selected)
+    auto drawMenuOption = [&](const String &label, int16_t x, int16_t y, bool selected, bool editing)
     {
         int16_t x1, y1;
         uint16_t w, h;
         display.getTextBounds(label, x, y, &x1, &y1, &w, &h);
 
-        if (selected)
+        if (editing)
         {
-            display.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, WHITE); // Draw selection rectangle with padding
-            Serial.println(String(w));
+            display.drawRect(x1 - 2, y1 - 2, w + 4, h + 4, WHITE);
+        }
+        else if (selected)
+        {
+            display.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, WHITE);
             display.setTextColor(BLACK, WHITE);
         }
         else
@@ -598,6 +598,24 @@ void manageAlarms()
         display.print(label);
     };
 
+    auto drawBitmapOption = [&](int16_t x, int16_t y, bool selected, bool editing)
+    {
+        if (editing)
+        {
+            display.drawRect(x - 4, y - 4, 26, 26, WHITE);
+            display.drawBitmap(x, y, remove_18x18, 18, 18, WHITE);
+        }
+        else if (selected)
+        {
+            display.drawRect(x - 4, y - 4, 26, 26, WHITE);
+            display.drawBitmap(x, y, remove_18x18, 18, 18, WHITE);
+        }
+        else
+        {
+            display.drawBitmap(x, y, remove_18x18, 18, 18, BLACK, WHITE);
+        }
+    };
+
     auto updateAlarmValue = [&]()
     {
         if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
@@ -606,7 +624,7 @@ void manageAlarms()
                 alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 1) % 24;
             else if (currentState == 1)
                 alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 1) % 60;
-            else if (currentState == 2)
+            else if (currentState == 3)
                 alarms[alarmIndex].day = (alarms[alarmIndex].day + 1) % 7;
         }
         else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
@@ -615,33 +633,46 @@ void manageAlarms()
                 alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 23) % 24;
             else if (currentState == 1)
                 alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 59) % 60;
-            else if (currentState == 2)
+            else if (currentState == 3)
                 alarms[alarmIndex].day = (alarms[alarmIndex].day + 6) % 7;
         }
     };
 
     display.clearDisplay();
+    display.setTextColor(WHITE, BLACK);
+
+    display.setCursor(1, 10);
+    display.println("Alarm " + String(alarmIndex));
+    display.setFont(&DejaVu_LGC_Sans_Bold_8);
+    display.setCursor(65,10);
+    display.print("Today:" + getShortCurrentWeekdayName());
+
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    centerText(":", 25, 34);
+
     display.setCursor(0, 0);
-    centerText("Editing Alarm " + String(alarmIndex), 10);
-    centerText(":", 25);
 
     if (!isEditing)
     {
-        // Use formatWithLeadingZero to add leading zeros to hours and minutes
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), ((SCREEN_WIDTH / 2)) - 18, 25, currentState == 0);
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), (SCREEN_WIDTH / 2) + 4, 25, currentState == 1);
-        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 0, 37, currentState == 2);
-        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 0, 50, currentState == 3);
-        drawMenuOption("Delete Alarm", 0, 63, currentState == 4);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 35 - 18, 25, currentState == 0, false);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 35 + 4, 25, currentState == 1, false);
+        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 1, 50, currentState == 3, false);
+        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 37, currentState == 2, false);
+        drawMenuOption("Sound: " + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 63, currentState == 4, false);
+        drawBitmapOption(SCREEN_WIDTH - 30, 20, currentState == 5, false);
 
         if (checkButtonReleased(BUTTON_CONFIRM_PIN, selectHeld))
         {
-            if (currentState == 3)
+            if (currentState == 2)
                 alarms[alarmIndex].enabled = !alarms[alarmIndex].enabled;
             else if (currentState == 4)
+                alarms[alarmIndex].soundOn = !alarms[alarmIndex].soundOn;
+            else if (currentState == 5)
                 deleteAlarmStatic(alarmIndex);
             else
                 isEditing = true;
+
+            manager.oledDisplay();
         }
         else if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
         {
@@ -650,21 +681,21 @@ void manageAlarms()
         }
         else if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
         {
-            currentState = (currentState + 4) % 5;
+            currentState = (currentState + 5) % 6;
         }
         else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
         {
-            currentState = (currentState + 1) % 5;
+            currentState = (currentState + 1) % 6;
         }
     }
     else
     {
-        // Use formatWithLeadingZero to add leading zeros to hours and minutes
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), ((SCREEN_WIDTH / 2)) - 18, 25, currentState == 0);
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), (SCREEN_WIDTH / 2) + 4, 25, currentState == 1);
-        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 0, 37, currentState == 2);
-        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 0, 50, currentState == 3);
-        drawMenuOption("Delete Alarm", 0, 63, currentState == 4);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 35 - 18, 25, currentState == 0, currentState == 0);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 35 + 4, 25, currentState == 1, currentState == 1);
+        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 1, 50, currentState == 3, currentState == 3);
+        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 37, currentState == 2, currentState == 2);
+        drawMenuOption("Sound: " + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 63, currentState == 4, currentState == 4);
+        drawBitmapOption(SCREEN_WIDTH - 30, 20, currentState == 5, currentState == 5);
 
         updateAlarmValue();
 
@@ -673,8 +704,6 @@ void manageAlarms()
             isEditing = false;
         }
     }
-
-    display.setTextColor(WHITE, BLACK);
     manager.oledDisplay();
 }
 
@@ -693,7 +722,7 @@ void addNewAlarm()
     {
         if (!alarms[i].exists)
         {
-            alarms[i] = {true, false, 0, 0, 0, false}; // probably should do it instead of letting random data in there
+            alarms[i] = {true, false, 0, 0, 0, true}; // probably should do it instead of letting random data in there
             alarms[i].exists = true;
             Serial.println("New alarm added. " + String(i));
             data.currentSubmenu = alarmsSubmenu->entries;

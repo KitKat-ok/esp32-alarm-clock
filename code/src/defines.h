@@ -53,9 +53,10 @@ extern bool OTAEnabled;
 #define BUTTON_CONFIRM_PIN GPIO_NUM_25
 #define BUTTON_EXIT_PIN    GPIO_NUM_26
 
+#define HALL_SWITCH GPIO_NUM_39
+
 #define MAX_MENU_ITEMS 15
 #define MAX_ALARMS 15
-
 
 #define TOUCH_BUTTON_PIN 4
 #define TOUCH_BUTTON_THRESHOLD 8
@@ -77,7 +78,7 @@ extern bool OTAEnabled;
 #define N_FLYERS 5  // Numver of flyers on screensaver
 
 // Buzzer
-#define BUZZER_PIN 14
+#define BUZZER_PIN GPIO_NUM_14
 #define START_SOUND true // uncomment to enable start sound
 
 // Battery

@@ -26,6 +26,7 @@ void initHardware()
   pinMode(VOLTAGE_DIVIDER_PIN, INPUT);
   pinMode(POWER_STATE_PIN, INPUT);
   pinMode(CHARGER_CONTROL_PIN, OUTPUT);
+  pinMode(HALL_SWITCH, INPUT);
   initButtons();
   touchSetCycles(1000, 1000);
   initBuzzer();
@@ -33,6 +34,12 @@ void initHardware()
   initLedDisplay();
   initLightSensor();
   initTempSensor();
+}
+
+bool readHallSwitch()
+{
+  int pinState = digitalRead(HALL_SWITCH); // Read the pin state
+  return (pinState == LOW);                    // Return true if LOW, false if HIGH
 }
 
 void initOledDisplay()
