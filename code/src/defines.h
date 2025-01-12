@@ -16,7 +16,9 @@
 #include <Adafruit_SHT4x.h>
 #include <oledManager.h>
 #include <Grafici.h>
-#include <esp_adc_cal.h>
+
+#include "esp_pm.h"
+#include "esp_wifi.h"
 
 #include "../icons/icons/icons_18x18.h"
 #include "../icons/icons/icons_24x24.h"
@@ -51,9 +53,10 @@ extern bool OTAEnabled;
 #define BUTTON_CONFIRM_PIN GPIO_NUM_25
 #define BUTTON_EXIT_PIN    GPIO_NUM_26
 
+#define HALL_SWITCH GPIO_NUM_39
+
 #define MAX_MENU_ITEMS 15
 #define MAX_ALARMS 15
-
 
 #define TOUCH_BUTTON_PIN 4
 #define TOUCH_BUTTON_THRESHOLD 8
@@ -75,8 +78,8 @@ extern bool OTAEnabled;
 #define N_FLYERS 5  // Numver of flyers on screensaver
 
 // Buzzer
-#define BUZZER_PIN 14
-//#define START_SOUND true // uncomment to enable start sound
+#define BUZZER_PIN GPIO_NUM_14
+#define START_SOUND true // uncomment to enable start sound
 
 // Battery
 #define MIN_VOLTAGE 3.30  // Minimum voltage of LiPo battery
@@ -92,9 +95,9 @@ extern bool OTAEnabled;
 #define BATT_TARGET_VOLTAGE 3.85   // Target voltage in volts
 #define BATT_HYSTERESIS 0.15       // charging Hysteresis in volts
 
-#define TIMER_WAKUP_TIME 10000 // In miliseconds
+#define TIMER_WAKUP_TIME 5000 // In miliseconds
 #define GPIO_WAKUP_TIME 30000 // In miliseconds
-#define SLEEPING_TIME 60 * 1000000 
+#define SLEEPING_TIME 35 * 1000000 
 
 #define CHARGING_THRESHOLD 1000
 #define STANDBY_THRESHOLD 1000

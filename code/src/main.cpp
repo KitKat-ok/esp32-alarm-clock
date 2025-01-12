@@ -10,6 +10,7 @@ void setup()
   Serial.println("Initializing Hardware");
 
   initHardware();
+  WiFi.mode(WIFI_STA);
   initWifi();
   readOtaValue();
 
@@ -90,8 +91,8 @@ void setup()
   delay(100);
 }
 
+
 void loop()
 {
-  handleMenus();
-  listenToSleep();
+  delay(100000);
 }

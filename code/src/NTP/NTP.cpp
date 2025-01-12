@@ -105,7 +105,6 @@ void synchronizeAndSetTime()
   Serial.println("Synchronizing Time");
   timeClient.begin();
   timeClient.update();
-  syncESP32RTC();
 
   // Check if DST is in effect
   if (isDaylightSavingTime())
@@ -129,5 +128,6 @@ void synchronizeAndSetTime()
 
   setTime(timeClient.getEpochTime()); // Set the system time
   timeClient.end();
+  syncESP32RTC();
   Serial.println("Current time " + String(hour()) + ":" + String(minute()));
 }

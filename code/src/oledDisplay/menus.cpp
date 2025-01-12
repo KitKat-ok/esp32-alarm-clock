@@ -152,6 +152,7 @@ String convertWindDirection(uint16_t degrees)
 }
 void fpsCalc()
 {
+    checkExit();
     unsigned long startTime, endTime;
     int numFrames = 100; // Number of frames to measure
 
@@ -159,6 +160,7 @@ void fpsCalc()
     startTime = millis();
     for (int i = 0; i < numFrames; i++)
     {
+        checkExit();
         display.clearDisplay();
         for (int x = 0; x < SCREEN_WIDTH; x += 2)
         {
@@ -230,10 +232,6 @@ void wifiDebugMenu()
     manager.oledDisplay();
 }
 
-esp_chip_info_t chip_info;
-
-#include "hal/efuse_hal.h"
-
 void CPUDebugMenu()
 {
     checkExit();
@@ -246,7 +244,6 @@ void CPUDebugMenu()
     display.setCursor(0, 34);
     display.println("XTAL freq: " + String(getXtalFrequencyMhz()) + " Mhz");
     centerText("Chip model:", 44);
-    centerText(String(ESP.getChipModel()), 54);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     manager.oledDisplay();
 }
@@ -261,7 +258,7 @@ void generalDebugMenu()
     centerText("Reset reason:", 23);
     centerText(resetReasonToString(esp_reset_reason()), 33);
     display.setCursor(0, 43);
-    display.println("Uptime: " + microsecondsToTimeString(esp_timer_get_time()) + " " + touchRead(TOUCH_BUTTON_PIN) + " " + smoothTouchRead(TOUCH_BUTTON_PIN));
+    display.println("Uptime: " + microsecondsToTimeString(esp_timer_get_time()));
     display.setCursor(0, 53);
     display.println("Free heap: " + String(esp_get_free_heap_size() / 1024.0, 2) + " KB");
     display.setCursor(0, 63);
