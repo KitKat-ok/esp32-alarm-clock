@@ -5,6 +5,7 @@
 
 void centerText(String text, int y, int x = -1);
 void leftAlignText(String text, int y,int offset, int x = -1);
+String formatWithLeadingZero(int number);
 
 String getCurrentWeekdayName();
 String getShortCurrentWeekdayName();

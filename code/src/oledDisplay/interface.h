@@ -8,8 +8,10 @@ void handleMenus();
 void showMenu();
 
 void addNewAlarm();
+bool checkButtonReleased(int pin, bool &heldState);
 
 extern bool menuRunning;
-
+extern bool idleEnabled;
+extern bool exitLoopFunction;
 
 #endif

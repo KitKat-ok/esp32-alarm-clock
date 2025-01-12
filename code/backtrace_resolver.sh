@@ -1,7 +1,7 @@
 #!/bin/bash
 
 XTENSA_ADDR2LINE="$HOME/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-addr2line"
-ELF_FILE=".pio/build/esp32doit-devkit-v1/firmware.elf"
+ELF_FILE=".pio/build/esp32/firmware.elf"
 
 for BACKTRACE in "$@"; do
     echo "Processing backtrace: $BACKTRACE"

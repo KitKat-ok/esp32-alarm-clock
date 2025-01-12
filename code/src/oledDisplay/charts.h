@@ -6,10 +6,14 @@
 void loopTempGraph();
 void initTempGraph();
 
+void initHumidityGraph();
+void loopHumidityGraph();
+
 void loopLightGraph();
 void initLightGraph();
 
-extern float temperatureArray[TEMP_CHART_READINGS];
-extern float lightArray[TEMP_CHART_READINGS];
+extern float temperatureArray[CHART_READINGS];
+extern float humidityArray[CHART_READINGS];
+extern float lightArray[CHART_READINGS];
 
 #endif

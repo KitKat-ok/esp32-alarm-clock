@@ -80,15 +80,27 @@
   "project": {
     "files": [
       {
-        "name": "top-board.kicad_pcb",
-        "open": false,
+        "name": "top-board.kicad_sch",
+        "open": true,
         "window": {
-          "display": 1,
+          "display": 0,
           "maximized": false,
           "pos_x": 0,
           "pos_y": 0,
-          "size_x": 1265,
-          "size_y": 1380
+          "size_x": 945,
+          "size_y": 1020
+        }
+      },
+      {
+        "name": "top-board.kicad_pcb",
+        "open": true,
+        "window": {
+          "display": 0,
+          "maximized": false,
+          "pos_x": 0,
+          "pos_y": 0,
+          "size_x": 945,
+          "size_y": 1020
         }
       }
     ]

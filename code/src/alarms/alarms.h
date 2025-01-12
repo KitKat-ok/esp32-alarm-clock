@@ -21,6 +21,8 @@ struct Alarm {
     bool soundOn;
 };
 
+extern bool ringing;
+
 extern Alarm alarms[MAX_ALARMS];  // Declaration of the array
 
 #endif

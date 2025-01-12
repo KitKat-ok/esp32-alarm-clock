@@ -78,19 +78,6 @@
     "version": 3
   },
   "project": {
-    "files": [
-      {
-        "name": "usb-board.kicad_pcb",
-        "open": false,
-        "window": {
-          "display": 1,
-          "maximized": false,
-          "pos_x": 0,
-          "pos_y": 0,
-          "size_x": 1265,
-          "size_y": 1380
-        }
-      }
-    ]
+    "files": []
   }
 }

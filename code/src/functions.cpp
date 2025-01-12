@@ -26,6 +26,11 @@ void leftAlignText(String text, int y,int offset, int x)
   display.print(text);
 }
 
+String formatWithLeadingZero(int number)
+{
+    return (number < 10) ? "0" + String(number) : String(number);
+}
+
 
 String getMonthName(int monthNumber)
 {

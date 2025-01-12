@@ -2,27 +2,34 @@
 #define DEFINES_H
 
 #include "fonts/fonts.h"
-#include "weather/weathericons.h"
 
 #include <Arduino.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <TM1637Display.h>
-#include <BH1750.h>
+#include <LTR_F216A.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
 #include <TimeLib.h>
 #include <NTPClient.h>
 #include <Preferences.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
+#include <Adafruit_SHT4x.h>
 #include <oledManager.h>
+#include <Grafici.h>
+
+#include "esp_pm.h"
+#include "esp_wifi.h"
+
+#include "../icons/icons/icons_18x18.h"
+#include "../icons/icons/icons_24x24.h"
+#include "../icons/icons/icons_32x32.h"
+#include "../icons/icons/icons_48x48.h"
 
 extern bool OTAEnabled;
 
 // Led Display
-#define CLK  19 
-#define DIO  18 
+#define CLK  18 
+#define DIO  19 
 
 // NTP
 #define TIME_OFFSET_S 3600            // Time offset in seconds, use this as timezones
@@ -32,21 +39,24 @@ extern bool OTAEnabled;
 #define CURRENT_WEATHER_INTERVAL 30 * 60 * 1000  // 30 minutes
 
 // Light Sensor
-#define OLED_DISABLE_THRESHOLD 45
+#define OLED_DISABLE_THRESHOLD 20
 #define LED_DIM_THRESHOLD 30
 #define LED_DISABLE_THRESHOLD 1
+
+#define DIM_DELAY 30000
 
 #define MAX_INCREASE_OF_LIGHT_LEVEL 1000
 
 // Inputs
 #define BUTTON_UP_PIN      GPIO_NUM_12
 #define BUTTON_DOWN_PIN    GPIO_NUM_13
-#define BUTTON_CONFIRM_PIN GPIO_NUM_14
-#define BUTTON_EXIT_PIN    GPIO_NUM_15
+#define BUTTON_CONFIRM_PIN GPIO_NUM_25
+#define BUTTON_EXIT_PIN    GPIO_NUM_26
+
+#define HALL_SWITCH GPIO_NUM_39
 
 #define MAX_MENU_ITEMS 15
 #define MAX_ALARMS 15
-
 
 #define TOUCH_BUTTON_PIN 4
 #define TOUCH_BUTTON_THRESHOLD 8
@@ -56,53 +66,46 @@ extern bool OTAEnabled;
 #define NUM_TOUCH_SAMPLES 10
 
 // Menus
+#define LOOP_FUNCTION_TIMEOUT_MS 60000 // 1 minute timeout
 #define TOTAL_NAV_BUTTONS 4
 #define MAX_DEPTH 20
+
+#define MENU_TIMEOUT 10000
 
 #define MAIN_PAGE_DURATION 60000
 #define SCREENSAVER_DURATION 30000
 
 #define N_FLYERS 5  // Numver of flyers on screensaver
 
-#define fontX 6
-//5
-#define fontY 12
-
-// Alarm
-#define SUNDAY    0
-#define MONDAY    1
-#define TUESDAY   2
-#define WEDNESDAY 3
-#define THURSDAY  4
-#define FRIDAY    5
-#define SATURDAY  6
-
 // Buzzer
-#define BUZZER_PIN 27
-//#define START_SOUND false // uncomment to enable start sound
+#define BUZZER_PIN GPIO_NUM_14
+#define START_SOUND true // uncomment to enable start sound
 
 // Battery
-#define MIN_VOLTAGE 3.40  // Minimum voltage of LiPo battery
+#define MIN_VOLTAGE 3.30  // Minimum voltage of LiPo battery
 #define MAX_VOLTAGE 4.20  // Maximum voltage of LiPo battery
-#define NUM_SAMPLES 15   // How many samples to read to smooth the voltage out
 
 #define VOLTAGE_DIVIDER_PIN 34 
+#define ADC_VOLTAGE_DIVIDER 710.094f // 300K and 806K
+#define ADC_OFFSET 77 // In milivolts to calibrate it
 
-#define FULLY_CHARGED_PIN 32
-#define CHARGING_PIN 33
+#define POWER_STATE_PIN GPIO_NUM_36
 
-#define TIMER_WAKUP_TIME 15000 // In miliseconds
+#define CHARGER_CONTROL_PIN GPIO_NUM_23
+#define BATT_TARGET_VOLTAGE 3.85   // Target voltage in volts
+#define BATT_HYSTERESIS 0.15       // charging Hysteresis in volts
+
+#define TIMER_WAKUP_TIME 5000 // In miliseconds
 #define GPIO_WAKUP_TIME 30000 // In miliseconds
-#define SLEEPING_TIME 60 * 1000000 
+#define SLEEPING_TIME 35 * 1000000 
 
 #define CHARGING_THRESHOLD 1000
 #define STANDBY_THRESHOLD 1000
 
-// Temperature
-#define TEMP_SENS_PIN 5
-#define TEMP_CHART_READINGS 55 // Number of readings to keep
-
-#define TEMP_OFFSET 2.77
+// Charts
+#define CHART_READINGS 55 // Number of readings to keep
+#define INTERVAL_CHARTS 300000
+#define BOOL_STR(b) ((b) ? String("True") : String("False"))
 
 
 #include "hardware/pitches.h"

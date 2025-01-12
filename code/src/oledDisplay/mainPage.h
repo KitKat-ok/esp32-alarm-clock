@@ -13,4 +13,5 @@ void cyclePages();
 void showFirstPage();
 void showForecastPage();
 void showInfoPage();
+void showSensorPage();
 #endif

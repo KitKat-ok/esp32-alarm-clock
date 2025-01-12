@@ -46,12 +46,14 @@ Submenu *menuStack[MAX_STACK_SIZE];
 int stackPointer = -1;
 
 unsigned long lastInputTime = 0;
-const unsigned long idleTimeout = 300000;
-
 bool startedLoop = false;
 
 bool DownHeld = false;
 bool UpHeld = false;
+
+bool menuRunning = true;
+
+bool exitLoopFunction = false;
 
 bool checkButtonReleased(int pin, bool &heldState)
 {
@@ -81,6 +83,7 @@ void resetPreviousItems()
 
 void showMenu()
 {
+    manager.stopScrolling();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     display.clearDisplay();
     display.setTextSize(data.textSize);
@@ -161,31 +164,48 @@ void updateLastInputTime()
     lastInputTime = millis();
 }
 
-bool idleEnabled = false;
+static bool timerActive = false; // Track if the timer is active
+
+enum IdleState
+{
+    IDLE,
+    ANIMATING
+};
+
+IdleState currentState = IDLE;
+unsigned long lastAnimationTime = 0;
+const unsigned long animationInterval = 1; // Adjust as needed
+bool idleEnabled = true;
 
 void startIdleAnimation()
 {
-    static bool confirmHeld = false;
-    static bool upHeld = false;
-    static bool downHeld = false;
-    static bool exitHeld = false;
-
-    Serial.println("Main Page started...");
-    delay(100);
-
-    while (millis() - lastInputTime > idleTimeout || idleEnabled == true)
+    if (idleEnabled)
     {
-        showMainPage();
-        if (digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-            digitalRead(BUTTON_UP_PIN) == LOW ||
-            digitalRead(BUTTON_DOWN_PIN) == LOW ||
-            digitalRead(BUTTON_EXIT_PIN) == LOW)
+        if (currentState == IDLE && millis() - lastInputTime > MENU_TIMEOUT)
         {
-            updateLastInputTime();
-            break;
+            currentState = ANIMATING;
+            Serial.println("Main Page started...");
+            lastAnimationTime = millis();
+        }
+
+        if (currentState == ANIMATING)
+        {
+            if (millis() - lastAnimationTime >= animationInterval)
+            {
+                showMainPage();
+                lastAnimationTime = millis();
+            }
+
+            if (digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+                digitalRead(BUTTON_UP_PIN) == LOW ||
+                digitalRead(BUTTON_DOWN_PIN) == LOW ||
+                digitalRead(BUTTON_EXIT_PIN) == LOW)
+            {
+                updateLastInputTime();
+                currentState = IDLE;
+            }
         }
     }
-    idleEnabled = false;
 }
 
 void exitSubmenu()
@@ -217,6 +237,10 @@ void exitSubmenu()
     {
         Serial.println("No submenu to exit.");
         idleEnabled = true;
+        timerActive = true;
+        lastInputTime = millis();
+        lastInputTime = lastInputTime - 10001111;
+        currentState = IDLE;
         startIdleAnimation();
     }
 }
@@ -232,19 +256,27 @@ void pushSubmenu(Submenu *submenu)
 
 void runLoopFunction(void (*loopFunction)())
 {
-    static bool exitHeld = false;
+    unsigned long lastInputTime = millis();
+    exitLoopFunction = false;
 
     while (true)
     {
         loopFunction();
 
-        if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+        // Check for any button press (low when pressed)
+        if (inputDetected == true)
+        {
+            lastInputTime = millis();
+        }
+
+        if (millis() - lastInputTime > LOOP_FUNCTION_TIMEOUT_MS || exitLoopFunction == true)
         {
             break;
         }
 
-        delay(50);
+        delay(10);
     }
+
     showMenu();
 }
 
@@ -326,26 +358,67 @@ void loopMenu()
     static bool confirmHeld = false;
     static bool exitHeld = false;
 
+    // Check for button actions regardless of timer state
     if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
     {
         data.currentButton = max(data.currentButton - 1, 0);
         showMenu();
+        lastInputTime = millis(); // Reset last input time
+        timerActive = false;      // Stop the timer
     }
 
     if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
     {
         data.currentButton = min(data.currentButton + 1, (data.isSubmenu ? data.submenuCount - 1 : data.totalMenus - 1));
         showMenu();
+        lastInputTime = millis(); // Reset last input time
+        timerActive = false;      // Stop the timer
     }
 
     if (checkButtonReleased(BUTTON_CONFIRM_PIN, confirmHeld))
     {
         handleConfirm();
+        lastInputTime = millis(); // Reset last input time
+        timerActive = false;      // Stop the timer
     }
 
     if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
     {
+        timerActive = false;      // Stop the timer
+        lastInputTime = millis(); // Reset last input time
         exitSubmenu();
+    }
+
+    // If no button is pressed, check for idle timeout
+    if (!(digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+          digitalRead(BUTTON_UP_PIN) == LOW ||
+          digitalRead(BUTTON_DOWN_PIN) == LOW ||
+          digitalRead(BUTTON_EXIT_PIN) == LOW))
+    {
+        // No button is pressed, check for idle timeout
+        if (!timerActive)
+        {
+            lastInputTime = millis(); // Start the timer
+            timerActive = true;
+        }
+        else
+        {
+            // If the timer is active, check the elapsed time
+            if (millis() - lastInputTime >= MENU_TIMEOUT)
+            {
+                // Call startIdleAnimation continuously after 10 seconds of inactivity
+                startIdleAnimation();
+                menuRunning = false;
+            }
+        }
+    }
+    else
+    {
+        // If any button is pressed, reset the timer and show the menu
+        lastInputTime = millis(); // Reset the last input time
+        timerActive = false;      // Stop the timer
+        menuRunning = true;
+        showMenu(); // Show the menu
     }
 }
 
@@ -434,28 +507,6 @@ void editCurrentMenuEntry(String newText, void (*newFunction)() = nullptr, void 
     showMenu();
 }
 
-bool myBool = false;
-
-void toggleBool(bool *boolPtr)
-{
-    *boolPtr = !(*boolPtr);
-}
-
-entryMenu newButton = {"New Item", nullptr, nullptr, nullptr, &myBool, toggleBool};
-
-void test()
-{
-    addMenuEntry(newButton);
-}
-
-bool menuRunning;
-
-int test1 = 0;
-String hour1 = "hour";
-void loopExample()
-{
-}
-
 Submenu *createSubmenu(const String &name, int maxMenus, void (*function)() = nullptr)
 {
     Submenu *submenu = new Submenu;
@@ -467,7 +518,7 @@ Submenu *createSubmenu(const String &name, int maxMenus, void (*function)() = nu
 }
 
 bool addEntryToSubmenu(Submenu *submenu, const String &text,
-                       void (*function)(),
+                       void (*function)() = nullptr,
                        void (*loopFunction)() = nullptr,
                        bool *boolPtr = nullptr,
                        void (*boolToggleFunction)(bool *) = nullptr)
@@ -478,16 +529,16 @@ bool addEntryToSubmenu(Submenu *submenu, const String &text,
         return false;
     }
     submenu->entries[submenu->count].text = text;
-    submenu->entries[submenu->count].function = nullptr;
+    submenu->entries[submenu->count].function = function;
     submenu->entries[submenu->count].loopFunction = loopFunction;
-    submenu->entries[submenu->count].submenu = nullptr;
+    submenu->entries[submenu->count].submenu = nullptr; // Initialize as no submenu
     submenu->entries[submenu->count].boolPtr = boolPtr;
     submenu->entries[submenu->count].boolToggleFunction = boolToggleFunction;
     submenu->count++;
     return true;
 }
-int currentAlarmIndex = 0;
-int currentEntryAlarm = 0;
+
+uint8_t indexList[MAX_ALARMS];
 
 void deleteAlarm(int index)
 {
@@ -495,30 +546,8 @@ void deleteAlarm(int index)
     showMenu();
 }
 
-void deleteAlarmStatic();
+void deleteAlarmStatic(int index);
 void changeAlarmDay();
-
-void setEntryIndex() {
-    currentEntryAlarm = data.currentButton;
-    Serial.println("this function has run");
-}
-
-Submenu *createAlarmSubmenu(int index, String menuName)
-{
-    // index--; // what the heck why is this here
-    currentAlarmIndex = index; // sure? should not break anything...
-
-    Submenu *alarmSubmenu = createSubmenu(menuName, 3,setEntryIndex);
-
-    bool *isEnabled = &alarms[index].enabled;
-
-    addEntryToSubmenu(alarmSubmenu, "Enabled: ", nullptr, nullptr, isEnabled, toggleBool);
-    addEntryToSubmenu(alarmSubmenu, "Change Day", nullptr, changeAlarmDay, nullptr, nullptr);
-
-    addEntryToSubmenu(alarmSubmenu, "Delete", deleteAlarmStatic, nullptr, nullptr, nullptr);
-
-    return alarmSubmenu;
-}
 
 Submenu *createAlarmsMenu()
 {
@@ -528,70 +557,163 @@ Submenu *createAlarmsMenu()
         alarmsSubmenu = createSubmenu("Alarms", MAX_ALARMS + 2); // +2 for the managing menus mhm
 
         // Add "Add New Alarm" option
-        addEntryToSubmenu(alarmsSubmenu, "Add New Alarm", []()
-                          {
-            addNewAlarm();
-            showMenu(); });
+        addEntryToSubmenu(alarmsSubmenu, "Add New Alarm", addNewAlarm);
 
-        addEntryToSubmenu(alarmsSubmenu, "Save Alarms", []()
-                          {
-            saveAlarms();
-            showMenu(); });
+        addEntryToSubmenu(alarmsSubmenu, "Save Alarms", saveAlarms);
     }
     return alarmsSubmenu;
 }
 
 Submenu *alarmsSubmenu = createAlarmsMenu();
 
-void deleteAlarmStatic()
+void manageAlarms()
 {
-    if (currentAlarmIndex >= 0)
+    static uint8_t currentState = 0; // 0: View Hour, 1: View Minute, 2: View Day, 3: Toggle Enabled, 4: Toggle SoundOn, 5: Delete Alarm
+    static bool isEditing = false, upHeld = false, downHeld = false, selectHeld = false, exitHeld = false;
+
+    uint8_t alarmIndex = alarmsSubmenu->entries[data.currentButton].text.toInt();
+    Serial.println(alarmIndex);
+
+    auto drawMenuOption = [&](const String &label, int16_t x, int16_t y, bool selected, bool editing)
     {
-        String str = data.menuName;
-        int number = str.substring(0).toInt();
-        deleteAlarm(number);
-        exitSubmenu();
+        int16_t x1, y1;
+        uint16_t w, h;
+        display.getTextBounds(label, x, y, &x1, &y1, &w, &h);
 
-        removeMenuEntry(currentAlarmIndex);
+        if (editing)
+        {
+            display.drawRect(x1 - 2, y1 - 2, w + 4, h + 4, WHITE);
+        }
+        else if (selected)
+        {
+            display.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, WHITE);
+            display.setTextColor(BLACK, WHITE);
+        }
+        else
+        {
+            display.setTextColor(WHITE, BLACK);
+        }
 
-        alarmsSubmenu->count--;
+        display.setCursor(x, y);
+        display.print(label);
+    };
 
-        showMenu();
-    }
-}
-
-void changeAlarmDay() // kil me
-{
-    display.fillRoundRect(10, 15, SCREEN_WIDTH - 20, 40, 5, SSD1306_BLACK);
-    display.drawRoundRect(10, 15, SCREEN_WIDTH - 20, 40, 5, SSD1306_WHITE);
-    display.setFont(&DejaVu_LGC_Sans_15);
-    centerText(getWeekdayName(alarms[currentAlarmIndex].day + 1), SCREEN_HEIGHT / 2);
-
-    if (checkButtonReleased(BUTTON_DOWN_PIN, DownHeld) && alarms[currentAlarmIndex].day < 6) // ?
+    auto drawBitmapOption = [&](int16_t x, int16_t y, bool selected, bool editing)
     {
-        alarms[currentAlarmIndex].day++;
-        delay(5);
-    }
+        if (editing)
+        {
+            display.drawRect(x - 4, y - 4, 26, 26, WHITE);
+            display.drawBitmap(x, y, remove_18x18, 18, 18, WHITE);
+        }
+        else if (selected)
+        {
+            display.drawRect(x - 4, y - 4, 26, 26, WHITE);
+            display.drawBitmap(x, y, remove_18x18, 18, 18, WHITE);
+        }
+        else
+        {
+            display.drawBitmap(x, y, remove_18x18, 18, 18, BLACK, WHITE);
+        }
+    };
 
-    if (checkButtonReleased(BUTTON_UP_PIN, DownHeld) && alarms[currentAlarmIndex].day > 0)
+    auto updateAlarmValue = [&]()
     {
-        alarms[currentAlarmIndex].day--;
-        delay(5);
+        if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
+        {
+            if (currentState == 0)
+                alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 1) % 24;
+            else if (currentState == 1)
+                alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 1) % 60;
+            else if (currentState == 3)
+                alarms[alarmIndex].day = (alarms[alarmIndex].day + 1) % 7;
+        }
+        else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
+        {
+            if (currentState == 0)
+                alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 23) % 24;
+            else if (currentState == 1)
+                alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 59) % 60;
+            else if (currentState == 3)
+                alarms[alarmIndex].day = (alarms[alarmIndex].day + 6) % 7;
+        }
+    };
+
+    display.clearDisplay();
+    display.setTextColor(WHITE, BLACK);
+
+    display.setCursor(1, 10);
+    display.println("Alarm " + String(alarmIndex));
+    display.setFont(&DejaVu_LGC_Sans_Bold_8);
+    display.setCursor(65,10);
+    display.print("Today:" + getShortCurrentWeekdayName());
+
+    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    centerText(":", 25, 34);
+
+    display.setCursor(0, 0);
+
+    if (!isEditing)
+    {
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 35 - 18, 25, currentState == 0, false);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 35 + 4, 25, currentState == 1, false);
+        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 1, 50, currentState == 3, false);
+        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 37, currentState == 2, false);
+        drawMenuOption("Sound: " + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 63, currentState == 4, false);
+        drawBitmapOption(SCREEN_WIDTH - 30, 20, currentState == 5, false);
+
+        if (checkButtonReleased(BUTTON_CONFIRM_PIN, selectHeld))
+        {
+            if (currentState == 2)
+                alarms[alarmIndex].enabled = !alarms[alarmIndex].enabled;
+            else if (currentState == 4)
+                alarms[alarmIndex].soundOn = !alarms[alarmIndex].soundOn;
+            else if (currentState == 5)
+                deleteAlarmStatic(alarmIndex);
+            else
+                isEditing = true;
+
+            manager.oledDisplay();
+        }
+        else if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+        {
+            exitLoopFunction = true;
+            editCurrentMenuEntry(String(alarmIndex) + " " + String(alarms[alarmIndex].enabled ? "On" : "Off") + " " + getShortWeekdayName(alarms[alarmIndex].day + 1) + " " + formatWithLeadingZero(alarms[alarmIndex].hours) + ":" + formatWithLeadingZero(alarms[alarmIndex].minutes));
+        }
+        else if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
+        {
+            currentState = (currentState + 5) % 6;
+        }
+        else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
+        {
+            currentState = (currentState + 1) % 6;
+        }
     }
+    else
+    {
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 35 - 18, 25, currentState == 0, currentState == 0);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 35 + 4, 25, currentState == 1, currentState == 1);
+        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 1, 50, currentState == 3, currentState == 3);
+        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 37, currentState == 2, currentState == 2);
+        drawMenuOption("Sound: " + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 63, currentState == 4, currentState == 4);
+        drawBitmapOption(SCREEN_WIDTH - 30, 20, currentState == 5, currentState == 5);
 
-    Serial.println(String(currentEntryAlarm)); // change the name pleasee
+        updateAlarmValue();
 
+        if (checkButtonReleased(BUTTON_CONFIRM_PIN, selectHeld) || checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+        {
+            isEditing = false;
+        }
+    }
     manager.oledDisplay();
-
-    data.currentSubmenu->text = String(currentAlarmIndex + 1) + " " + getWeekdayName(alarms[currentAlarmIndex].day + 1);
-    alarmsSubmenu->entries[currentEntryAlarm].text = String(currentAlarmIndex + 1) + " " + getWeekdayName(alarms[currentAlarmIndex].day + 1);
-
-    delay(1);
 }
 
-void setAlarmIndex()
+void deleteAlarmStatic(int index)
 {
-    currentAlarmIndex = data.currentButton;
+    Serial.println("delete: " + String(index));
+    alarms[index].exists = false;
+    removeMenuEntry(data.currentButton);
+    alarmsSubmenu->count = alarmsSubmenu->count - 1;
+    exitLoopFunction = true;
 }
 
 void addNewAlarm()
@@ -600,15 +722,14 @@ void addNewAlarm()
     {
         if (!alarms[i].exists)
         {
-            alarms[i] = {true, true, 0, 0, 0, false}; // probably should do it instead of letting random data in there
+            alarms[i] = {true, false, 0, 0, 0, true}; // probably should do it instead of letting random data in there
+            alarms[i].exists = true;
             Serial.println("New alarm added. " + String(i));
             data.currentSubmenu = alarmsSubmenu->entries;
             data.submenuCount = alarmsSubmenu->count;
-            String menuName = String(i + 1) + " " + getWeekdayName(alarms[i].day + 1);
 
-            Submenu *alarmSubmenu = createAlarmSubmenu(i, menuName);
-            addEntryToSubmenu(alarmsSubmenu, String(i + 1) + " " + getWeekdayName(alarms[i].day + 1), setAlarmIndex, nullptr, nullptr, nullptr);
-            alarmsSubmenu->entries[alarmsSubmenu->count - 1].submenu = alarmSubmenu;
+            addEntryToSubmenu(alarmsSubmenu, String(i) + " " + String(alarms[i].enabled ? "On" : "Off") + " " + getShortWeekdayName(alarms[i].day + 1) + " " + formatWithLeadingZero(alarms[i].hours) + ":" + formatWithLeadingZero(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
+
             // alarmsSubmenu->name = menuName;
             data.submenuCount++;
             data.currentButton = data.submenuCount - 1;
@@ -624,56 +745,99 @@ void initAlarmMenus()
 {
     for (int i = 0; i < MAX_ALARMS; ++i)
     {
-        if (alarms[i].exists)
-        {
-            alarms[i] = {true, true, 0, 0, 0, false};
-            Serial.println("New alarm added. " + String(i));
-            data.currentSubmenu = alarmsSubmenu->entries;
-            data.submenuCount = alarmsSubmenu->count;
-            String menuName = String(i + 1) + " " + getWeekdayName(alarms[i].day + 1);
+        Serial.println("Alarm exists: " + String(alarms[i].exists));
 
-            Submenu *alarmSubmenu = createAlarmSubmenu(i, menuName);
-            addEntryToSubmenu(alarmsSubmenu, String(i + 1) + " " + getWeekdayName(alarms[i].day + 1), setAlarmIndex, nullptr, nullptr, nullptr);
-            alarmsSubmenu->entries[alarmsSubmenu->count - 1].submenu = alarmSubmenu;
+        if (alarms[i].exists == true)
+        {
+            Serial.println("New alarm added. " + String(i));
+
+            addEntryToSubmenu(alarmsSubmenu, String(i) + " " + String(alarms[i].enabled ? "On" : "Off") + " " + getShortWeekdayName(alarms[i].day + 1) + " " + formatWithLeadingZero(alarms[i].hours) + ":" + formatWithLeadingZero(alarms[i].minutes), nullptr, manageAlarms, nullptr, nullptr);
+
             // alarmsSubmenu->name = menuName;
-            data.submenuCount++;
+            delay(1);
+            showMenu();
         }
+    }
+}
+
+void handleMenus()
+{
+    loopMenu();
+}
+
+void menuTask(void *parameter)
+{
+    startedLoop = true;
+    while (true)
+    {
+        if (goToSleep == false && (manager.ScreenEnabled == true || inputDetected == true))
+        {
+            handleMenus();
+        }
+        vTaskDelay(10); // Adjust delay as needed
     }
 }
 
 void initMenus()
 {
-    // Create sub-submenu
-    entryMenu *subSubmenuItems = new entryMenu[MAX_MENU_ITEMS]{
-        {"SubSubItem 1", nullptr, nullptr, nullptr, nullptr},
-        {"SubSubItem 2", nullptr, nullptr, nullptr, nullptr}};
+    entryMenu *WeatherItems = new entryMenu[MAX_MENU_ITEMS]{
+        {"Current Weather", initWeatherMenu,
+         currentWeatherMenu, nullptr, nullptr},
+        {"Today's cast", initWeatherMenu, []()
+         { displayWeatherCast(0); }, nullptr, nullptr},
+        {"Tomorrow's cast", initWeatherMenu, []()
+         { displayWeatherCast(1); }, nullptr, nullptr},
+        {"Day After's Cast", initWeatherMenu, []()
+         { displayWeatherCast(2); }, nullptr, nullptr}};
 
-    Submenu *subSubmenu = new Submenu{"SubSubmenu", subSubmenuItems, 2, MAX_MENU_ITEMS};
-
-    // Create submenu
-    entryMenu *submenuItems = new entryMenu[MAX_MENU_ITEMS]{
-        {"SubItem 1", nullptr, nullptr, subSubmenu, nullptr},
-        {"SubItem 2", nullptr, nullptr, nullptr, nullptr}};
-
-    Submenu *submenu = new Submenu{"Submenu", submenuItems, 2, MAX_MENU_ITEMS};
+    Submenu *weatherSubmenu = new Submenu{"Weather", WeatherItems, 4, MAX_MENU_ITEMS};
 
     // Initialize main menu buttons
-    entryMenu button0 = {"Text 0", test, nullptr, nullptr, nullptr};
-    entryMenu button1 = {"Text 1", nullptr, nullptr, nullptr, nullptr};
-    entryMenu button2 = {"Text 2", nullptr, loopExample, nullptr, nullptr};
-    entryMenu button3 = {"Submenu", nullptr, nullptr, submenu, nullptr};
+    entryMenu weatherButton = {"Weather", nullptr, nullptr, weatherSubmenu, nullptr};
+
+    entryMenu *chartItems = new entryMenu[MAX_MENU_ITEMS]{
+        {"Temp Chart", initTempGraph, loopTempGraph, nullptr, nullptr},
+        {"Humidity Chart", initHumidityGraph, loopHumidityGraph, nullptr, nullptr},
+        {"Light Chart", initLightGraph, loopLightGraph, nullptr, nullptr},
+    };
+
+    Submenu *chartSubmenu = new Submenu{"Charts", chartItems, 3, MAX_MENU_ITEMS};
+
+    // Initialize main menu buttons
+    entryMenu chartButton = {"Charts", nullptr, nullptr, chartSubmenu, nullptr};
+
+    entryMenu *debugItems = new entryMenu[MAX_MENU_ITEMS]{
+        {"General Debug", nullptr, generalDebugMenu, nullptr, nullptr},
+        {"Cpu Debug", nullptr, CPUDebugMenu, nullptr, nullptr},
+        {"WiFi Debug", nullptr, wifiDebugMenu, nullptr, nullptr},
+        {"FPS calc", nullptr, fpsCalc, nullptr, nullptr},
+    };
+
+    Submenu *debugSubmenu = new Submenu{"Debug", debugItems, 4, MAX_MENU_ITEMS};
+
+    // Initialize main menu buttons
+    entryMenu debugButton = {"Debug", nullptr, nullptr, debugSubmenu, nullptr};
 
     // Initialize new button for the alarms menu
     alarmsSubmenu = createAlarmsMenu();                                                   // Call the function to get the Submenu*
     entryMenu alarmsButton = {"Manage Alarms", nullptr, nullptr, alarmsSubmenu, nullptr}; // Use alarmsSubmenu
 
     // Initialize the main menu
-    initMenu(new entryMenu[6]{button0, button1, button2, button3, alarmsButton, newButton}, 6, "Main Menu", 1, 1);
+    initMenu(new entryMenu[4]{
+                 alarmsButton,
+                 weatherButton,
+                 chartButton,
+                 debugButton,
+             },
+             4, "Main Menu", 1, 1);
     initAlarmMenus();
-}
-
-void handleMenus()
-{
-    loopMenu();
-    startedLoop = true;
+    xTaskCreatePinnedToCore(
+        menuTask,    // Task function
+        "Menu Task", // Task name
+        2048,        // Stack size in bytes
+        NULL,        // Task parameter
+        3,           // Task priority
+        NULL,        // Task handle
+        0            // Core number (0 or 1 for ESP32)
+    );
 }

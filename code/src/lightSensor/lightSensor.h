@@ -7,7 +7,7 @@ void createDimmingTask();
 
 void dimLedDisplay();
 
-float removeLightNoise();
+float getLightLevel();
 int smoothTouchRead(int pin);
 
 bool checkForInput();

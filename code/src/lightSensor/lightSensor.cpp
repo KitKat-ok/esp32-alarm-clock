@@ -16,6 +16,10 @@ TaskHandle_t dimmingTask;
 
 void createDimmingTask()
 {
+    for (int i = 0; i < CHART_READINGS; i++)
+    {
+        lightArray[i] = getLightLevel();
+    }
     Serial.print("creating dimmingTask");
     xTaskCreatePinnedToCore(
         dimmingFunction, /* Task function. */
@@ -34,14 +38,13 @@ float lightLevel = 0.0;
 
 void dimmingFunction(void *pvParameters)
 {
-    const unsigned long intervalLight = 60000;
+    unsigned long intervalLight = 60000;
     unsigned long previousMillisLight = 0;
 
     unsigned long previousMillisDimming = 0;
     unsigned long intervalDimming = 1000;
 
     unsigned long lastActionTime = 0;
-    unsigned long delayDuration = 60000;
     while (true)
     {
         dimmingTaskRunning = true;
@@ -54,25 +57,25 @@ void dimmingFunction(void *pvParameters)
             unsigned long currentMillis = millis(); // Get the current time
             if (currentMillis - previousMillisLight >= intervalLight)
             {
-                for (int i = 0; i < TEMP_CHART_READINGS - 1; i++)
+                for (int i = 0; i < CHART_READINGS - 1; i++)
                 {
                     lightArray[i] = lightArray[i + 1];
                 }
 
                 // Add the new reading to the end of the array
-                lightArray[TEMP_CHART_READINGS - 1] = removeLightNoise(); // Replace with your temperature reading function
+                lightArray[CHART_READINGS - 1] = getLightLevel(); // Replace with your temperature reading function
                 previousMillisLight = currentMillis;
             }
 
-            if (currentMillis - previousMillisDimming >= intervalDimming && charging == true)
+            if (currentMillis - previousMillisDimming >= intervalDimming && powerConnected == true)
             {
-                lightLevel = removeLightNoise();
+                lightLevel = getLightLevel();
                 dimOledDisplay();
                 maxBrightness = false;
 
                 Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
 
-                Serial.println("Reading brightness and dimming oled accordingly");
+                Serial.println("Reading brightness and dimming oled accordingly: " + String(lightLevel));
                 previousMillisDimming = currentMillis;
             }
             vTaskDelay(10);
@@ -84,49 +87,66 @@ void dimmingFunction(void *pvParameters)
                 break;
             }
         }
-        Serial.println("Button pressed");
-        Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
-
-        Serial.println("setting max brightness");
-        vTaskDelay(pdMS_TO_TICKS(20));
-
-        maxBrightness = true;
-        lastActionTime = millis();
-        vTaskDelay(pdMS_TO_TICKS(350));
-        if (dimmed == true)
+        if (checkPower() == true)
         {
-            manager.oledFadeIn();
-            dimmed = false;
-        }
+            Serial.println("Button pressed");
+            Serial.println("touch level: " + String(touchRead(TOUCH_BUTTON_PIN)));
 
-        vTaskDelay(pdMS_TO_TICKS(10));
-        while (millis() - lastActionTime < delayDuration)
-        {
-            lightLevel = removeLightNoise();
+            Serial.println("setting max brightness");
+            vTaskDelay(pdMS_TO_TICKS(20));
 
-            vTaskDelay(10);
-            if (checkForInput() == true)
+            maxBrightness = true;
+            lastActionTime = millis();
+            vTaskDelay(pdMS_TO_TICKS(350));
+            if (dimmed == true)
             {
-                lastActionTime = millis();
-                if (menuRunning == false)
-                {
-                    turnOffScreensaver();
-                }
-                if (dimmed == true)
-                {
-                    manager.oledFadeIn();
-                    dimmed = false;
-                }
+                manager.oledFadeIn();
+                manager.oledEnable();
+                dimmed = false;
+            }
+
+            vTaskDelay(pdMS_TO_TICKS(10));
+            while (millis() - lastActionTime < DIM_DELAY)
+            {
 
                 vTaskDelay(10);
-                while (checkForInput() == true)
+                if (checkForInput() == true)
                 {
                     lastActionTime = millis();
+                    if (dimmed == true)
+                    {
+                        manager.oledFadeIn();
+                        dimmed = false;
+                    }
+
+                    vTaskDelay(10);
+                    while (checkForInput() == true)
+                    {
+                        lastActionTime = millis();
+                    }
                 }
             }
+            inputDetected = false;
         }
-        inputDetected = false;
     }
+}
+
+bool shouldTurnOffDisplay(int lux)
+{
+    static const int offThreshold = OLED_DISABLE_THRESHOLD;     // Lux threshold to turn off
+    static const int onThreshold = OLED_DISABLE_THRESHOLD + 10; // Lux threshold to turn back on
+    static bool isDisplayOff = false;
+
+    if (isDisplayOff && lux >= onThreshold)
+    {
+        isDisplayOff = false; // Turn on when lux exceeds onThreshold
+    }
+    else if (!isDisplayOff && lux < offThreshold)
+    {
+        isDisplayOff = true; // Turn off when lux drops below offThreshold
+    }
+
+    return isDisplayOff;
 }
 
 float previousLightLevel = 0.0;
@@ -135,10 +155,10 @@ void dimOledDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    Serial.println("raw light level: " + String(removeLightNoise()));
+    Serial.println("raw light level: " + String(getLightLevel()));
     Serial.println("smoothened light level: " + String(lightLevel));
 
-    if (OLED_DISABLE_THRESHOLD > lightLevel)
+    if (shouldTurnOffDisplay(getLightLevel()) == true)
     {
         manager.oledDisable();
 
@@ -168,7 +188,7 @@ void dimLedDisplay()
 {
     int currentHour = hour();
     int currentMinute = minute();
-    Serial.println("raw light level: " + String(removeLightNoise()));
+    Serial.println("raw light level: " + String(getLightLevel()));
     Serial.println("smoothened light level: " + String(lightLevel));
     if (lightLevel < 5000)
     {
@@ -188,64 +208,16 @@ void dimLedDisplay()
         {
             displayON = true;
             LedDisplay.setBrightness(0);
+            Serial.println("Brightness of Led display 0");
         }
     }
 }
 
-const int bufferLightSize = 30; // Adjust buffer size as needed
-float lightLevelBuffer[bufferLightSize];
-int bufferLightIndex = 0;
-
-float smoothedLightLevel = 0.0; // Initial smoothed light level
-
-// New parameters for adjustment
-float normalSmoothingFactor = 0.005;  // Normal smoothing factor (adjust as needed)
-float highChangeSmoothingFactor = 0.5;  // Smoothing factor for significant changes (adjust as needed)
-float significantChangeThreshold = 5.0; // Threshold to classify a big change (adjust as needed)
-float spikeSuppressionThreshold = MAX_INCREASE_OF_LIGHT_LEVEL; // Suppress spikes beyond this value
-
-float removeLightNoise()
+float getLightLevel()
 {
-    float currentLightLevel = lightMeter.readLightLevel(); // Read the current light level from BH1750 sensor
-
-    // Handle sudden spikes in light level by suppressing them
-    if (currentLightLevel - lightLevelBuffer[bufferLightIndex] > spikeSuppressionThreshold)
-    {
-        currentLightLevel = lightLevelBuffer[bufferLightIndex]; // Suppress the spike by keeping the last good value
-    }
-
-    // Store current light level in the circular buffer
-    lightLevelBuffer[bufferLightIndex] = currentLightLevel;
-
-    // Update buffer index (circular increment)
-    bufferLightIndex = (bufferLightIndex + 1) % bufferLightSize;
-
-    // Calculate simple moving average
-    float movingAverage = 0.0;
-    for (int i = 0; i < bufferLightSize; ++i)
-    {
-        movingAverage += lightLevelBuffer[i];
-    }
-    movingAverage /= bufferLightSize;
-
-    // Determine if this is a significant change
-    float lightLevelDifference = abs(currentLightLevel - smoothedLightLevel);
-    if (lightLevelDifference > significantChangeThreshold)
-    {
-        // Use the adjustable smoothing factor for significant changes
-        smoothedLightLevel = highChangeSmoothingFactor * movingAverage + (1.0 - highChangeSmoothingFactor) * smoothedLightLevel;
-    }
-    else
-    {
-        // Use the normal smoothing factor for small changes
-        smoothedLightLevel = normalSmoothingFactor * movingAverage + (1.0 - normalSmoothingFactor) * smoothedLightLevel;
-    }
-
-    return smoothedLightLevel;
+    float currentLightLevel = lightMeter.readBrightnessInLux(); // Read the current light level from BH1750 sensor
+    return currentLightLevel;
 }
-
-
-
 
 int touchSamples[NUM_TOUCH_SAMPLES];
 int touchSampleIndex = 0;
@@ -267,7 +239,7 @@ int smoothTouchRead(int pin)
 bool checkForInput()
 {
     int threshold;
-    if (charging == false)
+    if (powerConnected == false)
     {
         threshold = TOUCH_BUTTON_THRESHOLD_ON_BATTERY;
     }

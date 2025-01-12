@@ -5,6 +5,7 @@
 
 void createTempTask();
 
-extern float temperature;
+float readHumidity();
+float readTemperature();
 
 #endif

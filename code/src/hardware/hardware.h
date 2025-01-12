@@ -5,12 +5,11 @@
 
 extern TM1637Display LedDisplay;
 
-extern BH1750 lightMeter;
+extern LTR_F216A lightMeter;
 
-extern OneWire oneWire;
-extern DallasTemperature tempSensor;
+extern Adafruit_SHT4x sht4;
 
 void initHardware();
-void LowBattery();
+bool readHallSwitch();
 
 #endif

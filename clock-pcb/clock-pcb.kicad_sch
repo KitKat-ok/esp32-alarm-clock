@@ -8512,16 +8512,6 @@
 		)
 		(uuid "0f35b0e4-e7d2-49c5-ac70-73b9467ac516")
 	)
-	(text "Can also be a smd cap"
-		(exclude_from_sim no)
-		(at 73.152 157.48 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "0fce22ed-501a-4d3b-8e22-95f05ffe0e27")
-	)
 	(text "unnecessary if the Power Mux works correctly"
 		(exclude_from_sim no)
 		(at 121.158 187.96 0)
