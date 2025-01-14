@@ -264,7 +264,10 @@ void runLoopFunction(void (*loopFunction)())
         loopFunction();
 
         // Check for any button press (low when pressed)
-        if (inputDetected == true)
+        if (digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
+            digitalRead(BUTTON_UP_PIN) == LOW ||
+            digitalRead(BUTTON_DOWN_PIN) == LOW ||
+            digitalRead(BUTTON_EXIT_PIN) == LOW)
         {
             lastInputTime = millis();
         }
@@ -566,13 +569,14 @@ Submenu *createAlarmsMenu()
 
 Submenu *alarmsSubmenu = createAlarmsMenu();
 
+bool AlarmMenuUpdate = true;
+
 void manageAlarms()
 {
-    static uint8_t currentState = 0; // 0: View Hour, 1: View Minute, 2: View Day, 3: Toggle Enabled, 4: Toggle SoundOn, 5: Delete Alarm
+    static uint8_t currentState = 0;
     static bool isEditing = false, upHeld = false, downHeld = false, selectHeld = false, exitHeld = false;
 
     uint8_t alarmIndex = alarmsSubmenu->entries[data.currentButton].text.toInt();
-    Serial.println(alarmIndex);
 
     auto drawMenuOption = [&](const String &label, int16_t x, int16_t y, bool selected, bool editing)
     {
@@ -620,6 +624,7 @@ void manageAlarms()
     {
         if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
         {
+            AlarmMenuUpdate = true;
             if (currentState == 0)
                 alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 1) % 24;
             else if (currentState == 1)
@@ -629,6 +634,7 @@ void manageAlarms()
         }
         else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
         {
+            AlarmMenuUpdate = true;
             if (currentState == 0)
                 alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 23) % 24;
             else if (currentState == 1)
@@ -638,31 +644,36 @@ void manageAlarms()
         }
     };
 
-    display.clearDisplay();
-    display.setTextColor(WHITE, BLACK);
+    if (AlarmMenuUpdate)
+    {
+        AlarmMenuUpdate = false;
+        display.clearDisplay();
+        display.setCursor(0, 0);
 
-    display.setCursor(1, 10);
-    display.println("Alarm " + String(alarmIndex));
-    display.setFont(&DejaVu_LGC_Sans_Bold_8);
-    display.setCursor(65,10);
-    display.print("Today:" + getShortCurrentWeekdayName());
+        display.setTextColor(WHITE, BLACK);
+        display.setCursor(1, 10);
+        display.println("Alarm " + String(alarmIndex));
+        display.setFont(&DejaVu_LGC_Sans_Bold_8);
+        display.setCursor(65, 10);
+        display.print("Today:" + getShortCurrentWeekdayName());
 
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    centerText(":", 25, 34);
+        display.setFont(&DejaVu_LGC_Sans_Bold_10);
+        centerText(":", 25, 34);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 35 - 18, 25, currentState == 0, isEditing && currentState == 0);
+        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 35 + 4, 25, currentState == 1, isEditing && currentState == 1);
+        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 1, 50, currentState == 3, isEditing && currentState == 3);
+        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 37, currentState == 2, isEditing && currentState == 2);
+        drawMenuOption("Sound: " + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 63, currentState == 4, isEditing && currentState == 4);
+        drawBitmapOption(SCREEN_WIDTH - 30, 20, currentState == 5, isEditing && currentState == 5);
 
-    display.setCursor(0, 0);
+        manager.oledDisplay();
+    }
 
     if (!isEditing)
     {
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 35 - 18, 25, currentState == 0, false);
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 35 + 4, 25, currentState == 1, false);
-        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 1, 50, currentState == 3, false);
-        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 37, currentState == 2, false);
-        drawMenuOption("Sound: " + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 63, currentState == 4, false);
-        drawBitmapOption(SCREEN_WIDTH - 30, 20, currentState == 5, false);
-
         if (checkButtonReleased(BUTTON_CONFIRM_PIN, selectHeld))
         {
+            AlarmMenuUpdate = true;
             if (currentState == 2)
                 alarms[alarmIndex].enabled = !alarms[alarmIndex].enabled;
             else if (currentState == 4)
@@ -671,40 +682,35 @@ void manageAlarms()
                 deleteAlarmStatic(alarmIndex);
             else
                 isEditing = true;
-
-            manager.oledDisplay();
         }
         else if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
         {
+            AlarmMenuUpdate = true;
             exitLoopFunction = true;
+            AlarmMenuUpdate = true;
             editCurrentMenuEntry(String(alarmIndex) + " " + String(alarms[alarmIndex].enabled ? "On" : "Off") + " " + getShortWeekdayName(alarms[alarmIndex].day + 1) + " " + formatWithLeadingZero(alarms[alarmIndex].hours) + ":" + formatWithLeadingZero(alarms[alarmIndex].minutes));
         }
         else if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
         {
+            AlarmMenuUpdate = true;
             currentState = (currentState + 5) % 6;
         }
         else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
         {
+            AlarmMenuUpdate = true;
             currentState = (currentState + 1) % 6;
         }
     }
     else
     {
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 35 - 18, 25, currentState == 0, currentState == 0);
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 35 + 4, 25, currentState == 1, currentState == 1);
-        drawMenuOption("Day: " + getWeekdayName(alarms[alarmIndex].day + 1), 1, 50, currentState == 3, currentState == 3);
-        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 37, currentState == 2, currentState == 2);
-        drawMenuOption("Sound: " + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 63, currentState == 4, currentState == 4);
-        drawBitmapOption(SCREEN_WIDTH - 30, 20, currentState == 5, currentState == 5);
-
         updateAlarmValue();
 
         if (checkButtonReleased(BUTTON_CONFIRM_PIN, selectHeld) || checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
         {
+            AlarmMenuUpdate = true;
             isEditing = false;
         }
     }
-    manager.oledDisplay();
 }
 
 void deleteAlarmStatic(int index)

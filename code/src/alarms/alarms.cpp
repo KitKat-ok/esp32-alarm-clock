@@ -9,7 +9,7 @@ void createRiningingTask();
 void sendOnPostRequest();
 void sendOffPostRequest();
 
-void checkAlarm(int alarmHours, int alarmMinutes);
+void checkAlarm(int index);
 void checkAlarmsTask(void *pvParameters);
 
 void initialzeAlarmArray()
@@ -42,7 +42,7 @@ void checkAlarms()
   {
     if (alarms[i].day == currentDay && alarms[i].enabled == true && alarms[i].exists == true)
     {
-      checkAlarm(alarms[i].hours, alarms[i].minutes);
+      checkAlarm(i);
     }
   }
   if (powerConnected == true)
@@ -86,7 +86,9 @@ int lastRingingMinute = -1; // Initialized to an invalid minute
 int lastRingingHour = -1;   // Initialized to an invalid hour
 bool ringing = false;
 
-void checkAlarm(int alarmHours, int alarmMinutes)
+bool buzzerEnabled = false;
+
+void checkAlarm(int index)
 {
   // Get the current time
   int currentHours = hour();
@@ -94,9 +96,10 @@ void checkAlarm(int alarmHours, int alarmMinutes)
   Serial.print("Check Alarm Function");
 
   // Check if it's time for the alarm
-  if (currentHours == alarmHours && currentMinutes == alarmMinutes && (ringing == false || lastRingingMinute != currentMinutes || lastRingingHour != currentHours))
+  if (currentHours == alarms[index].hours && currentMinutes == alarms[index].minutes && (ringing == false || lastRingingMinute != currentMinutes || lastRingingHour != currentHours))
   {
     Serial.print("Alarm! It's time to wake up on ");
+    buzzerEnabled = alarms[index].soundOn;
     createRiningingTask();
 
     lastRingingMinute = currentMinutes;
@@ -138,13 +141,7 @@ void touchStopAlarm(int hour, bool ringOn)
 void ringAlarm(void *parameter)
 {
   unsigned long startTime = millis() + 180000;
-  unsigned long currentTime = millis();
-
-  unsigned long previousMillisLowBrightness = 0;
-  unsigned long previousMillisMaxBrightness = 0;
-  const long intervalBrightness = 3000;
-
-  bool ringOn = alarms[weekday() - 1].soundOn;
+  bool ringOn = buzzerEnabled;
 
   int currentHour = hour();
   int currentMinute = minute();
@@ -156,14 +153,16 @@ void ringAlarm(void *parameter)
   {
     sendOnPostRequest();
   }
+  Serial.println("Starting Alarm");
 
   while (true)
   {
-    Serial.println("ringin Alarm");
-    currentTime = millis();
+    int currentHour = hour();
+    int currentMinute = minute();
 
-    if ((currentTime >= startTime || WiFi.SSID() != "dragonn2" || WiFi.status() != WL_CONNECTED || (currentHour >= 11 && currentHour <= 21)) && ringOn == true)
+    if ((millis() >= startTime || WiFi.SSID() != SSID1 || WiFi.status() != WL_CONNECTED || (currentHour >= 11 && currentHour <= 21)) && ringOn == true)
     {
+      Serial.println("ringin Alarm");
 
       for (int i = 0; i < sizeof(alarmMelody) / sizeof(alarmMelody[0]); i++)
       {
@@ -176,7 +175,10 @@ void ringAlarm(void *parameter)
       vTaskDelay(100);
     }
     touchStopAlarm(currentHour, ringOn);
-
+    Serial.print("help");
+    Serial.println(startTime);
+    Serial.println(millis());
+    Serial.println(ringOn);
     vTaskDelay(pdMS_TO_TICKS(10));
   }
 }

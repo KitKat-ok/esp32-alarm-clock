@@ -190,6 +190,7 @@ void dimLedDisplay()
     int currentMinute = minute();
     Serial.println("raw light level: " + String(getLightLevel()));
     Serial.println("smoothened light level: " + String(lightLevel));
+    
     if (lightLevel < 5000)
     {
 
