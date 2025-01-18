@@ -305,10 +305,9 @@ bool checkForNight()
 
 bool getLightState()
 {
-    String url = "http://192.168.88.74/gateways/4276/RGB/0";
+    String url = "http://192.168.88.74/gateways/4276/RGB/0";    
     String jsonString = getStringRequest(url);
-    
-    DynamicJsonDocument jsonDoc(256);
+    JsonDocument jsonDoc;
     DeserializationError error = deserializeJson(jsonDoc, jsonString);
 
     if (error)
