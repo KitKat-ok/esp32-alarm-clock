@@ -42,15 +42,12 @@ void dimmingFunction(void *pvParameters)
     unsigned long previousMillisLight = 0;
 
     unsigned long previousMillisDimming = 0;
-    unsigned long intervalDimming = 1000;
+    unsigned long intervalDimming = 30000;
 
     unsigned long lastActionTime = 0;
     while (true)
     {
         dimmingTaskRunning = true;
-
-        int currentHour = hour();
-        int currentMinute = minute();
 
         while (true)
         {
@@ -158,7 +155,7 @@ void dimOledDisplay()
     Serial.println("raw light level: " + String(getLightLevel()));
     Serial.println("smoothened light level: " + String(lightLevel));
 
-    if (shouldTurnOffDisplay(getLightLevel()) == true)
+    if (shouldTurnOffDisplay(getLightLevel()) == true || (getLightState() == false && WiFi.SSID() == SSID1))
     {
         manager.oledDisable();
 
@@ -190,7 +187,7 @@ void dimLedDisplay()
     int currentMinute = minute();
     Serial.println("raw light level: " + String(getLightLevel()));
     Serial.println("smoothened light level: " + String(lightLevel));
-    
+
     if (lightLevel < 5000)
     {
 
@@ -304,4 +301,30 @@ bool checkForNight()
         else
             return false;
     }
+}
+
+bool getLightState()
+{
+    String url = "http://192.168.88.74/gateways/4276/RGB/0";
+    String jsonString = getStringRequest(url);
+    
+    DynamicJsonDocument jsonDoc(256);
+    DeserializationError error = deserializeJson(jsonDoc, jsonString);
+
+    if (error)
+    {
+        Serial.print("deserializeJson() returned ");
+        Serial.println(error.c_str());
+        return false; // Return false if deserialization fails
+    }
+
+    const char* state = jsonDoc["state"]; // Extract the state field
+
+    if (state != nullptr && strcmp(state, "ON") == 0)
+    {
+        Serial.println("Ligh is ON");
+        return true;
+    }
+    Serial.println("Ligh is OFF");
+    return false;
 }

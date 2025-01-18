@@ -13,6 +13,8 @@ int smoothTouchRead(int pin);
 bool checkForInput();
 bool checkForNight();
 
+bool getLightState();
+
 extern TaskHandle_t dimmingTask;
 extern bool dimmingTaskRunning;
 extern bool maxBrightness;

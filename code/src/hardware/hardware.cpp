@@ -39,7 +39,7 @@ void initHardware()
 bool readHallSwitch()
 {
   int pinState = digitalRead(HALL_SWITCH); // Read the pin state
-  return (pinState == LOW);                    // Return true if LOW, false if HIGH
+  return (pinState == LOW);                // Return true if LOW, false if HIGH
 }
 
 void initOledDisplay()
@@ -61,6 +61,7 @@ void initOledDisplay()
   delay(100);
   display.ssd1306_command(0xD9);
   display.ssd1306_command(30);
+  manager.oledFadeOut();
   Serial.println("OLed display initialized");
 }
 

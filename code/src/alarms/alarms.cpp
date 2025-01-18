@@ -123,9 +123,12 @@ void createRiningingTask()
   );
 }
 
+static unsigned long alarmStartTime = 0;  // Variable to store the start time
+
 void touchStopAlarm(int hour, bool ringOn)
 {
-  if (readHallSwitch() == true)
+
+  if (readHallSwitch() == true || (millis() - alarmStartTime >= 30 * 60 * 1000))
   {
     if (!(hour >= 11 && hour <= 21) || ringOn == false)
     {
@@ -138,6 +141,7 @@ void touchStopAlarm(int hour, bool ringOn)
   }
 }
 
+
 void ringAlarm(void *parameter)
 {
   unsigned long startTime = millis() + 180000;
@@ -148,6 +152,7 @@ void ringAlarm(void *parameter)
 
   int alarmMelody[] = {NOTE_A5, NOTE_A5, NOTE_A6, NOTE_A6, NOTE_A6, NOTE_A6, NOTE_A4, NOTE_A4};
   int alarmDurations[] = {4, 4, 4, 7, 7, 7, 4, 4};
+  alarmStartTime = millis();
 
   if (!(currentHour >= 11 && currentHour <= 21) || ringOn == false)
   {
