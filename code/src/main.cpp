@@ -17,7 +17,6 @@ void setup()
   syncTimeLibWithRTC();
   LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
 
-  // Check if both buttons are pressed to enable OTA
   int upButtonState = digitalRead(BUTTON_UP_PIN);
   if (upButtonState == LOW || OTAEnabled == true)
   {
@@ -29,8 +28,6 @@ void setup()
     centerText("Connecting To WiFi", 30);
     centerText("Starting OTA", 40);
     manager.oledDisplay();
-    manager.oledFadeOut();
-    // Replace "1234" with a secure OTA password
     while (WiFi.status() != WL_CONNECTED)
     {
       delay(100);
@@ -44,13 +41,10 @@ void setup()
     manager.oledDisplay();
     String ipAddress = WiFi.localIP().toString();
 
-    // Extract the last two digits from the IP address
     String lastTwoDigits = ipAddress.substring(ipAddress.length() - 2);
 
-    // Convert the last two digits string to an integer
     int lastTwoDigitsInt = lastTwoDigits.toInt();
 
-    // Display the last two digits on the TM1637 display
     LedDisplay.showNumberDec(lastTwoDigitsInt);
 
     saveOtaValue(false);
@@ -72,8 +66,6 @@ void setup()
     }
     manager.oledDisable();
   }
-
-  // Proceed with regular initialization if OTA is not enabled
   if (!OTAEnabled)
   {
     initialzeAlarmArray();
