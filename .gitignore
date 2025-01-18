@@ -4,3 +4,62 @@
 .vscode/launch.json
 .vscode/ipch
 src/confidential.h
+
+
+dependencies.lock
+managed_components
+components/arduino
+
+.platformio/*
+!.platformio/.gitkeep
+
+.esp-idf/esp-idf
+.esp-idf/espressif/*
+
+!.esp-idf/.gitkeep
+!.esp-idf/espressif/.gitkeep
+
+trash/
+build/
+
+resources/personal/oldConfigs/*
+
+src/idf_component.yml*
+
+
+# Temporary kicad files
+*.000
+*.bak
+*.bck
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.kicad_prl
+*.sch-bak
+*~
+_autosave-*
+*.tmp
+*-save.pro
+*-save.kicad_pcb
+fp-info-cache
+.DS_Store
+
+# Netlist files (exported from Eeschema)
+*.net
+
+# Autorouter files (exported from Pcbnew)
+*.dsn
+*.ses
+
+# Exported BOM files
+*.xml
+*panel.csv
+
+# PCM build files
+build
+jlcpcb
+
+# Kicad lock files
+*.lck
+
+Yatchy-backups
+module-backups

@@ -1,6 +1,6 @@
 dependencies:
   espressif/mdns:
-    component_hash: f5267872ed0c810d1b281c41a567cace7b3a3695c0df9dff89f631e9ba426ed0
+    component_hash: d36b265164be5139f92de993f08f5ecaa0de0c0acbf84deee1f10bb5902d04ff
     dependencies:
     - name: idf
       require: private
@@ -8,13 +8,13 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.4.2
+    version: 1.4.3
   idf:
     source:
       type: idf
     version: 5.3.2
   joltwallet/littlefs:
-    component_hash: a023b819eff7a7740d61ae40b8e0c53dfe32843a99bc4aa6554867f3fc5091d3
+    component_hash: cc23c607cbc8671bc03b1b1b39ae13d8f5e8e23771e0b1c66599d04ecd0a3527
     dependencies:
     - name: idf
       require: private
@@ -22,7 +22,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.16.1
+    version: 1.16.2
 direct_dependencies:
 - espressif/mdns
 - idf
