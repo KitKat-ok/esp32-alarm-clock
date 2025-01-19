@@ -43,7 +43,7 @@ extern bool OTAEnabled;
 #define LED_DIM_THRESHOLD 30
 #define LED_DISABLE_THRESHOLD 1
 
-#define DIM_DELAY 30000
+#define DIM_DELAY 15000
 
 #define MAX_INCREASE_OF_LIGHT_LEVEL 1000
 

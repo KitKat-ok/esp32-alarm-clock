@@ -115,7 +115,10 @@ void dimmingFunction(void *pvParameters)
                         manager.oledFadeIn();
                         dimmed = false;
                     }
-
+                    if (manager.ScreenEnabled == false)
+                    {
+                        manager.oledEnable();
+                    }
                     vTaskDelay(10);
                     while (checkForInput() == true)
                     {
@@ -123,6 +126,7 @@ void dimmingFunction(void *pvParameters)
                     }
                 }
             }
+            dimOledDisplay();
             inputDetected = false;
         }
     }
@@ -305,7 +309,7 @@ bool checkForNight()
 
 bool getLightState()
 {
-    String url = "http://192.168.88.74/gateways/4276/RGB/0";    
+    String url = "http://192.168.88.74/gateways/4276/RGB/0";
     String jsonString = getStringRequest(url);
     JsonDocument jsonDoc;
     DeserializationError error = deserializeJson(jsonDoc, jsonString);
@@ -317,7 +321,7 @@ bool getLightState()
         return false; // Return false if deserialization fails
     }
 
-    const char* state = jsonDoc["state"]; // Extract the state field
+    const char *state = jsonDoc["state"]; // Extract the state field
 
     if (state != nullptr && strcmp(state, "ON") == 0)
     {

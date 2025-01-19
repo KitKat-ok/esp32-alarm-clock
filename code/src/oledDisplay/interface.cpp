@@ -766,6 +766,12 @@ void initAlarmMenus()
     }
 }
 
+void startOTA()
+{
+    saveOtaValue(true);
+    ESP.restart();
+}
+
 void handleMenus()
 {
     loopMenu();
@@ -786,7 +792,7 @@ void menuTask(void *parameter)
 
 void initMenus()
 {
-    entryMenu *WeatherItems = new entryMenu[MAX_MENU_ITEMS]{
+    entryMenu *WeatherItems = new entryMenu[4]{
         {"Current Weather", initWeatherMenu,
          currentWeatherMenu, nullptr, nullptr},
         {"Today's cast", initWeatherMenu, []()
@@ -796,30 +802,31 @@ void initMenus()
         {"Day After's Cast", initWeatherMenu, []()
          { displayWeatherCast(2); }, nullptr, nullptr}};
 
-    Submenu *weatherSubmenu = new Submenu{"Weather", WeatherItems, 4, MAX_MENU_ITEMS};
+    Submenu *weatherSubmenu = new Submenu{"Weather", WeatherItems, 4, 4};
 
     // Initialize main menu buttons
     entryMenu weatherButton = {"Weather", nullptr, nullptr, weatherSubmenu, nullptr};
 
-    entryMenu *chartItems = new entryMenu[MAX_MENU_ITEMS]{
+    entryMenu *chartItems = new entryMenu[3]{
         {"Temp Chart", initTempGraph, loopTempGraph, nullptr, nullptr},
         {"Humidity Chart", initHumidityGraph, loopHumidityGraph, nullptr, nullptr},
         {"Light Chart", initLightGraph, loopLightGraph, nullptr, nullptr},
     };
 
-    Submenu *chartSubmenu = new Submenu{"Charts", chartItems, 3, MAX_MENU_ITEMS};
+    Submenu *chartSubmenu = new Submenu{"Charts", chartItems, 3, 3};
 
     // Initialize main menu buttons
     entryMenu chartButton = {"Charts", nullptr, nullptr, chartSubmenu, nullptr};
 
-    entryMenu *debugItems = new entryMenu[MAX_MENU_ITEMS]{
+    entryMenu *debugItems = new entryMenu[5]{
         {"General Debug", nullptr, generalDebugMenu, nullptr, nullptr},
         {"Cpu Debug", nullptr, CPUDebugMenu, nullptr, nullptr},
         {"WiFi Debug", nullptr, wifiDebugMenu, nullptr, nullptr},
         {"FPS calc", nullptr, fpsCalc, nullptr, nullptr},
+        {"Upload OTA", startOTA, nullptr, nullptr, nullptr},
     };
 
-    Submenu *debugSubmenu = new Submenu{"Debug", debugItems, 4, MAX_MENU_ITEMS};
+    Submenu *debugSubmenu = new Submenu{"Debug", debugItems, 5, 5};
 
     // Initialize main menu buttons
     entryMenu debugButton = {"Debug", nullptr, nullptr, debugSubmenu, nullptr};
