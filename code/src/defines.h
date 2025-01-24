@@ -15,6 +15,7 @@
 #include <Preferences.h>
 #include <Adafruit_SHT4x.h>
 #include <oledManager.h>
+#include <buttonManager.h>
 #include <Grafici.h>
 
 #include "esp_pm.h"
@@ -48,11 +49,6 @@ extern bool OTAEnabled;
 #define MAX_INCREASE_OF_LIGHT_LEVEL 1000
 
 // Inputs
-#define BUTTON_UP_PIN      GPIO_NUM_12
-#define BUTTON_DOWN_PIN    GPIO_NUM_13
-#define BUTTON_CONFIRM_PIN GPIO_NUM_25
-#define BUTTON_EXIT_PIN    GPIO_NUM_26
-
 #define HALL_SWITCH GPIO_NUM_39
 
 #define MAX_MENU_ITEMS 15
