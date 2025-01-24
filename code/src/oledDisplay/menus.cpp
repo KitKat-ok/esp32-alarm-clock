@@ -10,7 +10,7 @@ void initWeatherMenu()
 void checkExit()
 {
     static bool exitHeld = false;
-    if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+    if (buttons.checkExit())
     {
         manager.stopScrolling();
         displayed = false;

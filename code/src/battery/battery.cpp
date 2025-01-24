@@ -133,7 +133,7 @@ void manageBattery(void *parameter)
           {
             vTaskDelay(pdMS_TO_TICKS(500));
 
-            if (checkForInput())
+            if (buttons.checkInput())
             {
               esp_pm_config_t pm_config = {
                   .max_freq_mhz = 80,
@@ -195,7 +195,7 @@ void manageBattery(void *parameter)
 
             LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
 
-            if (checkForInput() == true)
+            if (buttons.checkInput() == true)
             {
               LedDisplay.setBrightness(0);
               currentHour = hour();
@@ -265,7 +265,7 @@ void initSleep()
 
   esp_sleep_enable_timer_wakeup(SLEEPING_TIME);
 
-  touchSleepWakeUpEnable(TOUCH_BUTTON_PIN, TOUCH_BUTTON_THRESHOLD_ON_BATTERY);
+  touchSleepWakeUpEnable(TOUCH_BUTTON_PIN, TOUCH_BUTTON_THRESHOLD);
 
   esp_sleep_enable_touchpad_wakeup();
   initializedSleep = true;
@@ -329,7 +329,7 @@ void listenToSleep()
     initializedSleep = false;
     checkPower();
     delay(200);
-    if (checkForInput())
+    if (buttons.checkInput())
     {
       esp_pm_config_t pm_config = {
           .max_freq_mhz = 80,

@@ -76,7 +76,7 @@ void dimmingFunction(void *pvParameters)
                 previousMillisDimming = currentMillis;
             }
             vTaskDelay(10);
-            if (checkForInput() == true)
+            if (buttons.checkInput() == true)
             {
                 inputDetected = true;
                 manager.oledEnable();
@@ -107,7 +107,7 @@ void dimmingFunction(void *pvParameters)
             {
 
                 vTaskDelay(10);
-                if (checkForInput() == true)
+                if (buttons.checkInput() == true)
                 {
                     lastActionTime = millis();
                     if (dimmed == true)
@@ -120,7 +120,7 @@ void dimmingFunction(void *pvParameters)
                         manager.oledEnable();
                     }
                     vTaskDelay(10);
-                    while (checkForInput() == true)
+                    while (buttons.checkInput() == true)
                     {
                         lastActionTime = millis();
                     }
@@ -219,65 +219,6 @@ float getLightLevel()
 {
     float currentLightLevel = lightMeter.readBrightnessInLux(); // Read the current light level from BH1750 sensor
     return currentLightLevel;
-}
-
-int touchSamples[NUM_TOUCH_SAMPLES];
-int touchSampleIndex = 0;
-
-int smoothTouchRead(int pin)
-{
-    int sum = 0;
-    touchSamples[touchSampleIndex] = touchRead(pin);
-    touchSampleIndex = (touchSampleIndex + 1) % NUM_TOUCH_SAMPLES;
-
-    for (int i = 0; i < NUM_TOUCH_SAMPLES; i++)
-    {
-        sum += touchSamples[i];
-    }
-
-    return sum / NUM_TOUCH_SAMPLES;
-}
-
-bool checkForInput()
-{
-    int threshold;
-    if (powerConnected == false)
-    {
-        threshold = TOUCH_BUTTON_THRESHOLD_ON_BATTERY;
-    }
-    else if (inputDetected == true)
-    {
-        threshold = TOUCH_BUTTON_THRESHOLD_WHEN_ALREADY_TOUCHED;
-    }
-    else
-    {
-        threshold = TOUCH_BUTTON_THRESHOLD;
-    }
-
-    if (smoothTouchRead(TOUCH_BUTTON_PIN) < threshold ||
-        digitalRead(BUTTON_UP_PIN) == LOW ||
-        digitalRead(BUTTON_DOWN_PIN) == LOW ||
-        digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-        digitalRead(BUTTON_EXIT_PIN) == LOW)
-    {
-        delay(50);
-        if (smoothTouchRead(TOUCH_BUTTON_PIN) < threshold ||
-            digitalRead(BUTTON_UP_PIN) == LOW ||
-            digitalRead(BUTTON_DOWN_PIN) == LOW ||
-            digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-            digitalRead(BUTTON_EXIT_PIN) == LOW)
-        {
-            return true;
-        }
-        else
-        {
-            return true;
-        }
-    }
-    else
-    {
-        return false;
-    }
 }
 
 bool checkForNight()

@@ -48,33 +48,9 @@ int stackPointer = -1;
 unsigned long lastInputTime = 0;
 bool startedLoop = false;
 
-bool DownHeld = false;
-bool UpHeld = false;
-
 bool menuRunning = true;
 
 bool exitLoopFunction = false;
-
-bool checkButtonReleased(int pin, bool &heldState)
-{
-    bool pressed = digitalRead(pin) == LOW;
-
-    if (!pressed && heldState)
-    {
-        heldState = false;
-        return true;
-    }
-    else if (pressed && !heldState)
-    {
-        delay(1);
-        if (digitalRead(pin) == LOW)
-        {
-            heldState = true;
-        }
-    }
-
-    return false;
-}
 
 void resetPreviousItems()
 {
@@ -196,10 +172,7 @@ void startIdleAnimation()
                 lastAnimationTime = millis();
             }
 
-            if (digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-                digitalRead(BUTTON_UP_PIN) == LOW ||
-                digitalRead(BUTTON_DOWN_PIN) == LOW ||
-                digitalRead(BUTTON_EXIT_PIN) == LOW)
+            if (buttons.checkButtonInput())
             {
                 updateLastInputTime();
                 currentState = IDLE;
@@ -264,10 +237,7 @@ void runLoopFunction(void (*loopFunction)())
         loopFunction();
 
         // Check for any button press (low when pressed)
-        if (digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-            digitalRead(BUTTON_UP_PIN) == LOW ||
-            digitalRead(BUTTON_DOWN_PIN) == LOW ||
-            digitalRead(BUTTON_EXIT_PIN) == LOW)
+        if (buttons.checkButtonInput())
         {
             lastInputTime = millis();
         }
@@ -356,13 +326,8 @@ void handleConfirm()
 
 void loopMenu()
 {
-    static bool upHeld = false;
-    static bool downHeld = false;
-    static bool confirmHeld = false;
-    static bool exitHeld = false;
-
     // Check for button actions regardless of timer state
-    if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
+    if (buttons.checkUp())
     {
         data.currentButton = max(data.currentButton - 1, 0);
         showMenu();
@@ -370,7 +335,7 @@ void loopMenu()
         timerActive = false;      // Stop the timer
     }
 
-    if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
+    if (buttons.checkDown())
     {
         data.currentButton = min(data.currentButton + 1, (data.isSubmenu ? data.submenuCount - 1 : data.totalMenus - 1));
         showMenu();
@@ -378,14 +343,14 @@ void loopMenu()
         timerActive = false;      // Stop the timer
     }
 
-    if (checkButtonReleased(BUTTON_CONFIRM_PIN, confirmHeld))
+    if (buttons.checkConfirm())
     {
         handleConfirm();
         lastInputTime = millis(); // Reset last input time
         timerActive = false;      // Stop the timer
     }
 
-    if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+    if (buttons.checkExit())
     {
         timerActive = false;      // Stop the timer
         lastInputTime = millis(); // Reset last input time
@@ -393,10 +358,7 @@ void loopMenu()
     }
 
     // If no button is pressed, check for idle timeout
-    if (!(digitalRead(BUTTON_CONFIRM_PIN) == LOW ||
-          digitalRead(BUTTON_UP_PIN) == LOW ||
-          digitalRead(BUTTON_DOWN_PIN) == LOW ||
-          digitalRead(BUTTON_EXIT_PIN) == LOW))
+    if (!(buttons.checkButtonInput()))
     {
         // No button is pressed, check for idle timeout
         if (!timerActive)
@@ -574,9 +536,8 @@ bool AlarmMenuUpdate = true;
 void manageAlarms()
 {
     static uint8_t currentState = 0;
-    static bool isEditing = false, upHeld = false, downHeld = false, selectHeld = false, exitHeld = false;
-
     uint8_t alarmIndex = alarmsSubmenu->entries[data.currentButton].text.toInt();
+    static bool isEditing = false;
 
     auto drawMenuOption = [&](const String &label, int16_t x, int16_t y, bool selected, bool editing)
     {
@@ -622,7 +583,7 @@ void manageAlarms()
 
     auto updateAlarmValue = [&]()
     {
-        if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
+        if (buttons.checkUp())
         {
             AlarmMenuUpdate = true;
             if (currentState == 0)
@@ -632,7 +593,7 @@ void manageAlarms()
             else if (currentState == 3)
                 alarms[alarmIndex].day = (alarms[alarmIndex].day + 1) % 7;
         }
-        else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
+        else if (buttons.checkDown())
         {
             AlarmMenuUpdate = true;
             if (currentState == 0)
@@ -671,7 +632,7 @@ void manageAlarms()
 
     if (!isEditing)
     {
-        if (checkButtonReleased(BUTTON_CONFIRM_PIN, selectHeld))
+        if (buttons.checkConfirm())
         {
             AlarmMenuUpdate = true;
             if (currentState == 2)
@@ -683,19 +644,19 @@ void manageAlarms()
             else
                 isEditing = true;
         }
-        else if (checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+        else if (buttons.checkExit())
         {
             AlarmMenuUpdate = true;
             exitLoopFunction = true;
             AlarmMenuUpdate = true;
             editCurrentMenuEntry(String(alarmIndex) + " " + String(alarms[alarmIndex].enabled ? "On" : "Off") + " " + getShortWeekdayName(alarms[alarmIndex].day + 1) + " " + formatWithLeadingZero(alarms[alarmIndex].hours) + ":" + formatWithLeadingZero(alarms[alarmIndex].minutes));
         }
-        else if (checkButtonReleased(BUTTON_UP_PIN, upHeld))
+        else if (buttons.checkUp())
         {
             AlarmMenuUpdate = true;
             currentState = (currentState + 5) % 6;
         }
-        else if (checkButtonReleased(BUTTON_DOWN_PIN, downHeld))
+        else if (buttons.checkDown())
         {
             AlarmMenuUpdate = true;
             currentState = (currentState + 1) % 6;
@@ -705,7 +666,7 @@ void manageAlarms()
     {
         updateAlarmValue();
 
-        if (checkButtonReleased(BUTTON_CONFIRM_PIN, selectHeld) || checkButtonReleased(BUTTON_EXIT_PIN, exitHeld))
+        if (buttons.checkConfirm() || buttons.checkExit())
         {
             AlarmMenuUpdate = true;
             isEditing = false;

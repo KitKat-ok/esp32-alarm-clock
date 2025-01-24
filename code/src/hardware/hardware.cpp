@@ -29,6 +29,7 @@ void initHardware()
   pinMode(HALL_SWITCH, INPUT);
   initButtons();
   touchSetCycles(1000, 1000);
+  touchRead(TOUCH_BUTTON_PIN);
   initBuzzer();
   initOledDisplay();
   initLedDisplay();
@@ -86,6 +87,7 @@ void initButtons()
   pinMode(BUTTON_DOWN_PIN, INPUT_PULLUP);
   pinMode(BUTTON_CONFIRM_PIN, INPUT_PULLUP);
   pinMode(BUTTON_EXIT_PIN, INPUT_PULLUP);
+  buttons.createTask();
   Serial.println("Buttons initialized");
 }
 

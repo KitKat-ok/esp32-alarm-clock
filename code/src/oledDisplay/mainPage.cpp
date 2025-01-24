@@ -34,10 +34,32 @@ unsigned long previousMillisFirstMenu = 0; // Store the last time the display wa
 const long intervalFirstMenu = 1000;       // Interval at which to run the code (15 seconds)
 
 bool previousInputState = false;
+bool currentInputState = false;
+bool isBeingHeld = false;
 
 void showMainPage()
 {
-    bool currentInputState = checkForInput();
+    if (buttons.checkTouch() && !isBeingHeld)
+    {
+        // Touch initially pressed
+        if (touchRead(TOUCH_BUTTON_PIN) < TOUCH_BUTTON_THRESHOLD)
+        {
+            currentInputState = true;
+            isBeingHeld = true;
+            Serial.println("Held");
+        }
+    }
+
+    if (isBeingHeld)
+    {
+        // Check if touch is still being held
+        if (touchRead(TOUCH_BUTTON_PIN) >= TOUCH_BUTTON_THRESHOLD)
+        {
+            currentInputState = false;
+            isBeingHeld = false;
+            Serial.println("Released");
+        }
+    }
     if (currentInputState == true && previousInputState == false)
     {
         turnOffScreensaver();
@@ -287,6 +309,7 @@ void showSensorPage()
 
 void cyclePages()
 {
+    manager.stopScrolling();
     if (LastPageShown == 1)
     {
         PageNumberToShow = 2;
@@ -340,13 +363,11 @@ void showScreensaver()
     int16_t x, y;
     boolean resort = false;
 
-    manager.oledDisplay();
-    manager.stopScrolling();
     display.clearDisplay();
 
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
     {
-        if (checkForInput() == true)
+        if (buttons.checkTouch() == true)
         {
             turnOffScreensaver();
             break;
@@ -382,4 +403,6 @@ void showScreensaver()
     {
         qsort(flyer, N_FLYERS, sizeof(struct Flyer), compare);
     }
+    manager.oledDisplay();
+    delay(15);
 }

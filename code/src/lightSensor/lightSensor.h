@@ -10,7 +10,6 @@ void dimLedDisplay();
 float getLightLevel();
 int smoothTouchRead(int pin);
 
-bool checkForInput();
 bool checkForNight();
 
 bool getLightState();
