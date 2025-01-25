@@ -244,6 +244,7 @@ void wifiDebugMenu()
     centerText(String(WiFi.macAddress()), 63);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     manager.oledDisplay();
+    delay(10);
 }
 
 void CPUDebugMenu()
@@ -260,6 +261,7 @@ void CPUDebugMenu()
     centerText("Chip model:", 44);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     manager.oledDisplay();
+    delay(10);
 }
 
 void generalDebugMenu()
@@ -283,4 +285,5 @@ void generalDebugMenu()
     }
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     manager.oledDisplay();
+    delay(10);
 }
