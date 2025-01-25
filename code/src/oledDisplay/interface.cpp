@@ -106,6 +106,10 @@ void showMenu()
     }
 
     manager.oledDisplay();
+    while (manager.finishedDisplaying == false);
+    {
+        
+    }
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     display.setTextColor(SSD1306_WHITE);
 }
@@ -354,6 +358,7 @@ void loopMenu()
     {
         timerActive = false;      // Stop the timer
         lastInputTime = millis(); // Reset last input time
+        buttons.checkButtonInput();
         exitSubmenu();
     }
 

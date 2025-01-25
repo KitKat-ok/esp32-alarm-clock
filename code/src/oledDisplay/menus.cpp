@@ -10,6 +10,8 @@ void initWeatherMenu()
 void checkExit()
 {
     static bool exitHeld = false;
+    buttons.checkConfirm();
+
     if (buttons.checkExit())
     {
         manager.stopScrolling();
@@ -20,7 +22,12 @@ void checkExit()
 
 void currentWeatherMenu()
 {
-    currentWeather();
+    initWeatherMenu();
+    if (displayed == false)
+    {
+        currentWeather();
+        displayed = true;
+    }
     checkExit();
 }
 
