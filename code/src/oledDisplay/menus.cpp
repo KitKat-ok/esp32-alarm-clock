@@ -60,12 +60,19 @@ void currentWeather()
     display.print(currentWeatherData.windSpeed, 1); // Wind speed with 1 decimal place
     display.print(" m/s ");
     display.print(convertWindDirection(currentWeatherData.windDirection));
-
     // Display the weather condition description
-    display.setCursor(0, SCREEN_HEIGHT - 5);
+    display.setCursor(1, SCREEN_HEIGHT - 5);
     display.setFont(&Roboto_Black_9);
     display.fillRect(0, SCREEN_HEIGHT - 16, SCREEN_WIDTH, 16, SSD1306_BLACK);
-    display.print(currentWeatherData.main); // Print the weather condition description
+    if (isWeatherAvailable == true)
+    {
+        display.print(currentWeatherData.main); // Print the weather condition description
+    }
+    else
+    {
+        display.setCursor(0, SCREEN_HEIGHT - 5);
+        display.print("N/A                     ");
+    }
     display.print("\t");
     display.print("");
 
@@ -117,7 +124,7 @@ void displayWeatherCast(int dayIndex)
 
         if (isWeatherAvailable == true)
         {
-            display.setCursor(0, SCREEN_HEIGHT - 5);
+            display.setCursor(1, SCREEN_HEIGHT - 5);
             display.print(weatherConditionIdToStr(weatherDailyForecastData[dayIndex].weatherConditionId));
             display.print("");
         }
