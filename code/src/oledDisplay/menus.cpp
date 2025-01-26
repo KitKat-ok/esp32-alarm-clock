@@ -22,7 +22,6 @@ void checkExit()
 
 void currentWeatherMenu()
 {
-    initWeatherMenu();
     if (displayed == false)
     {
         currentWeather();

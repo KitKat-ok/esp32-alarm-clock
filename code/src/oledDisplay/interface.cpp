@@ -212,6 +212,7 @@ void exitSubmenu()
         Serial.println("No submenu to exit.");
         idleEnabled = true;
         timerActive = true;
+        displayedWeather = false;
         lastInputTime = millis();
         lastInputTime = lastInputTime - 10001111;
         currentState = IDLE;
