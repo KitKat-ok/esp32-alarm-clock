@@ -35,6 +35,7 @@ void createDimmingTask()
 bool dimmed = false;
 
 float lightLevel = 0.0;
+int lightState = 0;
 
 void dimmingFunction(void *pvParameters)
 {
@@ -42,7 +43,10 @@ void dimmingFunction(void *pvParameters)
     unsigned long previousMillisLight = 0;
 
     unsigned long previousMillisDimming = 0;
-    unsigned long intervalDimming = 30000;
+    unsigned long intervalDimming = 1000;
+
+    unsigned long previousMillisState = 0;
+    unsigned long intervalState = 30000;
 
     unsigned long lastActionTime = 0;
     while (true)
@@ -62,6 +66,12 @@ void dimmingFunction(void *pvParameters)
                 // Add the new reading to the end of the array
                 lightArray[CHART_READINGS - 1] = getLightLevel(); // Replace with your temperature reading function
                 previousMillisLight = currentMillis;
+            }
+
+            if (currentMillis - previousMillisState >= intervalState && WiFi.isConnected() == true && powerConnected == true)
+            {
+                lightState = getLightState();
+                delay(100);
             }
 
             if (currentMillis - previousMillisDimming >= intervalDimming && powerConnected == true)
@@ -159,7 +169,7 @@ void dimOledDisplay()
     Serial.println("raw light level: " + String(getLightLevel()));
     Serial.println("smoothened light level: " + String(lightLevel));
 
-    if (shouldTurnOffDisplay(getLightLevel()) == true || (getLightState() == false && WiFi.SSID() == SSID1))
+    if (shouldTurnOffDisplay(getLightLevel()) == true || (lightState == 0 && WiFi.SSID() == SSID1 && lightState != 3 && WiFi.isConnected() == true))
     {
         manager.oledDisable();
 
@@ -248,13 +258,13 @@ bool checkForNight()
     }
 }
 
-bool getLightState()
+int getLightState()
 {
     String url = "http://192.168.88.74/gateways/4276/RGB/0";
     String jsonString = getStringRequest(url);
-    if (jsonString == "{}")
+    if (jsonString == "")
     {
-        return false;
+        return 3;
     }
 
     JsonDocument jsonDoc;
@@ -264,7 +274,7 @@ bool getLightState()
     {
         Serial.print("deserializeJson() returned ");
         Serial.println(error.c_str());
-        return false; // Return false if deserialization fails
+        return 3; // Return false if deserialization fails
     }
 
     const char *state = jsonDoc["state"]; // Extract the state field
@@ -272,8 +282,8 @@ bool getLightState()
     if (state != nullptr && strcmp(state, "ON") == 0)
     {
         Serial.println("Ligh is ON");
-        return true;
+        return 1;
     }
     Serial.println("Ligh is OFF");
-    return false;
+    return 0;
 }
