@@ -68,9 +68,10 @@ void dimmingFunction(void *pvParameters)
                 previousMillisLight = currentMillis;
             }
 
-            if (currentMillis - previousMillisState >= intervalState && WiFi.isConnected() == true && powerConnected == true)
+            if (currentMillis - previousMillisState >= intervalState && WiFi.isConnected() == true && powerConnected == true && WiFi.SSID() == SSID1)
             {
                 lightState = getLightState();
+                previousMillisState = currentMillis;
                 delay(100);
             }
 
