@@ -252,6 +252,11 @@ bool getLightState()
 {
     String url = "http://192.168.88.74/gateways/4276/RGB/0";
     String jsonString = getStringRequest(url);
+    if (jsonString == "{}")
+    {
+        return false;
+    }
+
     JsonDocument jsonDoc;
     DeserializationError error = deserializeJson(jsonDoc, jsonString);
 
