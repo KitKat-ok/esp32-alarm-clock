@@ -4,8 +4,6 @@ int previousMinute = -1;
 
 void showTimeTask(void *pvParameters);
 
-bool LedTaskRunning = false;
-
 TaskHandle_t LedTask;
 
 void createLedDisplayTask()
@@ -32,10 +30,7 @@ void showTimeTask(void *pvParameters)
   {
     while (maxBrightness == false)
     {
-      bool LedTaskRunning = true;
       unsigned long currentMillis = millis(); // Get the current time
-      int currentHour = hour();
-      int currentMinute = minute();
       if (currentMillis - previousMillis >= interval)
       {
         previousMillis = currentMillis;
@@ -54,37 +49,30 @@ void showTimeTask(void *pvParameters)
 
     Serial.println("Setting max brightness Led display");
 
-    int currentHour = hour();
-    int currentMinute = minute();
-    if (currentHour >= 23 || currentHour < 10)
+    if (hour() >= 23 || hour() < 10)
     {
       LedDisplay.setBrightness(2);
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
       while (maxBrightness == true)
       {
-        int currentHour = hour();
-        int currentMinute = minute();
-        LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+        LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
         vTaskDelay(1000);
       }
       dimLedDisplay();
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
     }
     else
     {
       LedDisplay.setBrightness(7);
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
       while (maxBrightness == true)
       {
-        int currentHour = hour();
-        int currentMinute = minute();
-        LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+
+        LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
         vTaskDelay(1000);
       }
       dimLedDisplay();
-      int currentHour = hour();
-      int currentMinute = minute();
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
     }
   }
 }

@@ -214,9 +214,6 @@ float previousLightLevel = 0.0;
 
 void dimOledDisplay()
 {
-    int currentHour = hour();
-    int currentMinute = minute();
-
     if (shouldTurnOffDisplay(lightLevel) == true || (mmwaveState == 0 && WiFi.SSID() == SSID1 && mmwaveState != 3 && WiFi.isConnected() == true))
     {
         manager.sendOledAction(OLED_DISABLE);
@@ -273,9 +270,6 @@ bool disableHysteresisState = false;
 
 void dimLedDisplay()
 {
-    int currentHour = hour();
-    int currentMinute = minute();
-
     if (lightLevel < 5000)
     {
         if (disableHysteresisState)

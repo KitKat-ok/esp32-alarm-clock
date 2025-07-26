@@ -138,7 +138,7 @@ void createWifiTask()
 {
   wifi_init_config_t wifi_init_config = WIFI_INIT_CONFIG_DEFAULT();
 
-  esp_err_t ret = esp_wifi_init(&wifi_init_config);
+  esp_wifi_init(&wifi_init_config);
   xTaskCreatePinnedToCore(
       connectToWiFi, // Task function
       "WiFiTask",    // Task name
@@ -196,9 +196,6 @@ void WiFiEvent(WiFiEvent_t event)
 {
   Serial.println("WiFi event");
 
-  // Declare WiFiTaskState outside the switch block
-  eTaskState WiFiTaskState;
-
   switch (event)
   {
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
@@ -219,7 +216,6 @@ void WiFiEvent(WiFiEvent_t event)
     break;
 
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    WiFiTaskState = eTaskGetState(wifiTask); // Assign the task state here
     if (powerConnected == true)
     {
       turnOffWifi();
@@ -233,7 +229,6 @@ void WiFiEvent(WiFiEvent_t event)
     break;
 
   case ARDUINO_EVENT_PROV_CRED_FAIL:
-    WiFiTaskState = eTaskGetState(wifiTask); // Assign the task state here
     if (powerConnected == true)
     {
       turnOffWifi();
@@ -246,7 +241,6 @@ void WiFiEvent(WiFiEvent_t event)
     }
     break;
   case ARDUINO_EVENT_WIFI_STA_LOST_IP:
-    WiFiTaskState = eTaskGetState(wifiTask); // Assign the task state here
     if (powerConnected == true)
     {
       turnOffWifi();

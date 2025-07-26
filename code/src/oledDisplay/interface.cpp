@@ -216,7 +216,6 @@ void exitSubmenu()
             data.currentSubmenu = nullptr;
             data.menuName = "Main Menu";
             data.isSubmenu = false;
-            data.currentButton = mainMenuLastSelectedIndex;
         }
         showMenu();
         Serial.println("Exited submenu, now in: " + data.menuName);
@@ -269,7 +268,6 @@ bool shouldExitLoop()
 
 void runLoopFunction(void (*loopFunction)())
 {
-    unsigned long lastInputTime = millis();
     exitLoopFunction = false;
 
     while (true)
@@ -299,6 +297,7 @@ void handleConfirm()
         if (selectedEntry.submenu != nullptr)
         {
             pushSubmenu(selectedEntry.submenu);
+            data.currentButton = mainMenuLastSelectedIndex;
             data.currentSubmenu = selectedEntry.submenu->entries;
             data.submenuCount = selectedEntry.submenu->count;
             data.menuName = selectedEntry.submenu->name;

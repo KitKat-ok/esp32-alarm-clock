@@ -177,9 +177,6 @@ void ringAlarm(void *parameter)
   bool ringOn = buzzerEnabled;
   bool lightOn = lightCtrlEnabled;
 
-  int currentHour = hour();
-  int currentMinute = minute();
-
   int alarmMelody[] = {NOTE_C5, NOTE_C5, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_G4, NOTE_G4};
   int alarmDurations[] = {8, 8, 8, 12, 12, 12, 8, 8};
   int SecAlarmMelody[] = {NOTE_C3, NOTE_C3, NOTE_B2, NOTE_B2, NOTE_B2, NOTE_B2, NOTE_G2, NOTE_G2};
@@ -202,7 +199,7 @@ void ringAlarm(void *parameter)
     {
       alarmDetectInput = (useAllTouch() != No_Seg);
     }
-    if ((millis() - startTime >= 15000 || WiFi.SSID() != SSID1 || WiFi.status() != WL_CONNECTED || (currentHour >= 11 && currentHour <= 21)) && ringOn == true)
+    if ((millis() - startTime >= 15000 || WiFi.SSID() != SSID1 || WiFi.status() != WL_CONNECTED || (hour() >= 11 && hour() <= 21)) && ringOn == true)
     {
       if (alarmDetectInput == false)
       {
@@ -222,7 +219,7 @@ void ringAlarm(void *parameter)
       }
     }
 
-    touchStopAlarm(currentHour, ringOn, lightOn, startTime);
+    touchStopAlarm(hour(), ringOn, lightOn, startTime);
     vTaskDelay(pdMS_TO_TICKS(1));
   }
 }

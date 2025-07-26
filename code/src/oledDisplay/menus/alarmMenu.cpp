@@ -154,7 +154,7 @@ void initManageAlarm()
     isEditingAlarm = false;
     AlarmMenuUpdate = true;
     inDaySelectionMode = false;
-    inkButtonStates btn = useButton();
+    useButton();
 }
 
 void manageAlarms()
@@ -163,7 +163,6 @@ void manageAlarms()
     bool exitAlarm = false;
 
     static unsigned long lastRepeatTime = 0;
-    const unsigned long repeatInterval = 150;
     inkButtonStates btn = useButton();
     int labelWidth = 0;
 

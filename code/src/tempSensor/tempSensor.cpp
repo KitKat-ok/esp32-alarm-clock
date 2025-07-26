@@ -3,7 +3,6 @@ float readTemperature()
 {
     sensors_event_t humidity, temp;
 
-    uint32_t timestamp = millis();
     sht4.getEvent(&humidity, &temp); // Populate temp and humidity objects with fresh data
     return temp.temperature;
 }
@@ -12,7 +11,6 @@ float readHumidity()
 {
     sensors_event_t humidity, temp;
 
-    uint32_t timestamp = millis();
     sht4.getEvent(&humidity, &temp); // Populate temp and humidity objects with fresh data
     return humidity.relative_humidity;
 }
