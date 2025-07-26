@@ -69,7 +69,7 @@ void createDimmingTask()
     xTaskCreatePinnedToCore(
         oledWakeupTask,        /* Task function. */
         "InputOledTask",       /* String with name of task. */
-        2048,                  /* Stack size in words. */
+        4096,                  /* Stack size in words. */
         NULL,                  /* Parameter passed as input of the task */
         3,                     /* Priority of the task. */
         &oledWakeupTaskHandle, /* Task handle. */
