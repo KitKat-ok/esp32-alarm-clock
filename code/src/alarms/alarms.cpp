@@ -127,7 +127,7 @@ void createRiningingTask()
   xTaskCreatePinnedToCore(
       ringAlarm,   // Function to implement the task
       "ringAlarm", // Name of the task
-      2048,        // Stack size (words)
+      4096,        // Stack size (words)
       NULL,        // Parameter to pass
       4,           // Priority
       &Alarm,      // Task handle
