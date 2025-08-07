@@ -1,7 +1,7 @@
 (footprint "tm1637_module"
-	(version 20240108)
+	(version 20241229)
 	(generator "pcbnew")
-	(generator_version "8.0")
+	(generator_version "9.0")
 	(layer "F.Cu")
 	(property "Reference" "REF**"
 		(at 0 4.25 0)
@@ -20,19 +20,6 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(uuid "c5d428db-8846-4b60-842f-f13458ea4a61")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(property "Footprint" ""
-		(at 0.045 0.02 0)
-		(unlocked yes)
-		(layer "F.Fab")
-		(hide yes)
-		(uuid "df7b0620-97b2-4918-8698-50c7451964c1")
 		(effects
 			(font
 				(size 1 1)
@@ -67,28 +54,6 @@
 		)
 	)
 	(attr smd)
-	(fp_circle
-		(center 1.379926 -10.8)
-		(end 1.379926 -12.55)
-		(stroke
-			(width 0.2)
-			(type default)
-		)
-		(fill none)
-		(layer "Edge.Cuts")
-		(uuid "7c563121-1ac0-4263-a421-1b3403c825a9")
-	)
-	(fp_circle
-		(center 1.379926 11.05)
-		(end 1.379926 9.3)
-		(stroke
-			(width 0.2)
-			(type default)
-		)
-		(fill none)
-		(layer "Edge.Cuts")
-		(uuid "cdde10cf-8f41-41e3-98d9-5e22a00d2f7c")
-	)
 	(fp_rect
 		(start -1.75 -14.25)
 		(end 4.5 14.25)
@@ -96,7 +61,7 @@
 			(width 0.1)
 			(type default)
 		)
-		(fill none)
+		(fill no)
 		(layer "F.CrtYd")
 		(uuid "8ce19047-c352-4508-9df1-d4d63d904bd1")
 	)
@@ -148,14 +113,10 @@
 		(uuid "0fadb4f2-552d-4d81-938e-92be345072f5")
 		(members "0bf2c5eb-6ab9-4816-b424-4d2485513a4a" "23db6c88-02c7-4ac6-a9ce-ccef4de8e589"
 			"26c29c8b-0445-4de0-8338-82656c8c058f" "63520074-7d99-4e1c-b4ae-55f8d98576d8"
-			"af408165-3ba1-4907-b83d-acd5c12cd1e2" "df7b0620-97b2-4918-8698-50c7451964c1"
-			"e8d2ff22-1b74-468e-984c-5a7cb4604760"
+			"af408165-3ba1-4907-b83d-acd5c12cd1e2" "e8d2ff22-1b74-468e-984c-5a7cb4604760"
 		)
 	)
-	(group ""
-		(uuid "5527937f-2aab-499d-8cca-8de241445cb8")
-		(members "7c563121-1ac0-4263-a421-1b3403c825a9" "cdde10cf-8f41-41e3-98d9-5e22a00d2f7c")
-	)
+	(embedded_fonts no)
 	(model "${KIPRJMOD}/3D/LED Display.step"
 		(offset
 			(xyz 7 21 -27.5)

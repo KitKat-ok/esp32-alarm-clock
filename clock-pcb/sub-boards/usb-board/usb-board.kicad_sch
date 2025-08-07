@@ -1,26 +1,28 @@
 (kicad_sch
-	(version 20231120)
+	(version 20250114)
 	(generator "eeschema")
-	(generator_version "8.0")
+	(generator_version "9.0")
 	(uuid "59df2326-3c19-48f6-80f9-a7f0f278deee")
 	(paper "A4")
 	(lib_symbols
-		(symbol "clock:Conn_01x02_Socket"
+		(symbol "Connector:Conn_01x04_Socket"
 			(pin_names
-				(offset 1.016) hide)
+				(offset 1.016)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "J"
-				(at 0 2.54 0)
+				(at 0 5.08 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Value" "Conn_01x02_Socket"
-				(at 0 -5.08 0)
+			(property "Value" "Conn_01x04_Socket"
+				(at 0 -7.62 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -45,7 +47,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Generic connector, single row, 01x02, script generated"
+			(property "Description" "Generic connector, single row, 01x04, script generated"
 				(at 0 0 0)
 				(effects
 					(font
@@ -80,11 +82,23 @@
 					(hide yes)
 				)
 			)
-			(symbol "Conn_01x02_Socket_1_1"
-				(arc
-					(start 0 -2.032)
-					(mid -0.5058 -2.54)
-					(end 0 -3.048)
+			(symbol "Conn_01x04_Socket_1_1"
+				(polyline
+					(pts
+						(xy -1.27 2.54) (xy -0.508 2.54)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 0) (xy -0.508 0)
+					)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -107,7 +121,7 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 0) (xy -0.508 0)
+						(xy -1.27 -5.08) (xy -0.508 -5.08)
 					)
 					(stroke
 						(width 0.1524)
@@ -118,9 +132,45 @@
 					)
 				)
 				(arc
-					(start 0 0.508)
+					(start 0 2.032)
+					(mid -0.5058 2.54)
+					(end 0 3.048)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -0.508)
 					(mid -0.5058 0)
-					(end 0 -0.508)
+					(end 0 0.508)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -3.048)
+					(mid -0.5058 -2.54)
+					(end 0 -2.032)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -5.588)
+					(mid -0.5058 -5.08)
+					(end 0 -4.572)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -130,7 +180,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 0 0)
+					(at -5.08 2.54 0)
 					(length 3.81)
 					(name "Pin_1"
 						(effects
@@ -148,7 +198,7 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -2.54 0)
+					(at -5.08 0 0)
 					(length 3.81)
 					(name "Pin_2"
 						(effects
@@ -165,11 +215,528 @@
 						)
 					)
 				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -5.08 0)
+					(length 3.81)
+					(name "Pin_4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
 			)
+			(embedded_fonts no)
+		)
+		(symbol "USB4145-03-0070-C:USB4145-03-0070-C"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 29.21 17.78 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+				)
+			)
+			(property "Value" "USB4145-03-0070-C"
+				(at 29.21 15.24 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+				)
+			)
+			(property "Footprint" "USB4145030070C"
+				(at 29.21 -84.76 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://gct.co/files/drawings/usb4145.pdf"
+				(at 29.21 -184.76 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Description" "USB Connectors USB-C Rec 3u\" Vert 16P SMT 0.7mm TH stakes H7.46mm T+R+Cap"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Height" "7.66"
+				(at 29.21 -384.76 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Mouser Part Number" "640-USB4145-3-0070-C"
+				(at 29.21 -484.76 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/GCT/USB4145-03-0070-C?qs=vvQtp7zwQdNoT6Ti9aciDw%3D%3D"
+				(at 29.21 -584.76 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Manufacturer_Name" "GCT (GLOBAL CONNECTOR TECHNOLOGY)"
+				(at 29.21 -684.76 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Manufacturer_Part_Number" "USB4145-03-0070-C"
+				(at 29.21 -784.76 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(symbol "USB4145-03-0070-C_1_1"
+				(rectangle
+					(start 5.08 12.7)
+					(end 27.94 -15.24)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin passive line
+					(at 0 0 0)
+					(length 5.08)
+					(name "MH1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "MH1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 0)
+					(length 5.08)
+					(name "MH4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "MH4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 17.78 270)
+					(length 5.08)
+					(name "GND_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 -20.32 90)
+					(length 5.08)
+					(name "GND_4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 17.78 270)
+					(length 5.08)
+					(name "VBUS_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 -20.32 90)
+					(length 5.08)
+					(name "VBUS_4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 12.7 17.78 270)
+					(length 5.08)
+					(name "CC1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 12.7 -20.32 90)
+					(length 5.08)
+					(name "SBU2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 15.24 17.78 270)
+					(length 5.08)
+					(name "DP1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 15.24 -20.32 90)
+					(length 5.08)
+					(name "DN2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 17.78 17.78 270)
+					(length 5.08)
+					(name "DN1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 17.78 -20.32 90)
+					(length 5.08)
+					(name "DP2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 20.32 17.78 270)
+					(length 5.08)
+					(name "SBU1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 20.32 -20.32 90)
+					(length 5.08)
+					(name "CC2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 17.78 270)
+					(length 5.08)
+					(name "VBUS_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -20.32 90)
+					(length 5.08)
+					(name "VBUS_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 25.4 17.78 270)
+					(length 5.08)
+					(name "GND_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 25.4 -20.32 90)
+					(length 5.08)
+					(name "GND_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 33.02 0 180)
+					(length 5.08)
+					(name "MH2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "MH2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 33.02 -2.54 180)
+					(length 5.08)
+					(name "MH3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "MH3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
 		)
 		(symbol "clock:ESD5Zxx"
-			(pin_numbers hide)
-			(pin_names hide)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -237,10 +804,10 @@
 			(symbol "ESD5Zxx_0_1"
 				(polyline
 					(pts
-						(xy 1.27 0) (xy -1.27 0)
+						(xy -1.27 -1.27) (xy -1.27 1.27) (xy -0.762 1.27)
 					)
 					(stroke
-						(width 0)
+						(width 0.254)
 						(type default)
 					)
 					(fill
@@ -249,10 +816,10 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 -1.27) (xy -1.27 1.27) (xy -0.762 1.27)
+						(xy 1.27 0) (xy -1.27 0)
 					)
 					(stroke
-						(width 0.254)
+						(width 0)
 						(type default)
 					)
 					(fill
@@ -310,12 +877,17 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "clock:GND"
 			(power)
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0) hide)
+				(offset 0)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -406,6 +978,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "clock:GND-power"
 			(power)
@@ -476,7 +1049,8 @@
 			(symbol "GND-power_1_1"
 				(pin power_in line
 					(at 0 0 270)
-					(length 0) hide
+					(length 0)
+					(hide yes)
 					(name "GND"
 						(effects
 							(font
@@ -493,9 +1067,12 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "clock:R"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
 				(offset 0)
 			)
@@ -614,307 +1191,17 @@
 					)
 				)
 			)
-		)
-		(symbol "clock:USB4140-GF-0070-C"
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "J"
-				(at 24.13 17.78 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-				)
-			)
-			(property "Value" "USB4140-GF-0070-C"
-				(at 24.13 15.24 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-				)
-			)
-			(property "Footprint" "USB4140GF0070C"
-				(at 24.13 -84.76 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "https://gct.co/files/drawings/usb4140.pdf?v=497efcde-01c1-4614-ade4-1b2d7a03c886"
-				(at 24.13 -184.76 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-					(hide yes)
-				)
-			)
-			(property "Description" "USB Connectors USB C Rec GF Vert 6P SMT 0.7mm TH stakes H 6.5mm"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Height" "6.7"
-				(at 24.13 -384.76 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-					(hide yes)
-				)
-			)
-			(property "Mouser Part Number" "640-USB4140-GF-0070C"
-				(at 24.13 -484.76 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-					(hide yes)
-				)
-			)
-			(property "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/GCT/USB4140-GF-0070-C?qs=Li%252BoUPsLEnvSB5aSpvSBUA%3D%3D"
-				(at 24.13 -584.76 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-					(hide yes)
-				)
-			)
-			(property "Manufacturer_Name" "GCT (GLOBAL CONNECTOR TECHNOLOGY)"
-				(at 24.13 -684.76 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-					(hide yes)
-				)
-			)
-			(property "Manufacturer_Part_Number" "USB4140-GF-0070-C"
-				(at 24.13 -784.76 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left top)
-					(hide yes)
-				)
-			)
-			(symbol "USB4140-GF-0070-C_1_1"
-				(rectangle
-					(start 5.08 12.7)
-					(end 22.86 -10.16)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(pin passive line
-					(at 20.32 17.78 270)
-					(length 5.08)
-					(name "GND_1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "A12"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 12.7 17.78 270)
-					(length 5.08)
-					(name "CC1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "A5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 17.78 17.78 270)
-					(length 5.08)
-					(name "VBUS_1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "A9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 17.78 270)
-					(length 5.08)
-					(name "GND_2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "B12"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 15.24 17.78 270)
-					(length 5.08)
-					(name "CC2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "B5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 10.16 17.78 270)
-					(length 5.08)
-					(name "VBUS_2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "B9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 0 0)
-					(length 5.08)
-					(name "MH1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "MH1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 27.94 0 180)
-					(length 5.08)
-					(name "MH2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "MH2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 12.7 -15.24 90)
-					(length 5.08)
-					(name "MH3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "MH3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 15.24 -15.24 90)
-					(length 5.08)
-					(name "MH4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "MH4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
+			(embedded_fonts no)
 		)
 		(symbol "clock:VBUS"
 			(power)
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0) hide)
+				(offset 0)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -986,7 +1273,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 0) (xy 0 2.54)
+						(xy 0 2.54) (xy 0.762 1.27)
 					)
 					(stroke
 						(width 0)
@@ -998,7 +1285,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
+						(xy 0 0) (xy 0 2.54)
 					)
 					(stroke
 						(width 0)
@@ -1029,101 +1316,22 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 	)
-	(wire
-		(pts
-			(xy 27.94 21.59) (xy 31.75 21.59)
+	(text "TVS diodes"
+		(exclude_from_sim no)
+		(at 103.124 29.21 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
 		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "33ce23b0-8da3-4123-88c9-86392f9342eb")
-	)
-	(wire
-		(pts
-			(xy 27.94 24.13) (xy 31.75 24.13)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3b6eee94-ece4-410a-ac7a-244b43143629")
-	)
-	(wire
-		(pts
-			(xy 35.56 40.64) (xy 35.56 41.91)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "55931a6e-5ce0-4973-b701-39fde3dbdb17")
-	)
-	(polyline
-		(pts
-			(xy 54.61 12.7) (xy 54.61 34.29)
-		)
-		(stroke
-			(width 0)
-			(type dash)
-		)
-		(uuid "5f8c9786-6b3e-4d7f-b093-66c055f28d18")
-	)
-	(polyline
-		(pts
-			(xy 12.7 95.25) (xy 58.42 95.25)
-		)
-		(stroke
-			(width 0)
-			(type dash)
-		)
-		(uuid "78b7d5de-653e-4629-a311-40e66d174b2b")
-	)
-	(wire
-		(pts
-			(xy 33.02 40.64) (xy 33.02 41.91)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "88a8f41c-9d06-41f1-914a-6fc8b065f56c")
-	)
-	(polyline
-		(pts
-			(xy 58.42 34.29) (xy 58.42 95.25)
-		)
-		(stroke
-			(width 0)
-			(type dash)
-		)
-		(uuid "d2fb8112-6053-4f57-98ce-0ee3ce909a3a")
-	)
-	(polyline
-		(pts
-			(xy 53.34 34.29) (xy 58.42 34.29)
-		)
-		(stroke
-			(width 0)
-			(type dash)
-		)
-		(uuid "f3a4f873-656d-4b9a-b4bb-46ac5d1ced70")
-	)
-	(polyline
-		(pts
-			(xy 12.7 34.29) (xy 54.61 34.29)
-		)
-		(stroke
-			(width 0)
-			(type dash)
-		)
-		(uuid "fc0b88b6-403d-477a-b7a6-6605d59865fc")
+		(uuid "349cef50-2a3d-4206-b078-a4e8817c2325")
 	)
 	(text "JST connector"
 		(exclude_from_sim no)
-		(at 46.99 32.766 0)
+		(at 54.356 29.21 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1133,7 +1341,7 @@
 	)
 	(text "USB connector"
 		(exclude_from_sim no)
-		(at 50.038 93.472 0)
+		(at 54.102 97.282 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1141,17 +1349,309 @@
 		)
 		(uuid "a66fd247-8a9f-43ec-b988-40401ff87a4e")
 	)
+	(polyline
+		(pts
+			(xy 109.22 12.7) (xy 109.22 30.48)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "1284ec18-15c3-4c75-8d70-9b06a88c4a9e")
+	)
+	(polyline
+		(pts
+			(xy 62.23 12.7) (xy 62.23 30.48)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "5f8c9786-6b3e-4d7f-b093-66c055f28d18")
+	)
+	(wire
+		(pts
+			(xy 40.64 93.98) (xy 40.64 92.71)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "653e0355-8971-4693-890c-8a72ffe0e3d1")
+	)
+	(polyline
+		(pts
+			(xy 12.7 99.06) (xy 62.23 99.06)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "78b7d5de-653e-4629-a311-40e66d174b2b")
+	)
+	(wire
+		(pts
+			(xy 33.02 38.1) (xy 33.02 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "88a8f41c-9d06-41f1-914a-6fc8b065f56c")
+	)
+	(polyline
+		(pts
+			(xy 62.23 30.48) (xy 109.22 30.48)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "99cbe2a3-131c-49b3-83a3-e77ed0d23eb2")
+	)
+	(polyline
+		(pts
+			(xy 62.23 30.48) (xy 62.23 99.06)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "d2fb8112-6053-4f57-98ce-0ee3ce909a3a")
+	)
+	(polyline
+		(pts
+			(xy 12.7 30.48) (xy 62.23 30.48)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "fc0b88b6-403d-477a-b7a6-6605d59865fc")
+	)
+	(global_label "DN"
+		(shape input)
+		(at 38.1 46.99 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "1814af92-fbb2-4e68-ad83-7b2838555d71")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 38.1 41.4043 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "DP"
+		(shape input)
+		(at 35.56 46.99 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2c788297-8d6d-4db8-bbdc-705b8920878e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 35.56 41.4648 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "DP"
+		(shape input)
+		(at 95.25 20.32 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "4539101c-412d-4c62-8400-2f813063c8ab")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.25 25.8452 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "DN"
+		(shape input)
+		(at 35.56 19.05 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "4c8ebbc9-c241-4335-baee-7d389bebb4bf")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 30.6285 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "DN"
+		(shape input)
+		(at 35.56 85.09 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "78a241a2-94f1-4542-83fe-3633b2d8ae5d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 35.56 90.6757 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "DN"
+		(shape input)
+		(at 81.28 20.32 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "ca5c7a30-8e75-43ba-9652-e3970cffc465")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 81.28 25.9057 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "DP"
+		(shape input)
+		(at 38.1 85.09 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "e7b8d858-f02b-40af-93eb-0d4fa0135a77")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 38.1 90.6152 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "DP"
+		(shape input)
+		(at 35.56 21.59 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "f49a9fd6-dd82-4422-8e64-9ea396b2d846")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 30.689 21.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(symbol
-		(lib_id "clock:VBUS")
-		(at 38.1 49.53 0)
+		(lib_id "USB4145-03-0070-C:USB4145-03-0070-C")
+		(at 20.32 64.77 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "249ab8db-9b28-4429-b8d2-2f82e68390c7")
-		(property "Reference" "#PWR08"
-			(at 38.1 53.34 0)
+		(uuid "054a1b86-18de-4a04-b21b-5d79bbba2cef")
+		(property "Reference" "J1"
+			(at 23.876 94.234 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "USB4145-03-0070-C"
+			(at 23.876 96.774 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "clock:USB4145030070C"
+			(at 49.53 149.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://gct.co/files/drawings/usb4145.pdf"
+			(at 49.53 249.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Description" "USB Connectors USB-C Rec 3u\" Vert 16P SMT 0.7mm TH stakes H7.46mm T+R+Cap"
+			(at 20.32 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1159,8 +1659,145 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "VBUS"
-			(at 38.1 44.45 90)
+		(property "Height" "7.66"
+			(at 49.53 449.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Part Number" "640-USB4145-3-0070-C"
+			(at 49.53 549.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/GCT/USB4145-03-0070-C?qs=vvQtp7zwQdNoT6Ti9aciDw%3D%3D"
+			(at 49.53 649.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Name" "GCT (GLOBAL CONNECTOR TECHNOLOGY)"
+			(at 49.53 749.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Part_Number" "USB4145-03-0070-C"
+			(at 49.53 849.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(pin "MH2"
+			(uuid "579b5bad-776d-4802-8f13-6b277eb03a21")
+		)
+		(pin "MH4"
+			(uuid "7c6cabd1-554d-4d2e-823f-af267ed608bd")
+		)
+		(pin "A6"
+			(uuid "12a3d4fd-fb26-43b3-9b22-b03b1a5a6e6a")
+		)
+		(pin "B1"
+			(uuid "58c95684-6231-4921-a3e9-4c3a88982637")
+		)
+		(pin "A12"
+			(uuid "5ed7dc0d-1e29-40c4-b5ad-7486f07bca09")
+		)
+		(pin "B12"
+			(uuid "b2cb823b-d838-45d5-9222-7f495371a1fa")
+		)
+		(pin "A4"
+			(uuid "47c406bc-b6cb-4315-b3ba-2386c4edba8d")
+		)
+		(pin "B9"
+			(uuid "82c702e0-d982-4e83-b128-342917777186")
+		)
+		(pin "A5"
+			(uuid "80b5d0cd-29c9-4fdb-a302-cca6ff96d77a")
+		)
+		(pin "B6"
+			(uuid "d229c919-f7cc-42e8-a59d-7059056562e4")
+		)
+		(pin "A9"
+			(uuid "2e353161-e2b3-4849-bcd4-e0e97bd7e78e")
+		)
+		(pin "B5"
+			(uuid "c1ad8288-0090-4de0-8092-29dd175ac899")
+		)
+		(pin "B4"
+			(uuid "48a06fa5-d905-48c5-bd20-346165b2377f")
+		)
+		(pin "A1"
+			(uuid "3fabc245-19cb-4080-912f-b7791849107c")
+		)
+		(pin "MH1"
+			(uuid "05500a60-85b2-4c7c-9962-6f77c8960027")
+		)
+		(pin "B8"
+			(uuid "b2113174-7d53-4b7a-9b2e-c278bd51c9aa")
+		)
+		(pin "A7"
+			(uuid "0f205bc0-4075-402e-ae1a-ac5188c0a673")
+		)
+		(pin "A8"
+			(uuid "6996093a-1e16-4912-bde7-2bdcd15f56b7")
+		)
+		(pin "MH3"
+			(uuid "77fa2380-7c6e-48eb-8b6d-7d46666965a2")
+		)
+		(pin "B7"
+			(uuid "ded96e1f-ea43-40e4-b059-db8454bff96c")
+		)
+		(instances
+			(project ""
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "J1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:GND-power")
+		(at 40.64 93.98 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0811e106-3666-46d1-a75c-43c8829857b8")
+		(property "Reference" "#PWR017"
+			(at 40.64 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 40.64 97.536 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1168,7 +1805,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 38.1 49.53 0)
+			(at 40.64 93.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1177,7 +1814,72 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 38.1 49.53 0)
+			(at 40.64 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 40.64 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9c92978f-dc5a-4884-b394-4a947e01fb25")
+		)
+		(instances
+			(project "usb-board"
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "#PWR017")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:VBUS")
+		(at 43.18 46.99 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "249ab8db-9b28-4429-b8d2-2f82e68390c7")
+		(property "Reference" "#PWR08"
+			(at 43.18 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "VBUS"
+			(at 43.18 41.91 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 43.18 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 43.18 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1186,7 +1888,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 38.1 49.53 0)
+			(at 43.18 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1208,7 +1910,7 @@
 	)
 	(symbol
 		(lib_id "clock:GND-power")
-		(at 33.02 40.64 180)
+		(at 33.02 38.1 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1216,7 +1918,7 @@
 		(dnp no)
 		(uuid "262750d0-ecbb-4b6e-9a0e-e50371bf391e")
 		(property "Reference" "#PWR03"
-			(at 33.02 34.29 0)
+			(at 33.02 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1225,7 +1927,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 33.02 37.084 0)
+			(at 33.02 34.544 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1233,7 +1935,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 33.02 40.64 0)
+			(at 33.02 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1242,7 +1944,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 33.02 40.64 0)
+			(at 33.02 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1251,7 +1953,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 33.02 40.64 0)
+			(at 33.02 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1273,15 +1975,15 @@
 	)
 	(symbol
 		(lib_id "clock:R")
-		(at 35.56 45.72 180)
+		(at 40.64 88.9 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3ed45a38-80c6-45e2-a5a6-98fc6edca331")
-		(property "Reference" "R2"
-			(at 36.322 40.132 90)
+		(uuid "301e9815-08cb-4f07-8351-c0ac471d1e1a")
+		(property "Reference" "R3"
+			(at 39.878 94.488 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1290,7 +1992,7 @@
 			)
 		)
 		(property "Value" "5.1k"
-			(at 35.56 43.18 90)
+			(at 40.64 91.44 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1299,7 +2001,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 37.338 45.72 90)
+			(at 38.862 88.9 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1308,7 +2010,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 35.56 45.72 0)
+			(at 40.64 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1317,7 +2019,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 35.56 45.72 0)
+			(at 40.64 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1326,15 +2028,15 @@
 			)
 		)
 		(pin "2"
-			(uuid "2cb4e54e-0702-456d-a378-e26321844a6d")
+			(uuid "a09356ef-930b-4960-bb17-c8ddc296d0dc")
 		)
 		(pin "1"
-			(uuid "6e45a39c-5eb9-4141-8396-2e90a739eec1")
+			(uuid "ec5e402d-6c07-4a30-9def-8ccc2137a3af")
 		)
 		(instances
 			(project "usb-board"
 				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
-					(reference "R2")
+					(reference "R3")
 					(unit 1)
 				)
 			)
@@ -1407,7 +2109,7 @@
 	)
 	(symbol
 		(lib_id "clock:R")
-		(at 33.02 45.72 180)
+		(at 33.02 43.18 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1415,7 +2117,7 @@
 		(dnp no)
 		(uuid "45098630-4758-43c8-a9f6-dfb221eb70f4")
 		(property "Reference" "R1"
-			(at 33.782 40.132 90)
+			(at 33.782 37.592 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1424,7 +2126,7 @@
 			)
 		)
 		(property "Value" "5.1k"
-			(at 33.02 43.18 90)
+			(at 33.02 40.64 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1433,7 +2135,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 34.798 45.72 90)
+			(at 34.798 43.18 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1442,7 +2144,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 33.02 45.72 0)
+			(at 33.02 43.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1451,7 +2153,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 33.02 45.72 0)
+			(at 33.02 43.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1476,7 +2178,7 @@
 	)
 	(symbol
 		(lib_id "clock:GND")
-		(at 48.26 67.31 90)
+		(at 53.34 67.31 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1484,7 +2186,7 @@
 		(dnp no)
 		(uuid "5988deab-7de1-4a40-8056-1951587491f2")
 		(property "Reference" "#PWR09"
-			(at 54.61 67.31 0)
+			(at 59.69 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1493,7 +2195,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 53.34 67.31 90)
+			(at 58.42 67.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1501,7 +2203,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 48.26 67.31 0)
+			(at 53.34 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1510,7 +2212,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 48.26 67.31 0)
+			(at 53.34 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1519,7 +2221,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 48.26 67.31 0)
+			(at 53.34 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1541,15 +2243,16 @@
 	)
 	(symbol
 		(lib_id "clock:GND")
-		(at 35.56 82.55 0)
+		(at 35.56 16.51 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8ec629eb-f7de-4d74-905a-e8fd127ba8f7")
-		(property "Reference" "#PWR012"
-			(at 35.56 88.9 0)
+		(fields_autoplaced yes)
+		(uuid "5ef4bf4c-d741-439c-a123-644122bcc9e1")
+		(property "Reference" "#PWR016"
+			(at 29.21 16.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1558,15 +2261,16 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 35.56 87.63 90)
+			(at 31.75 16.5101 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
 		(property "Footprint" ""
-			(at 35.56 82.55 0)
+			(at 35.56 16.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1575,7 +2279,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 35.56 82.55 0)
+			(at 35.56 16.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1584,7 +2288,204 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 35.56 82.55 0)
+			(at 35.56 16.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ea2867b7-fb2e-4754-98a5-0747a7f8401d")
+		)
+		(instances
+			(project "usb-board"
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "#PWR016")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:VBUS")
+		(at 35.56 24.13 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7e9d46ab-9b2d-41f6-ac11-f7dbfccce391")
+		(property "Reference" "#PWR015"
+			(at 39.37 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "VBUS"
+			(at 31.75 24.1301 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 35.56 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 35.56 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VBUS\""
+			(at 35.56 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6e5b9195-6479-4d1b-8fee-0e5e7b4c7dfb")
+		)
+		(instances
+			(project "usb-board"
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "#PWR015")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:GND")
+		(at 102.87 20.32 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8b5e7176-0b52-43ba-80a6-7e5d26a79183")
+		(property "Reference" "#PWR019"
+			(at 102.87 26.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 102.87 25.4 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 102.87 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 102.87 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 102.87 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "13c6b7e4-d1e3-400d-885e-e7908b25f70c")
+		)
+		(instances
+			(project "usb-board"
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "#PWR019")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:GND")
+		(at 45.72 85.09 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8ec629eb-f7de-4d74-905a-e8fd127ba8f7")
+		(property "Reference" "#PWR012"
+			(at 45.72 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 45.72 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 45.72 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 45.72 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 45.72 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1605,84 +2506,16 @@
 		)
 	)
 	(symbol
-		(lib_id "clock:Conn_01x02_Socket")
-		(at 36.83 21.59 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9295c20e-be24-445e-a1b9-dfebc8849d33")
-		(property "Reference" "USB_BOARD1"
-			(at 36.83 26.162 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "Conn_01x02_Socket"
-			(at 41.148 22.098 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "clock:SHDR2W64P0X250_1X2_740X575X700P"
-			(at 36.83 21.59 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 36.83 21.59 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x02, script generated"
-			(at 36.83 21.59 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "901e3325-88da-4867-9089-de40d00472f8")
-		)
-		(pin "2"
-			(uuid "932e32b6-734c-4ac9-81b3-493d17e751a7")
-		)
-		(instances
-			(project "usb-board"
-				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
-					(reference "USB_BOARD1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "clock:GND")
-		(at 53.34 44.45 0)
+		(at 88.9 20.32 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9613e6e4-b4c9-432f-a5ff-ed1c13281562")
-		(property "Reference" "#PWR013"
-			(at 53.34 50.8 0)
+		(uuid "92741dda-981a-4a44-9b97-a7579a878cc0")
+		(property "Reference" "#PWR020"
+			(at 88.9 26.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1691,7 +2524,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 53.34 49.53 90)
+			(at 88.9 25.4 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1699,7 +2532,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 53.34 44.45 0)
+			(at 88.9 20.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1708,7 +2541,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 53.34 44.45 0)
+			(at 88.9 20.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1717,7 +2550,72 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 53.34 44.45 0)
+			(at 88.9 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "131f4bc2-0b54-494d-a783-3065f655a1e8")
+		)
+		(instances
+			(project "usb-board"
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "#PWR020")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:GND")
+		(at 76.2 20.32 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9613e6e4-b4c9-432f-a5ff-ed1c13281562")
+		(property "Reference" "#PWR013"
+			(at 76.2 26.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 76.2 25.4 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 76.2 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 76.2 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 76.2 20.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1738,8 +2636,76 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:ESD5Zxx")
+		(at 85.09 20.32 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "98a8af2a-f891-423f-9793-b6caca414cee")
+		(property "Reference" "D2"
+			(at 85.09 13.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ESD5Zxx"
+			(at 85.09 16.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-523"
+			(at 85.09 24.765 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.onsemi.com/pdf/datasheet/esd5z2.5t1-d.pdf"
+			(at 85.09 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ESD Protection Diode, SOD-523"
+			(at 85.09 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "639a4bd7-801d-4e62-a2d9-86e21f27b440")
+		)
+		(pin "1"
+			(uuid "b3784a5a-83ad-43dd-bae2-445564f423e4")
+		)
+		(instances
+			(project "usb-board"
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "D2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "clock:GND")
-		(at 33.02 82.55 0)
+		(at 27.94 85.09 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1747,7 +2713,7 @@
 		(dnp no)
 		(uuid "9f8ef8d2-d9d7-4bcb-8cf6-e1375d4f80a7")
 		(property "Reference" "#PWR011"
-			(at 33.02 88.9 0)
+			(at 27.94 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1756,7 +2722,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 33.02 87.63 90)
+			(at 27.94 90.17 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1764,7 +2730,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 33.02 82.55 0)
+			(at 27.94 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1773,7 +2739,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 33.02 82.55 0)
+			(at 27.94 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1782,7 +2748,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 33.02 82.55 0)
+			(at 27.94 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1804,16 +2770,15 @@
 	)
 	(symbol
 		(lib_id "clock:VBUS")
-		(at 27.94 24.13 90)
+		(at 43.18 85.09 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "abab4aaa-8129-4f86-8984-5865d5ccca1d")
-		(property "Reference" "#PWR02"
-			(at 31.75 24.13 0)
+		(uuid "ae7ee313-8b45-4719-9124-d97b2e38dcf2")
+		(property "Reference" "#PWR04"
+			(at 43.18 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1822,16 +2787,15 @@
 			)
 		)
 		(property "Value" "VBUS"
-			(at 24.13 24.1301 90)
+			(at 43.18 90.17 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 27.94 24.13 0)
+			(at 43.18 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1840,7 +2804,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 27.94 24.13 0)
+			(at 43.18 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1849,7 +2813,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 27.94 24.13 0)
+			(at 43.18 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1858,12 +2822,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "5f43afa4-d2bc-4ee8-a57d-d6e55f30f116")
+			(uuid "fdb65ae4-f00c-46c8-8e2f-0fa06d69198d")
 		)
 		(instances
 			(project "usb-board"
 				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
-					(reference "#PWR02")
+					(reference "#PWR04")
 					(unit 1)
 				)
 			)
@@ -1871,7 +2835,7 @@
 	)
 	(symbol
 		(lib_id "clock:VBUS")
-		(at 30.48 49.53 0)
+		(at 30.48 46.99 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1879,7 +2843,7 @@
 		(dnp no)
 		(uuid "aee628d5-6d62-4554-be3d-174051521e86")
 		(property "Reference" "#PWR07"
-			(at 30.48 53.34 0)
+			(at 30.48 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1888,7 +2852,7 @@
 			)
 		)
 		(property "Value" "VBUS"
-			(at 30.48 44.45 90)
+			(at 30.48 41.91 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1896,7 +2860,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 30.48 49.53 0)
+			(at 30.48 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1905,7 +2869,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 30.48 49.53 0)
+			(at 30.48 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1914,7 +2878,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 30.48 49.53 0)
+			(at 30.48 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1936,7 +2900,7 @@
 	)
 	(symbol
 		(lib_id "clock:VBUS")
-		(at 45.72 44.45 180)
+		(at 68.58 20.32 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1944,7 +2908,7 @@
 		(dnp no)
 		(uuid "bb2af186-2110-4c4c-887a-64718a087a98")
 		(property "Reference" "#PWR014"
-			(at 45.72 40.64 0)
+			(at 68.58 16.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1953,7 +2917,7 @@
 			)
 		)
 		(property "Value" "VBUS"
-			(at 45.72 49.53 90)
+			(at 68.58 25.4 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1961,7 +2925,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 45.72 44.45 0)
+			(at 68.58 20.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1970,7 +2934,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 45.72 44.45 0)
+			(at 68.58 20.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1979,7 +2943,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 45.72 44.45 0)
+			(at 68.58 20.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2000,16 +2964,16 @@
 		)
 	)
 	(symbol
-		(lib_id "clock:GND")
-		(at 40.64 49.53 180)
+		(lib_id "clock:VBUS")
+		(at 30.48 85.09 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d76982b2-5815-4732-aed1-85eec8305e66")
-		(property "Reference" "#PWR05"
-			(at 40.64 43.18 0)
+		(uuid "c1780ffb-f6eb-4137-9d5a-810a751c4f2b")
+		(property "Reference" "#PWR018"
+			(at 30.48 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2017,8 +2981,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 40.64 44.45 90)
+		(property "Value" "VBUS"
+			(at 30.48 90.17 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2026,7 +2990,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 40.64 49.53 0)
+			(at 30.48 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2035,7 +2999,147 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 40.64 49.53 0)
+			(at 30.48 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VBUS\""
+			(at 30.48 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4ff44cc3-0b74-4866-ae9a-0d77b565ce61")
+		)
+		(instances
+			(project "usb-board"
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "#PWR018")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x04_Socket")
+		(at 40.64 19.05 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cc475cac-2cd1-469c-a3b6-13f486964b0f")
+		(property "Reference" "J8"
+			(at 22.86 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Conn_01x04_Socket"
+			(at 22.86 26.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_JST:JST_XH_B4B-XH-AM_1x04_P2.50mm_Vertical"
+			(at 40.64 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 40.64 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x04, script generated"
+			(at 40.64 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "2dbaabb5-26e7-4a98-a823-c44e4f09d343")
+		)
+		(pin "4"
+			(uuid "7c41c4fd-b83b-47e1-b9b1-d0fc6f1172b2")
+		)
+		(pin "2"
+			(uuid "c9c29da7-fd2f-48e8-8a0f-06dee371f408")
+		)
+		(pin "1"
+			(uuid "f24c6524-2aa4-47ad-8155-29dcd1915df0")
+		)
+		(instances
+			(project "usb-board"
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "J8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:GND")
+		(at 27.94 46.99 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d76982b2-5815-4732-aed1-85eec8305e66")
+		(property "Reference" "#PWR05"
+			(at 27.94 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 27.94 41.91 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 27.94 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 27.94 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2044,7 +3148,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 40.64 49.53 0)
+			(at 27.94 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2065,16 +3169,16 @@
 		)
 	)
 	(symbol
-		(lib_id "clock:GND-power")
-		(at 35.56 40.64 180)
+		(lib_id "clock:GND")
+		(at 20.32 64.77 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d92c6606-6c13-487a-b88e-313974a666b7")
-		(property "Reference" "#PWR04"
-			(at 35.56 34.29 0)
+		(uuid "d997d0c2-3d50-4a85-90a8-ab74dc3c423f")
+		(property "Reference" "#PWR02"
+			(at 13.97 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2083,7 +3187,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 35.56 37.084 0)
+			(at 15.24 64.77 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2091,7 +3195,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 35.56 40.64 0)
+			(at 20.32 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2100,7 +3204,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 35.56 40.64 0)
+			(at 20.32 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2108,8 +3212,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
-			(at 35.56 40.64 0)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 20.32 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2118,155 +3222,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "f9eb840d-ac94-4a91-a224-3c586b30f58d")
+			(uuid "4ef0e2d1-a559-4420-880c-6a7c445cc4ab")
 		)
 		(instances
 			(project "usb-board"
 				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
-					(reference "#PWR04")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "clock:USB4140-GF-0070-C")
-		(at 20.32 67.31 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "d9fdbb14-58ce-40d9-9ecb-4b5bba637f53")
-		(property "Reference" "J1"
-			(at 20.828 53.086 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "USB4140-GF-0070-C"
-			(at 23.368 53.086 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "clock:USB4140GF0070C"
-			(at 44.45 152.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://gct.co/files/drawings/usb4140.pdf?v=497efcde-01c1-4614-ade4-1b2d7a03c886"
-			(at 44.45 252.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-				(hide yes)
-			)
-		)
-		(property "Description" "USB Connectors USB C Rec GF Vert 6P SMT 0.7mm TH stakes H 6.5mm"
-			(at 20.32 67.31 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Height" "6.7"
-			(at 44.45 452.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-				(hide yes)
-			)
-		)
-		(property "Mouser Part Number" "640-USB4140-GF-0070C"
-			(at 44.45 552.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-				(hide yes)
-			)
-		)
-		(property "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/GCT/USB4140-GF-0070-C?qs=Li%252BoUPsLEnvSB5aSpvSBUA%3D%3D"
-			(at 44.45 652.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer_Name" "GCT (GLOBAL CONNECTOR TECHNOLOGY)"
-			(at 44.45 752.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer_Part_Number" "USB4140-GF-0070-C"
-			(at 44.45 852.07 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-				(hide yes)
-			)
-		)
-		(pin "A12"
-			(uuid "5719755a-4f94-4a22-99fd-9ac9a0b4c5f6")
-		)
-		(pin "MH3"
-			(uuid "0e02a6f6-f620-42c3-9a41-4249a70e1d32")
-		)
-		(pin "B9"
-			(uuid "f3f27452-8586-4d94-837d-1306d2206bd3")
-		)
-		(pin "A9"
-			(uuid "24666820-78e7-456e-95af-09237c56e8d0")
-		)
-		(pin "A5"
-			(uuid "d7524161-6e0c-43f6-9650-bda2b27384a8")
-		)
-		(pin "MH2"
-			(uuid "19717852-eb81-41d5-9fba-9da08e463af6")
-		)
-		(pin "MH4"
-			(uuid "3dab3cb8-01a4-42ac-95de-80897cd331d6")
-		)
-		(pin "B12"
-			(uuid "973e8160-6594-406a-8181-f69797bb68af")
-		)
-		(pin "B5"
-			(uuid "90c59f95-4394-4a32-afc2-c405529794c7")
-		)
-		(pin "MH1"
-			(uuid "f19b0193-8054-4865-a726-bd25eaac0bd4")
-		)
-		(instances
-			(project ""
-				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
-					(reference "J1")
+					(reference "#PWR02")
 					(unit 1)
 				)
 			)
@@ -2274,7 +3235,7 @@
 	)
 	(symbol
 		(lib_id "clock:ESD5Zxx")
-		(at 49.53 44.45 0)
+		(at 72.39 20.32 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -2283,7 +3244,7 @@
 		(fields_autoplaced yes)
 		(uuid "e1ea3ad8-7ca1-499c-9743-ea7f77a0c433")
 		(property "Reference" "D1"
-			(at 49.53 38.1 0)
+			(at 72.39 13.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2291,7 +3252,7 @@
 			)
 		)
 		(property "Value" "ESD5Zxx"
-			(at 49.53 40.64 0)
+			(at 72.39 16.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2299,7 +3260,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-523"
-			(at 49.53 48.895 0)
+			(at 72.39 24.765 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2308,7 +3269,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.onsemi.com/pdf/datasheet/esd5z2.5t1-d.pdf"
-			(at 49.53 44.45 0)
+			(at 72.39 20.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2317,7 +3278,7 @@
 			)
 		)
 		(property "Description" "ESD Protection Diode, SOD-523"
-			(at 49.53 44.45 0)
+			(at 72.39 20.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2342,16 +3303,15 @@
 	)
 	(symbol
 		(lib_id "clock:GND")
-		(at 27.94 21.59 270)
+		(at 53.34 64.77 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "f7b2d6fc-fd68-4baf-8337-8e23d007e664")
+		(uuid "e1fa3a45-74ba-4ab3-bae4-00ca56053181")
 		(property "Reference" "#PWR01"
-			(at 21.59 21.59 0)
+			(at 59.69 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2360,16 +3320,15 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 24.13 21.5901 90)
+			(at 58.42 64.77 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
 			)
 		)
 		(property "Footprint" ""
-			(at 27.94 21.59 0)
+			(at 53.34 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2378,7 +3337,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 27.94 21.59 0)
+			(at 53.34 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2387,7 +3346,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 27.94 21.59 0)
+			(at 53.34 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2396,7 +3355,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "1c2cf197-25ee-4ef0-9e28-dcfdb35f8926")
+			(uuid "5e07ea7c-84fc-4d83-9a5a-abb42cc4fa13")
 		)
 		(instances
 			(project "usb-board"
@@ -2408,8 +3367,76 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:ESD5Zxx")
+		(at 99.06 20.32 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f8babac0-ac44-47ff-a5fc-b549a97de572")
+		(property "Reference" "D3"
+			(at 99.06 13.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ESD5Zxx"
+			(at 99.06 16.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-523"
+			(at 99.06 24.765 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.onsemi.com/pdf/datasheet/esd5z2.5t1-d.pdf"
+			(at 99.06 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ESD Protection Diode, SOD-523"
+			(at 99.06 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "c47cf3be-e3b5-4b0f-89fc-8ae617bcdedf")
+		)
+		(pin "1"
+			(uuid "1f7d2cc0-4d80-4380-a09d-1b71c407d5eb")
+		)
+		(instances
+			(project "usb-board"
+				(path "/59df2326-3c19-48f6-80f9-a7f0f278deee"
+					(reference "D3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "clock:GND")
-		(at 27.94 49.53 180)
+		(at 45.72 46.99 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -2417,7 +3444,7 @@
 		(dnp no)
 		(uuid "fa185968-12f7-4967-b5f4-eb83c8b77496")
 		(property "Reference" "#PWR06"
-			(at 27.94 43.18 0)
+			(at 45.72 40.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2426,7 +3453,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 27.94 44.45 90)
+			(at 45.72 42.164 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2434,7 +3461,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 27.94 49.53 0)
+			(at 45.72 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2443,7 +3470,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 27.94 49.53 0)
+			(at 45.72 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2452,7 +3479,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 27.94 49.53 0)
+			(at 45.72 46.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2477,4 +3504,5 @@
 			(page "1")
 		)
 	)
+	(embedded_fonts no)
 )

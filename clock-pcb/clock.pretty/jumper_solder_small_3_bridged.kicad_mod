@@ -1,0 +1,97 @@
+(footprint "jumper_solder_small"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "JP1"
+		(at -2.25 0 270)
+		(layer "F.SilkS")
+		(uuid "b29e2c47-3a87-4433-af72-f08d96173eb7")
+		(effects
+			(font (size 0.8 0.8) (thickness 0.15))
+		)
+	)
+	(property "Value" "Jumper"
+		(at 0 2.25 0)
+		(layer "F.Fab")
+		(uuid "09ff7772-db49-4040-911d-c9e81aa83d75")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Datasheet" "~"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6c788860-23ab-4390-a6a7-e58606172855")
+		(effects
+			(font (size 1.27 1.27) (thickness 0.15))
+		)
+	)
+	(property "Description" "Solder Jumper, 2-pole, open"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "77a6df0b-409e-45d4-95c1-0d6f26c03440")
+		(effects
+			(font (size 1.27 1.27) (thickness 0.15))
+		)
+	)
+	(attr through_hole exclude_from_bom)
+	(fp_rect
+		(start -0.55 0)
+		(end -0.2 0)
+		(stroke (width 0.2) (type default))
+		(fill no)
+		(layer "F.Cu")
+		(uuid "ac75dd30-5f87-4320-bf2c-e9c47fb4049b")
+	)
+	(pad "1" smd custom
+		(at -0.6 0 180)
+		(size 0.3 1)
+		(layers "F.Cu" "F.Mask")
+		(zone_connect 0)
+		(options
+			(clearance outline)
+			(anchor rect)
+		)
+		(primitives
+			(gr_poly
+				(pts
+					(xy 0.15 0.5) (xy 0.15 -0.5) (xy 0.45 -0.25) (xy 0.45 0.25)
+				)
+				(width 0)
+				(fill yes)
+			)
+		)
+		(uuid "cb257f28-967b-43c4-a25d-c765ebc1a2c3")
+	)
+	(pad "2" smd rect
+		(at 0 0 180)
+		(size 0.6 1)
+		(layers "F.Cu" "F.Mask")
+		(zone_connect 0)
+		(uuid "c3cbe45b-d25a-4332-96f9-5ce481ab159a")
+	)
+	(pad "3" smd custom
+		(at 0.6 0 180)
+		(size 0.3 1)
+		(layers "F.Cu" "F.Mask")
+		(zone_connect 0)
+		(options
+			(clearance outline)
+			(anchor rect)
+		)
+		(primitives
+			(gr_poly
+				(pts
+					(xy -0.15 0.5) (xy -0.15 -0.5) (xy -0.45 -0.25) (xy -0.45 0.25)
+				)
+				(width 0)
+				(fill yes)
+			)
+		)
+		(uuid "9109af19-2467-4f63-b87f-3e17b55f38de")
+	)
+	(embedded_fonts no)
+)

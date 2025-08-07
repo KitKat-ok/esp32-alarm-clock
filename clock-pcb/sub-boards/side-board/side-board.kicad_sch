@@ -1,15 +1,19 @@
 (kicad_sch
-	(version 20231120)
+	(version 20250114)
 	(generator "eeschema")
-	(generator_version "8.0")
+	(generator_version "9.0")
 	(uuid "b1deab82-097c-4ad9-80a9-eb8517127baf")
 	(paper "A4")
 	(lib_symbols
 		(symbol "clock:+3V3"
 			(power)
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0) hide)
+				(offset 0)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -81,7 +85,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 0) (xy 0 2.54)
+						(xy 0 2.54) (xy 0.762 1.27)
 					)
 					(stroke
 						(width 0)
@@ -93,7 +97,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
+						(xy 0 0) (xy 0 2.54)
 					)
 					(stroke
 						(width 0)
@@ -124,6 +128,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "clock:B3F-5050"
 			(exclude_from_sim no)
@@ -239,16 +244,16 @@
 					)
 				)
 				(pin passive line
-					(at 30.48 -2.54 180)
+					(at 0 0 0)
 					(length 5.08)
-					(name "COM_1"
+					(name "NO_2"
 						(effects
 							(font
 								(size 1.27 1.27)
 							)
 						)
 					)
-					(number "1"
+					(number "4"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -293,16 +298,16 @@
 					)
 				)
 				(pin passive line
-					(at 0 0 0)
+					(at 30.48 -2.54 180)
 					(length 5.08)
-					(name "NO_2"
+					(name "COM_1"
 						(effects
 							(font
 								(size 1.27 1.27)
 							)
 						)
 					)
-					(number "4"
+					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -311,10 +316,13 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "clock:Conn_01x07_Socket"
 			(pin_names
-				(offset 1.016) hide)
+				(offset 1.016)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -388,93 +396,9 @@
 				)
 			)
 			(symbol "Conn_01x07_Socket_1_1"
-				(arc
-					(start 0 -7.112)
-					(mid -0.5058 -7.62)
-					(end 0 -8.128)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0 -4.572)
-					(mid -0.5058 -5.08)
-					(end 0 -5.588)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0 -2.032)
-					(mid -0.5058 -2.54)
-					(end 0 -3.048)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
 				(polyline
 					(pts
-						(xy -1.27 -7.62) (xy -0.508 -7.62)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 -5.08) (xy -0.508 -5.08)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 -2.54) (xy -0.508 -2.54)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 0) (xy -0.508 0)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 2.54) (xy -0.508 2.54)
+						(xy -1.27 7.62) (xy -0.508 7.62)
 					)
 					(stroke
 						(width 0.1524)
@@ -498,7 +422,55 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 7.62) (xy -0.508 7.62)
+						(xy -1.27 2.54) (xy -0.508 2.54)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 0) (xy -0.508 0)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -2.54) (xy -0.508 -2.54)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -5.08) (xy -0.508 -5.08)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -7.62) (xy -0.508 -7.62)
 					)
 					(stroke
 						(width 0.1524)
@@ -509,45 +481,81 @@
 					)
 				)
 				(arc
-					(start 0 0.508)
-					(mid -0.5058 0)
-					(end 0 -0.508)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0 3.048)
-					(mid -0.5058 2.54)
-					(end 0 2.032)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0 5.588)
-					(mid -0.5058 5.08)
-					(end 0 4.572)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0 8.128)
+					(start 0 7.112)
 					(mid -0.5058 7.62)
-					(end 0 7.112)
+					(end 0 8.128)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 4.572)
+					(mid -0.5058 5.08)
+					(end 0 5.588)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 2.032)
+					(mid -0.5058 2.54)
+					(end 0 3.048)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -0.508)
+					(mid -0.5058 0)
+					(end 0 0.508)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -3.048)
+					(mid -0.5058 -2.54)
+					(end 0 -2.032)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -5.588)
+					(mid -0.5058 -5.08)
+					(end 0 -4.572)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -8.128)
+					(mid -0.5058 -7.62)
+					(end 0 -7.112)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -683,12 +691,17 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "clock:GND"
 			(power)
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0) hide)
+				(offset 0)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -779,6 +792,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "clock:TMAG5231C1GQDBZR"
 			(pin_names
@@ -861,18 +875,6 @@
 			(symbol "TMAG5231C1GQDBZR_1_1"
 				(polyline
 					(pts
-						(xy 7.62 -7.62) (xy 33.02 -7.62)
-					)
-					(stroke
-						(width 0.127)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
 						(xy 7.62 5.08) (xy 7.62 -7.62)
 					)
 					(stroke
@@ -885,7 +887,7 @@
 				)
 				(polyline
 					(pts
-						(xy 33.02 -7.62) (xy 33.02 5.08)
+						(xy 7.62 -7.62) (xy 33.02 -7.62)
 					)
 					(stroke
 						(width 0.127)
@@ -898,6 +900,18 @@
 				(polyline
 					(pts
 						(xy 33.02 5.08) (xy 7.62 5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 33.02 -7.62) (xy 33.02 5.08)
 					)
 					(stroke
 						(width 0.127)
@@ -925,24 +939,6 @@
 						)
 					)
 				)
-				(pin output line
-					(at 40.64 -2.54 180)
-					(length 7.62)
-					(name "OUT"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
 				(pin power_out line
 					(at 40.64 0 180)
 					(length 7.62)
@@ -961,8 +957,57 @@
 						)
 					)
 				)
+				(pin output line
+					(at 40.64 -2.54 180)
+					(length 7.62)
+					(name "OUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(text "magnetic switch"
+		(exclude_from_sim no)
+		(at 72.644 74.676 0)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
 		)
+		(uuid "235f8089-0984-413f-a046-fb520f8d6e32")
+	)
+	(text "Buttons"
+		(exclude_from_sim no)
+		(at 152.908 42.926 0)
+		(effects
+			(font
+				(size 1.778 1.778)
+			)
+		)
+		(uuid "5144cf9d-bdd6-4db9-8f24-ad92fe76a873")
+	)
+	(text "Connector"
+		(exclude_from_sim no)
+		(at 39.878 43.18 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "d229ffd5-be7b-4480-9f02-2744b9c1babf")
 	)
 	(junction
 		(at 62.23 29.21)
@@ -1126,35 +1171,27 @@
 		)
 		(uuid "f72b7862-c02a-425f-bca4-6ea993f97704")
 	)
-	(text "magnetic switch"
-		(exclude_from_sim no)
-		(at 72.644 74.676 0)
+	(global_label "HALL_SENS"
+		(shape input)
+		(at 31.75 29.21 90)
+		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
+			(justify left)
 		)
-		(uuid "235f8089-0984-413f-a046-fb520f8d6e32")
-	)
-	(text "Buttons"
-		(exclude_from_sim no)
-		(at 152.908 42.926 0)
-		(effects
-			(font
-				(size 1.778 1.778)
+		(uuid "04fee9cf-9e31-4796-a871-b09eb04e5257")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 31.75 15.8834 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
 			)
 		)
-		(uuid "5144cf9d-bdd6-4db9-8f24-ad92fe76a873")
-	)
-	(text "Connector"
-		(exclude_from_sim no)
-		(at 39.878 43.18 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "d229ffd5-be7b-4480-9f02-2744b9c1babf")
 	)
 	(global_label "SCL"
 		(shape input)
@@ -1178,7 +1215,7 @@
 			)
 		)
 	)
-	(global_label "GPIO15"
+	(global_label "BUTON_CONF"
 		(shape input)
 		(at 26.67 29.21 90)
 		(fields_autoplaced yes)
@@ -1188,9 +1225,9 @@
 			)
 			(justify left)
 		)
-		(uuid "628674e6-6df1-433c-9ac6-a3ba79336af1")
+		(uuid "66e83b86-9575-4374-bdc9-8ca436345d5d")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 26.67 19.3305 90)
+			(at 26.67 14.0085 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1222,9 +1259,9 @@
 			)
 		)
 	)
-	(global_label "GPIO35"
+	(global_label "BUTTON_EXIT"
 		(shape input)
-		(at 31.75 29.21 90)
+		(at 106.68 29.21 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1232,9 +1269,9 @@
 			)
 			(justify left)
 		)
-		(uuid "84339342-2927-45ec-8a41-e03e2de713b9")
+		(uuid "91890a80-423d-4f52-9a0c-e6416d804e61")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 31.75 19.3305 90)
+			(at 106.68 14.1296 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1244,7 +1281,7 @@
 			)
 		)
 	)
-	(global_label "GPIO14"
+	(global_label "BUTTON_EXIT"
 		(shape input)
 		(at 29.21 29.21 90)
 		(fields_autoplaced yes)
@@ -1256,7 +1293,7 @@
 		)
 		(uuid "b3ea9006-1ec6-4008-abb9-035bd5166fd0")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 29.21 19.3305 90)
+			(at 29.21 14.1296 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1266,7 +1303,7 @@
 			)
 		)
 	)
-	(global_label "GPIO15"
+	(global_label "BUTON_CONF"
 		(shape input)
 		(at 59.69 29.21 90)
 		(fields_autoplaced yes)
@@ -1278,7 +1315,7 @@
 		)
 		(uuid "d7b433ed-9934-42b9-bf7d-dbe9877e33f0")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 59.69 19.3305 90)
+			(at 59.69 14.0085 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1288,7 +1325,7 @@
 			)
 		)
 	)
-	(global_label "GPIO35"
+	(global_label "HALL_SENS"
 		(shape input)
 		(at 60.96 60.96 0)
 		(fields_autoplaced yes)
@@ -1300,29 +1337,7 @@
 		)
 		(uuid "edab72a4-8e0e-42f6-8a63-f992580d707c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 70.8395 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "GPIO14"
-		(shape input)
-		(at 106.68 29.21 90)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "f19b4c50-1e96-4864-b17a-f5d4eed292ce")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 106.68 19.3305 90)
+			(at 74.2866 60.96 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2271,4 +2286,5 @@
 			(page "1")
 		)
 	)
+	(embedded_fonts no)
 )
