@@ -1473,17 +1473,16 @@
 		)
 	)
 	(symbol
-		(lib_id "clock:GND")
-		(at 109.22 31.75 270)
+		(lib_id "clock:+3V3")
+		(at 109.22 31.75 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "08d42f01-9988-4146-95cf-be09b49afb53")
+		(uuid "0ed42d8a-34f2-4f5b-bd92-ad74890ff0a0")
 		(property "Reference" "#PWR05"
-			(at 102.87 31.75 0)
+			(at 113.03 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1491,13 +1490,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 105.41 31.7499 90)
+		(property "Value" "+3V3"
+			(at 104.14 31.75 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
 			)
 		)
 		(property "Footprint" ""
@@ -1518,7 +1516,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
 			(at 109.22 31.75 0)
 			(effects
 				(font
@@ -1528,12 +1526,77 @@
 			)
 		)
 		(pin "1"
-			(uuid "85aabb42-0045-4163-9fa6-ee97b3ed05f2")
+			(uuid "86957a73-fa18-4724-9764-c3002c234f40")
 		)
 		(instances
 			(project "side-board"
 				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
 					(reference "#PWR05")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:+3V3")
+		(at 62.23 31.75 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2d156257-adff-4955-bdaf-4faf5e6aa2f3")
+		(property "Reference" "#PWR03"
+			(at 66.04 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 57.15 31.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 62.23 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 62.23 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 62.23 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "00a37126-ecc7-4f7b-9732-2ef04961cef5")
+		)
+		(instances
+			(project "side-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -1738,6 +1801,71 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:+3V3")
+		(at 92.71 31.75 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4ed29090-8b58-464f-99ad-bc384b4f20e2")
+		(property "Reference" "#PWR04"
+			(at 88.9 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 97.79 31.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 92.71 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 92.71 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 92.71 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "153d67c1-5a95-41e8-acbc-bd8c2e747a08")
+		)
+		(instances
+			(project "side-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "#PWR04")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "clock:Conn_01x07_Socket")
 		(at 29.21 34.29 270)
 		(unit 1)
@@ -1822,6 +1950,71 @@
 	)
 	(symbol
 		(lib_id "clock:+3V3")
+		(at 139.7 31.75 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "92976466-53ab-46f3-a550-415e32cd60bf")
+		(property "Reference" "#PWR06"
+			(at 135.89 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 144.78 31.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 139.7 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 139.7 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 139.7 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "830f69ef-b8c1-4f59-8536-a82eb9ebeb14")
+		)
+		(instances
+			(project "side-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "#PWR06")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:+3V3")
 		(at 34.29 29.21 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -1880,73 +2073,6 @@
 			(project "side-board"
 				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
 					(reference "#PWR01")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "clock:GND")
-		(at 139.7 31.75 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "abbc73e6-bf3c-4f95-9894-c8e4d25ed2f8")
-		(property "Reference" "#PWR06"
-			(at 146.05 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 143.51 31.7499 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 139.7 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 139.7 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 139.7 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "5a65d430-697f-413f-bd01-bba513029bdb")
-		)
-		(instances
-			(project "side-board"
-				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
-					(reference "#PWR06")
 					(unit 1)
 				)
 			)
@@ -2012,73 +2138,6 @@
 			(project "side-board"
 				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
 					(reference "#PWR08")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "clock:GND")
-		(at 92.71 31.75 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "bad3989e-2420-4958-9474-86c4899fe95a")
-		(property "Reference" "#PWR04"
-			(at 99.06 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 96.52 31.7499 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 92.71 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 92.71 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 92.71 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e75a4cbb-bc3a-4020-8288-c47ced04a5a0")
-		)
-		(instances
-			(project "side-board"
-				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
-					(reference "#PWR04")
 					(unit 1)
 				)
 			)
@@ -2209,73 +2268,6 @@
 			(project "side-board"
 				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
 					(reference "#PWR02")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "clock:GND")
-		(at 62.23 31.75 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "cfb233f3-3b98-4203-984a-962979746495")
-		(property "Reference" "#PWR03"
-			(at 55.88 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 58.42 31.7499 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 62.23 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 62.23 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 62.23 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "818d612e-daa8-4a1f-b677-2514a602800a")
-		)
-		(instances
-			(project "side-board"
-				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
-					(reference "#PWR03")
 					(unit 1)
 				)
 			)

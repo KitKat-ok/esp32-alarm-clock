@@ -1,4 +1,4 @@
-(footprint "jumper_solder_small"
+(footprint "jumper_solder_small_3_bridged"
 	(version 20241229)
 	(generator "pcbnew")
 	(generator_version "9.0")
@@ -8,7 +8,10 @@
 		(layer "F.SilkS")
 		(uuid "b29e2c47-3a87-4433-af72-f08d96173eb7")
 		(effects
-			(font (size 0.8 0.8) (thickness 0.15))
+			(font
+				(size 0.8 0.8)
+				(thickness 0.15)
+			)
 		)
 	)
 	(property "Value" "Jumper"
@@ -16,7 +19,10 @@
 		(layer "F.Fab")
 		(uuid "09ff7772-db49-4040-911d-c9e81aa83d75")
 		(effects
-			(font (size 1 1) (thickness 0.15))
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
 		)
 	)
 	(property "Datasheet" "~"
@@ -25,7 +31,10 @@
 		(hide yes)
 		(uuid "6c788860-23ab-4390-a6a7-e58606172855")
 		(effects
-			(font (size 1.27 1.27) (thickness 0.15))
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
 		)
 	)
 	(property "Description" "Solder Jumper, 2-pole, open"
@@ -34,17 +43,23 @@
 		(hide yes)
 		(uuid "77a6df0b-409e-45d4-95c1-0d6f26c03440")
 		(effects
-			(font (size 1.27 1.27) (thickness 0.15))
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
 		)
 	)
 	(attr through_hole exclude_from_bom)
 	(fp_rect
-		(start -0.55 0)
-		(end -0.2 0)
-		(stroke (width 0.2) (type default))
-		(fill no)
+		(start -0.45 -0.1)
+		(end -0.3 0.1)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill yes)
 		(layer "F.Cu")
-		(uuid "ac75dd30-5f87-4320-bf2c-e9c47fb4049b")
+		(uuid "d8367601-4425-4191-95fe-d7aa5494932e")
 	)
 	(pad "1" smd custom
 		(at -0.6 0 180)
