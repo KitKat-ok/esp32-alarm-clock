@@ -50,17 +50,6 @@
 		)
 	)
 	(attr through_hole exclude_from_bom)
-	(fp_rect
-		(start -0.45 -0.1)
-		(end -0.3 0.1)
-		(stroke
-			(width 0)
-			(type solid)
-		)
-		(fill yes)
-		(layer "F.Cu")
-		(uuid "d8367601-4425-4191-95fe-d7aa5494932e")
-	)
 	(pad "1" smd custom
 		(at -0.6 0 180)
 		(size 0.3 1)

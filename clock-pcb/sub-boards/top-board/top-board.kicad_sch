@@ -191,6 +191,234 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Sensor_Pressure:BMP280"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at -7.62 10.16 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+				)
+			)
+			(property "Value" "BMP280"
+				(at 5.08 10.16 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+				)
+			)
+			(property "Footprint" "Package_LGA:Bosch_LGA-8_2x2.5mm_P0.65mm_ClockwisePinNumbering"
+				(at 0 -17.78 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-DS001.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Absolute Barometric Pressure Sensor, LGA-8"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "I2C, SPI, pressure, temperature, sensor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Bosch*LGA*2x2.5mm*P0.65mm*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "BMP280_0_1"
+				(rectangle
+					(start -7.62 -5.08)
+					(end 5.08 7.62)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "BMP280_1_1"
+				(pin input line
+					(at -10.16 5.08 0)
+					(length 2.54)
+					(name "SCK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "SDI"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 0 0)
+					(length 2.54)
+					(name "SDO"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -10.16 -2.54 0)
+					(length 2.54)
+					(name "CSB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 10.16 270)
+					(length 2.54)
+					(name "VDDIO"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 2.54 10.16 270)
+					(length 2.54)
+					(name "VDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 2.54 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "VEML6030-GS15:VEML6030-GS15"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -2100,6 +2328,18 @@
 		(uuid "d229ffd5-be7b-4480-9f02-2744b9c1babf")
 	)
 	(junction
+		(at 133.35 63.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2d8a356f-1a17-4b1a-b0b5-17302c41fb06")
+	)
+	(junction
+		(at 133.35 81.28)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "314779ac-a1b4-4aa0-a644-412b5ee3ad90")
+	)
+	(junction
 		(at 30.48 66.04)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2110,6 +2350,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "852ae354-dff1-431e-9100-52ad651f84f4")
+	)
+	(junction
+		(at 132.08 81.28)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "8c7d7111-f6b3-4c06-928e-8cddcd8613b3")
 	)
 	(junction
 		(at 95.25 77.47)
@@ -2141,9 +2387,25 @@
 		(color 0 0 0 0)
 		(uuid "e598551c-fe41-491d-b8f5-84d32cd0fe6a")
 	)
+	(junction
+		(at 132.08 63.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f1c59a28-c1d1-4a11-baa4-f2724206379f")
+	)
 	(no_connect
 		(at 87.63 73.66)
 		(uuid "5820301f-811d-44cc-8b93-246aee0fa175")
+	)
+	(wire
+		(pts
+			(xy 132.08 81.28) (xy 133.35 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0014d285-bd21-4e63-b8a8-8dcc4da1b19a")
 	)
 	(wire
 		(pts
@@ -2177,6 +2439,16 @@
 	)
 	(wire
 		(pts
+			(xy 132.08 63.5) (xy 133.35 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "17682732-1447-4470-b284-9bf2f11eb5fe")
+	)
+	(wire
+		(pts
 			(xy 80.01 85.09) (xy 83.82 85.09)
 		)
 		(stroke
@@ -2204,6 +2476,16 @@
 			(type default)
 		)
 		(uuid "298321b0-12c0-4bab-ae37-29744e3bde2f")
+	)
+	(wire
+		(pts
+			(xy 113.03 73.66) (xy 120.65 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2ab3a74b-ef9d-4ffa-9c20-fd7af7f6050e")
 	)
 	(wire
 		(pts
@@ -2275,6 +2557,36 @@
 		)
 		(uuid "6c087279-d57a-421d-95c0-d2221ef94ce2")
 	)
+	(polyline
+		(pts
+			(xy 104.14 95.25) (xy 154.94 95.25)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "6c4a65ae-c6ca-4f48-a407-7664c5129664")
+	)
+	(wire
+		(pts
+			(xy 130.81 81.28) (xy 132.08 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "81febde6-6f52-4df4-bfb7-8a19d927ec5d")
+	)
+	(wire
+		(pts
+			(xy 138.43 63.5) (xy 133.35 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8522686e-b9d5-4294-9a0c-5e1afa43b11d")
+	)
 	(wire
 		(pts
 			(xy 80.01 77.47) (xy 83.82 77.47)
@@ -2284,6 +2596,26 @@
 			(type default)
 		)
 		(uuid "8ea8b656-17e7-4794-a6fc-0be73e1c7868")
+	)
+	(wire
+		(pts
+			(xy 138.43 68.58) (xy 138.43 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "92dae95e-7431-485b-8718-ab9570843b72")
+	)
+	(wire
+		(pts
+			(xy 132.08 58.42) (xy 132.08 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "977e61bc-d862-420f-ab3a-1d182706a7b4")
 	)
 	(polyline
 		(pts
@@ -2297,6 +2629,16 @@
 	)
 	(polyline
 		(pts
+			(xy 154.94 95.25) (xy 154.94 45.72)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "b5ba2fa9-3467-430a-b678-5912d431a5b6")
+	)
+	(polyline
+		(pts
 			(xy 12.7 95.25) (xy 104.14 95.25)
 		)
 		(stroke
@@ -2304,6 +2646,16 @@
 			(type dash)
 		)
 		(uuid "bdeff92f-6841-46d8-a287-ef77e2921b60")
+	)
+	(wire
+		(pts
+			(xy 138.43 81.28) (xy 133.35 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "be0babed-f169-4427-a540-681fd7765643")
 	)
 	(polyline
 		(pts
@@ -2337,6 +2689,16 @@
 	)
 	(wire
 		(pts
+			(xy 132.08 81.28) (xy 132.08 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cf423d89-91f8-4ed6-9236-cca4e4a1d2b0")
+	)
+	(wire
+		(pts
 			(xy 95.25 73.66) (xy 95.25 77.47)
 		)
 		(stroke
@@ -2354,6 +2716,26 @@
 			(type default)
 		)
 		(uuid "deb2f103-0f54-4c4d-a297-53103be66691")
+	)
+	(wire
+		(pts
+			(xy 138.43 76.2) (xy 138.43 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e20114db-e527-4bda-a523-73da47639f35")
+	)
+	(wire
+		(pts
+			(xy 130.81 63.5) (xy 132.08 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e3e60d42-3dc5-4b94-ae05-43f6bd36ea7b")
 	)
 	(polyline
 		(pts
@@ -2571,6 +2953,28 @@
 			)
 		)
 	)
+	(global_label "SCL"
+		(shape input)
+		(at 120.65 68.58 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "82c4bdcb-28f4-43ed-b9d8-f7daf6cb7db0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 114.1572 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "SDA"
 		(shape input)
 		(at 57.15 30.48 180)
@@ -2681,6 +3085,28 @@
 			)
 		)
 	)
+	(global_label "SDA"
+		(shape input)
+		(at 120.65 71.12 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "d8d13ad0-3672-4215-8f0e-6a64d520e1f8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 114.0967 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "GPIO25"
 		(shape input)
 		(at 87.63 49.53 0)
@@ -2770,6 +3196,71 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:+3V3")
+		(at 132.08 58.42 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "13a17ab1-4abd-4a99-9814-da8b53c67b49")
+		(property "Reference" "#PWR011"
+			(at 132.08 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 132.08 53.34 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 132.08 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 132.08 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 132.08 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "eaec5f72-ebf9-4afa-a8db-5a2f46bf8a7b")
+		)
+		(instances
+			(project "top-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "#PWR011")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "clock:GND")
 		(at 95.25 85.09 0)
 		(unit 1)
@@ -2829,6 +3320,71 @@
 			(project "top-board"
 				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
 					(reference "#PWR09")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:+3V3")
+		(at 109.22 68.58 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1cf49abb-77f9-4f1b-b2cd-1255f8d4f5fd")
+		(property "Reference" "#PWR020"
+			(at 109.22 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 109.22 63.5 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 109.22 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 109.22 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 109.22 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "043bd188-1929-49d2-969c-80da32cabd8e")
+		)
+		(instances
+			(project "top-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -2959,6 +3515,165 @@
 			(project "top-board"
 				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
 					(reference "#PWR018")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Sensor_Pressure:BMP280")
+		(at 130.81 73.66 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3cc8b45e-64d7-4eb5-be45-5788b114c980")
+		(property "Reference" "U1"
+			(at 144.78 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "BMP280"
+			(at 144.78 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_LGA:Bosch_LGA-8_2x2.5mm_P0.65mm_ClockwisePinNumbering"
+			(at 130.81 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BMP280-DS001.pdf"
+			(at 130.81 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Absolute Barometric Pressure Sensor, LGA-8"
+			(at 130.81 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "7"
+			(uuid "9f272645-572b-473f-9035-781aa9bade23")
+		)
+		(pin "1"
+			(uuid "e6f28b89-7be2-4548-8a76-8b454114887f")
+		)
+		(pin "6"
+			(uuid "b498ec79-2b56-4cba-94e6-19471b69fc1e")
+		)
+		(pin "4"
+			(uuid "d9d49ed8-1a58-4e61-9a61-3abd398ec6af")
+		)
+		(pin "2"
+			(uuid "da46f31f-35d6-440d-8bae-251808170e85")
+		)
+		(pin "5"
+			(uuid "7b7fe9ba-4e6f-4f42-ae24-1ec7253ad857")
+		)
+		(pin "3"
+			(uuid "d8758d7c-a9a9-4f81-84d3-396e17c7c7fc")
+		)
+		(pin "8"
+			(uuid "78c9913f-ad92-44aa-817a-c7c5b20cbc48")
+		)
+		(instances
+			(project ""
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:SolderJumper_3_Bridged12")
+		(at 109.22 73.66 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(uuid "42d54d21-011a-4137-afbe-13499e51324f")
+		(property "Reference" "JP2"
+			(at 107.188 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SolderJumper_3_Bridged12"
+			(at 106.68 74.9299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-3_P1.3mm_Bridged2Bar12_RoundedPad1.0x1.5mm"
+			(at 109.22 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 109.22 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "3-pole Solder Jumper, pins 1+2 closed/bridged"
+			(at 109.22 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "c8521032-7700-474c-b73d-5fd649c435e9")
+		)
+		(pin "3"
+			(uuid "40b782a9-c19d-45a3-9315-5bc5841c359f")
+		)
+		(pin "1"
+			(uuid "772ba227-50ba-4453-9511-b93618ab2401")
+		)
+		(instances
+			(project "top-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "JP2")
 					(unit 1)
 				)
 			)
@@ -3225,10 +3940,75 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:GND")
+		(at 132.08 86.36 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "612fd02a-9a5b-47dc-8014-b670f92161ba")
+		(property "Reference" "#PWR012"
+			(at 132.08 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 132.08 91.186 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 132.08 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 132.08 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 132.08 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "005f1eb4-ba69-45c2-bb73-5db9d8dab395")
+		)
+		(instances
+			(project "top-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "#PWR012")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "clock:SolderJumper_3_Bridged12")
 		(at 69.85 71.12 270)
 		(unit 1)
-		(exclude_from_sim yes)
+		(exclude_from_sim no)
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
@@ -3912,6 +4692,71 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:GND")
+		(at 109.22 78.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a683afb5-0e52-4ae4-b07f-51e27e0c7cc0")
+		(property "Reference" "#PWR014"
+			(at 109.22 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 109.22 83.566 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 109.22 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 109.22 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 109.22 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "145d968f-a4d6-4c19-b103-d5045c194c42")
+		)
+		(instances
+			(project "top-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "#PWR014")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "clock:R")
 		(at 17.78 67.31 0)
 		(unit 1)
@@ -3975,6 +4820,71 @@
 			(project "top-board"
 				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
 					(reference "R1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:+3V3")
+		(at 120.65 76.2 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b0e76a04-e9d5-4bfc-b551-ae30e5b6eb21")
+		(property "Reference" "#PWR013"
+			(at 124.46 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 115.57 76.2 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 120.65 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 120.65 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 120.65 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6cfae518-8b3d-4d97-a87e-fc335098688d")
+		)
+		(instances
+			(project "top-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "#PWR013")
 					(unit 1)
 				)
 			)
@@ -4321,6 +5231,73 @@
 			(project "top-board"
 				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
 					(reference "#PWR02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:C")
+		(at 138.43 72.39 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ce1a2428-0c6a-4ab9-94cc-20260ecefa28")
+		(property "Reference" "C2"
+			(at 142.494 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 142.494 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 137.4648 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 138.43 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 138.43 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "3f05ef27-d269-4ef5-95ae-55b530f4c5f3")
+		)
+		(pin "1"
+			(uuid "5477daca-471b-4aeb-b837-09668975a44d")
+		)
+		(instances
+			(project "top-board"
+				(path "/b1deab82-097c-4ad9-80a9-eb8517127baf"
+					(reference "C2")
 					(unit 1)
 				)
 			)

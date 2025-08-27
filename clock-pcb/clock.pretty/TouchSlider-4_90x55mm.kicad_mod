@@ -1,0 +1,1542 @@
+(footprint "TouchSlider-4_90x55mm"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -29.45 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "cbe8c422-45e5-469e-8426-8f0af46f6abd")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TouchSlider-4_90x55mm"
+		(at 0 -28.15 0)
+		(layer "F.Fab")
+		(uuid "639ca672-0ed1-4189-8f5a-af31ee438b7d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7746a968-a285-4a6c-992a-6a336a6c7af2")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4825ed14-6bef-4ca6-81e7-ea8fd6fabdd8")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(pad "1" smd custom
+		(at -44.721 0)
+		(size 4 54.999994)
+		(layers "F.Cu")
+		(thermal_bridge_angle 45)
+		(options
+			(clearance outline)
+			(anchor rect)
+		)
+		(primitives
+			(gr_rect
+				(start 1.809 25.839004)
+				(end 2.135 27.372001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 27.506001) (xy 26.466689 27.506001) (xy 2 25.641718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 21.910004)
+				(end 2.135 23.443001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 23.577001) (xy 26.466689 23.577001) (xy 2 21.712718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 17.981004)
+				(end 2.135 19.514001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 19.648001) (xy 26.466689 19.648001) (xy 2 17.783718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 14.052004)
+				(end 2.135 15.585001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 15.719001) (xy 26.466689 15.719001) (xy 2 13.854718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 10.123004)
+				(end 2.135 11.656001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 11.790001) (xy 26.466689 11.790001) (xy 2 9.925718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 6.194004)
+				(end 2.135 7.727001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 7.861001) (xy 26.466689 7.861001) (xy 2 5.996718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 2.265005)
+				(end 2.135 3.798002)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 3.932002) (xy 26.466689 3.932002) (xy 2 2.067719)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -1.666997)
+				(end 2.135 -0.134)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 0) (xy 26.466689 0) (xy 2 -1.864283)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -5.592994)
+				(end 2.135 -4.059997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -3.925997) (xy 26.466689 -3.925997) (xy 2 -5.79028)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -9.521994)
+				(end 2.135 -7.988997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -7.854997) (xy 26.466689 -7.854997) (xy 2 -9.71928)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -13.450994)
+				(end 2.135 -11.917997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -11.783997) (xy 26.466689 -11.783997) (xy 2 -13.64828)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -17.379994)
+				(end 2.135 -15.846997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -15.712997) (xy 26.466689 -15.712997) (xy 2 -17.57728)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -21.308994)
+				(end 2.135 -19.775997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -19.641997) (xy 26.466689 -19.641997) (xy 2 -21.50628)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -25.237994)
+				(end 2.135 -23.704997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -23.570997) (xy 26.466689 -23.570997) (xy 2 -25.43528)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 23.711001)
+				(end 2.135 25.243998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 23.577001) (xy 26.466689 23.577001) (xy 2 25.441284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 19.782001)
+				(end 2.135 21.314998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 19.648001) (xy 26.466689 19.648001) (xy 2 21.512284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 15.853001)
+				(end 2.135 17.385998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 15.719001) (xy 26.466689 15.719001) (xy 2 17.583284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 11.924001)
+				(end 2.135 13.456998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 11.790001) (xy 26.466689 11.790001) (xy 2 13.654284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 7.995001)
+				(end 2.135 9.527998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 7.861001) (xy 26.466689 7.861001) (xy 2 9.725284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 4.066002)
+				(end 2.135 5.598999)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 3.932002) (xy 26.466689 3.932002) (xy 2 5.796285)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 0.137002)
+				(end 2.135 1.669999)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 0.003002) (xy 26.466689 0.003002) (xy 2 1.867285)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -3.791997)
+				(end 2.135 -2.259)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -3.925997) (xy 26.466689 -3.925997) (xy 2 -2.061714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -7.720997)
+				(end 2.135 -6.188)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -7.854997) (xy 26.466689 -7.854997) (xy 2 -5.990714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -11.649997)
+				(end 2.135 -10.117)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -11.783997) (xy 26.466689 -11.783997) (xy 2 -9.919714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -15.578997)
+				(end 2.135 -14.046)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -15.712997) (xy 26.466689 -15.712997) (xy 2 -13.848714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -19.507997)
+				(end 2.135 -17.975)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -19.641997) (xy 26.466689 -19.641997) (xy 2 -17.777714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -23.436997)
+				(end 2.135 -21.904)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -23.570997) (xy 26.466689 -23.570997) (xy 2 -21.706714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -27.365997)
+				(end 2.135 -25.833)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -27.499997) (xy 26.466689 -27.499997) (xy 2 -25.635714)
+				)
+				(width 0)
+				(fill yes)
+			)
+		)
+		(uuid "f8b7073c-94b0-40c0-a8a7-82f463fc0fa7")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 -25.536)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "ee7577b1-e935-4680-9025-ec9e09e3a4d6")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 -21.607429)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "5d98c5a0-0c39-4cb1-b731-0348c638fb79")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 -17.678858)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "a30f921a-44c0-419c-9caf-791e3ae66e14")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 -13.750287)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "9a1f90b7-e60d-449a-b0d9-df48d0a872b2")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 -9.821716)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "be0fc639-5227-487f-9ad8-816823ba7239")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 -5.893145)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "05bbdfad-c68d-4899-8383-2cd930f16b6c")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 -1.964574)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "0625fdac-1375-4dc1-b61d-1540d79a35e7")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 1.963997)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "8e2cde1c-b1e2-4588-819b-e63835d6b186")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 5.892568)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "541ce8f9-2a4c-4d72-9595-2ba9ccae52d5")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 9.821139)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "c7991308-c927-47ff-9dcf-1c9c259e346b")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 13.74971)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "21269531-9e65-47b4-8adc-47e143999502")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 17.678281)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "7d4f4fdd-0d81-43b8-a4cc-521639d3f71b")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 21.606852)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "dfc5a564-447f-436c-9e26-8b7505f63ef7")
+	)
+	(pad "2" smd trapezoid
+		(at -29.732 25.535423)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "e669a20c-fbf6-4ef5-a971-c455750ba81c")
+	)
+	(pad "2" smd rect
+		(at -15.499 0.003002)
+		(size 5.314 55.005998)
+		(layers "F.Cu")
+		(thermal_bridge_angle 45)
+		(uuid "17f3bbe3-ae54-47c0-9019-a21685b2a9b6")
+	)
+	(pad "2" smd custom
+		(at -14.842 0)
+		(size 4 54.999994)
+		(layers "F.Cu")
+		(thermal_bridge_angle 45)
+		(options
+			(clearance outline)
+			(anchor rect)
+		)
+		(primitives
+			(gr_rect
+				(start 1.809 25.839004)
+				(end 2.135 27.372001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 27.506001) (xy 26.466689 27.506001) (xy 2 25.641718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 21.910004)
+				(end 2.135 23.443001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 23.577001) (xy 26.466689 23.577001) (xy 2 21.712718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 17.981004)
+				(end 2.135 19.514001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 19.648001) (xy 26.466689 19.648001) (xy 2 17.783718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 14.052004)
+				(end 2.135 15.585001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 15.719001) (xy 26.466689 15.719001) (xy 2 13.854718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 10.123004)
+				(end 2.135 11.656001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 11.790001) (xy 26.466689 11.790001) (xy 2 9.925718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 6.194004)
+				(end 2.135 7.727001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 7.861001) (xy 26.466689 7.861001) (xy 2 5.996718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 2.265005)
+				(end 2.135 3.798002)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 3.932002) (xy 26.466689 3.932002) (xy 2 2.067719)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -1.666997)
+				(end 2.135 -0.134)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 0) (xy 26.466689 0) (xy 2 -1.864283)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -5.592994)
+				(end 2.135 -4.059997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -3.925997) (xy 26.466689 -3.925997) (xy 2 -5.79028)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -9.521994)
+				(end 2.135 -7.988997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -7.854997) (xy 26.466689 -7.854997) (xy 2 -9.71928)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -13.450994)
+				(end 2.135 -11.917997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -11.783997) (xy 26.466689 -11.783997) (xy 2 -13.64828)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -17.379994)
+				(end 2.135 -15.846997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -15.712997) (xy 26.466689 -15.712997) (xy 2 -17.57728)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -21.308994)
+				(end 2.135 -19.775997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -19.641997) (xy 26.466689 -19.641997) (xy 2 -21.50628)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -25.237994)
+				(end 2.135 -23.704997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -23.570997) (xy 26.466689 -23.570997) (xy 2 -25.43528)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 23.711001)
+				(end 2.135 25.243998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 23.577001) (xy 26.466689 23.577001) (xy 2 25.441284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 19.782001)
+				(end 2.135 21.314998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 19.648001) (xy 26.466689 19.648001) (xy 2 21.512284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 15.853001)
+				(end 2.135 17.385998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 15.719001) (xy 26.466689 15.719001) (xy 2 17.583284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 11.924001)
+				(end 2.135 13.456998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 11.790001) (xy 26.466689 11.790001) (xy 2 13.654284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 7.995001)
+				(end 2.135 9.527998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 7.861001) (xy 26.466689 7.861001) (xy 2 9.725284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 4.066002)
+				(end 2.135 5.598999)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 3.932002) (xy 26.466689 3.932002) (xy 2 5.796285)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 0.137002)
+				(end 2.135 1.669999)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 0.003002) (xy 26.466689 0.003002) (xy 2 1.867285)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -3.791997)
+				(end 2.135 -2.259)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -3.925997) (xy 26.466689 -3.925997) (xy 2 -2.061714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -7.720997)
+				(end 2.135 -6.188)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -7.854997) (xy 26.466689 -7.854997) (xy 2 -5.990714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -11.649997)
+				(end 2.135 -10.117)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -11.783997) (xy 26.466689 -11.783997) (xy 2 -9.919714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -15.578997)
+				(end 2.135 -14.046)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -15.712997) (xy 26.466689 -15.712997) (xy 2 -13.848714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -19.507997)
+				(end 2.135 -17.975)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -19.641997) (xy 26.466689 -19.641997) (xy 2 -17.777714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -23.436997)
+				(end 2.135 -21.904)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -23.570997) (xy 26.466689 -23.570997) (xy 2 -21.706714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -27.365997)
+				(end 2.135 -25.833)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -27.499997) (xy 26.466689 -27.499997) (xy 2 -25.635714)
+				)
+				(width 0)
+				(fill yes)
+			)
+		)
+		(uuid "ff86ed45-37de-4615-929d-4dedc4c88d1c")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 -25.536)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "3f25338e-fdfc-4d33-8058-5f11559e68c9")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 -21.607429)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "eacaa366-aabc-4b77-8834-5822f775b332")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 -17.678858)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "2b295059-f5aa-40d8-80c1-9b2e85c3ff5d")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 -13.750287)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "5e52e227-cc35-431f-b663-a3c9231356f8")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 -9.821716)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "33b03d3f-e23d-4881-a8cc-6bddaa9d799d")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 -5.893145)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "8adc0997-d7dd-475a-87a0-891cb5ae51b0")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 -1.964574)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "98549204-a011-41ab-b193-105e1807609f")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 1.963997)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "575df3c7-3c66-4bce-a691-25e18544d6df")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 5.892568)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "c8e4cb57-968b-46d7-b3a7-f862b6b90e36")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 9.821139)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "d03a351e-45dd-4d6c-b91a-0856df28a05e")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 13.74971)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "a209d2f8-e292-44c1-9c3f-ac6b40479074")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 17.678281)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "675b27aa-17ff-4f43-aebb-e782f65be9ab")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 21.606852)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "e24a4f49-4f95-41f6-9d1c-36f09c42f570")
+	)
+	(pad "3" smd trapezoid
+		(at 0.141 25.535423)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "1a96ccd5-a093-4354-b38c-0b5c7eefd507")
+	)
+	(pad "3" smd custom
+		(at 14.938 0)
+		(size 4 54.999994)
+		(layers "F.Cu")
+		(thermal_bridge_angle 45)
+		(options
+			(clearance outline)
+			(anchor rect)
+		)
+		(primitives
+			(gr_rect
+				(start 1.809 -27.365997)
+				(end 2.135 -25.833)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -27.499997) (xy 26.466689 -27.499997) (xy 2 -25.635714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -23.436997)
+				(end 2.135 -21.904)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -23.570997) (xy 26.466689 -23.570997) (xy 2 -21.706714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -19.507997)
+				(end 2.135 -17.975)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -19.641997) (xy 26.466689 -19.641997) (xy 2 -17.777714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -15.578997)
+				(end 2.135 -14.046)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -15.712997) (xy 26.466689 -15.712997) (xy 2 -13.848714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -11.649997)
+				(end 2.135 -10.117)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -11.783997) (xy 26.466689 -11.783997) (xy 2 -9.919714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -7.720997)
+				(end 2.135 -6.188)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -7.854997) (xy 26.466689 -7.854997) (xy 2 -5.990714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -3.791997)
+				(end 2.135 -2.259)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -3.925997) (xy 26.466689 -3.925997) (xy 2 -2.061714)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 0.137002)
+				(end 2.135 1.669999)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 0.003002) (xy 26.466689 0.003002) (xy 2 1.867285)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 4.066002)
+				(end 2.135 5.598999)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 3.932002) (xy 26.466689 3.932002) (xy 2 5.796285)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 7.995001)
+				(end 2.135 9.527998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 7.861001) (xy 26.466689 7.861001) (xy 2 9.725284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 11.924001)
+				(end 2.135 13.456998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 11.790001) (xy 26.466689 11.790001) (xy 2 13.654284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 15.853001)
+				(end 2.135 17.385998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 15.719001) (xy 26.466689 15.719001) (xy 2 17.583284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 19.782001)
+				(end 2.135 21.314998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 19.648001) (xy 26.466689 19.648001) (xy 2 21.512284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 23.711001)
+				(end 2.135 25.243998)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 23.577001) (xy 26.466689 23.577001) (xy 2 25.441284)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -25.237994)
+				(end 2.135 -23.704997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -23.570997) (xy 26.466689 -23.570997) (xy 2 -25.43528)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -21.308994)
+				(end 2.135 -19.775997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -19.641997) (xy 26.466689 -19.641997) (xy 2 -21.50628)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -17.379994)
+				(end 2.135 -15.846997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -15.712997) (xy 26.466689 -15.712997) (xy 2 -17.57728)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -13.450994)
+				(end 2.135 -11.917997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -11.783997) (xy 26.466689 -11.783997) (xy 2 -13.64828)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -9.521994)
+				(end 2.135 -7.988997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -7.854997) (xy 26.466689 -7.854997) (xy 2 -9.71928)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -5.592994)
+				(end 2.135 -4.059997)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 -3.925997) (xy 26.466689 -3.925997) (xy 2 -5.79028)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 -1.666997)
+				(end 2.135 -0.134)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 0) (xy 26.466689 0) (xy 2 -1.864283)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 2.265005)
+				(end 2.135 3.798002)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 3.932002) (xy 26.466689 3.932002) (xy 2 2.067719)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 6.194004)
+				(end 2.135 7.727001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 7.861001) (xy 26.466689 7.861001) (xy 2 5.996718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 10.123004)
+				(end 2.135 11.656001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 11.790001) (xy 26.466689 11.790001) (xy 2 9.925718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 14.052004)
+				(end 2.135 15.585001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 15.719001) (xy 26.466689 15.719001) (xy 2 13.854718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 17.981004)
+				(end 2.135 19.514001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 19.648001) (xy 26.466689 19.648001) (xy 2 17.783718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 21.910004)
+				(end 2.135 23.443001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 23.577001) (xy 26.466689 23.577001) (xy 2 21.712718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start 1.809 25.839004)
+				(end 2.135 27.372001)
+				(width 0)
+				(fill yes)
+			)
+			(gr_poly
+				(pts
+					(xy 2 27.506001) (xy 26.466689 27.506001) (xy 2 25.641718)
+				)
+				(width 0)
+				(fill yes)
+			)
+			(gr_rect
+				(start -3.213 -27.499997)
+				(end 2 27.506001)
+				(width 0)
+				(fill yes)
+			)
+		)
+		(uuid "eee73458-3908-436b-83b5-d953ce4e7da2")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 -25.535714)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "635d9330-9176-4a1b-82a9-124bff1030ef")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 -21.607143)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "23e749e3-db17-4f3b-a6d2-3482db53ae1e")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 -17.678572)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "877da700-786b-4663-9937-adb0df313410")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 -13.750001)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "b542fee1-07b1-4423-a795-702ae35994a0")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 -9.82143)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "9c0dc7b8-f23a-425a-965f-0a571d7d1fdf")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 -5.892859)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "b3830e90-8e5e-4682-9d65-97bf39d118e1")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 -1.964288)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "7cf67841-adb2-4f5e-9006-a649395575b4")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 1.964283)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "6a32d1c4-f446-4ec9-9470-186c37c201aa")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 5.892854)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "ddd76b5f-270f-44f3-b7a6-48e1b243509a")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 9.821425)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "633addf0-c393-4062-ba1d-895cb2a1ca80")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 13.749996)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "90bd1ee1-3777-46f4-8d00-b3f87276ab77")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 17.678567)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "e16a5d19-efd8-449a-b505-9e97c1934f98")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 21.607138)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "eb8c0156-7e72-465d-a9c1-82a4c6b61a81")
+	)
+	(pad "4" smd trapezoid
+		(at 29.929 25.535709)
+		(size 25.779 1.964285)
+		(rect_delta -1.964285 0)
+		(layers "F.Cu" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "ed6653be-e070-4cd3-9572-1f579fc9428a")
+	)
+	(pad "4" smd rect
+		(at 44.1605 0)
+		(size 5.313 54.999994)
+		(layers "F.Cu")
+		(thermal_bridge_angle 45)
+		(uuid "4e43b0e3-e1ed-4667-b08b-ebb8071246b1")
+	)
+	(embedded_fonts no)
+)

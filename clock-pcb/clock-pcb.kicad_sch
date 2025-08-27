@@ -1089,7 +1089,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Connector:Conn_01x05_Socket"
+		(symbol "Connector:Conn_01x06_Socket"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -1105,8 +1105,8 @@
 					)
 				)
 			)
-			(property "Value" "Conn_01x05_Socket"
-				(at 0 -7.62 0)
+			(property "Value" "Conn_01x06_Socket"
+				(at 0 -10.16 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -1131,7 +1131,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Generic connector, single row, 01x05, script generated"
+			(property "Description" "Generic connector, single row, 01x06, script generated"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1166,7 +1166,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "Conn_01x05_Socket_1_1"
+			(symbol "Conn_01x06_Socket_1_1"
 				(polyline
 					(pts
 						(xy -1.27 5.08) (xy -0.508 5.08)
@@ -1218,6 +1218,18 @@
 				(polyline
 					(pts
 						(xy -1.27 -5.08) (xy -0.508 -5.08)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -7.62) (xy -0.508 -7.62)
 					)
 					(stroke
 						(width 0.1524)
@@ -1279,6 +1291,18 @@
 					(start 0 -5.588)
 					(mid -0.5058 -5.08)
 					(end 0 -4.572)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -8.128)
+					(mid -0.5058 -7.62)
+					(end 0 -7.112)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -1370,6 +1394,24 @@
 						)
 					)
 					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -7.62 0)
+					(length 3.81)
+					(name "Pin_6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -9740,6 +9782,12 @@
 		(uuid "5b9ecccd-8f3d-4f79-bdde-e7e853f3ab9c")
 	)
 	(junction
+		(at 166.37 113.03)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5bf41647-1ddc-4366-bdee-8fa7f0968c8d")
+	)
+	(junction
 		(at 161.29 175.26)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9822,6 +9870,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "75732617-101d-4496-b0e9-952adf889685")
+	)
+	(junction
+		(at 236.22 54.61)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "75d5af28-9116-4a97-b840-dd0e8aae204d")
 	)
 	(junction
 		(at 171.45 62.23)
@@ -10164,6 +10218,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "df57aba8-bdeb-4b3e-8fab-0ba74eca8de1")
+	)
+	(junction
+		(at 279.4 54.61)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e6fe1021-784d-47b7-b32c-52219599db15")
 	)
 	(junction
 		(at 86.36 137.16)
@@ -11111,6 +11171,16 @@
 	)
 	(wire
 		(pts
+			(xy 166.37 113.03) (xy 166.37 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "543b76c1-30a8-4586-8332-335a2a5e0bda")
+	)
+	(wire
+		(pts
 			(xy 81.28 38.1) (xy 87.63 38.1)
 		)
 		(stroke
@@ -11871,6 +11941,16 @@
 	)
 	(wire
 		(pts
+			(xy 171.45 109.22) (xy 171.45 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ec8ba29-46a8-42d2-a2b3-74e7a4ac4a22")
+	)
+	(wire
+		(pts
 			(xy 19.05 15.24) (xy 26.67 15.24)
 		)
 		(stroke
@@ -12458,6 +12538,16 @@
 			(type default)
 		)
 		(uuid "d35d6cfb-7284-4b76-8d96-cd267ab1c270")
+	)
+	(wire
+		(pts
+			(xy 166.37 110.49) (xy 171.45 110.49)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d4ebacc1-f83d-4fd1-84cd-b228e9675be9")
 	)
 	(wire
 		(pts
@@ -13065,28 +13155,6 @@
 			)
 		)
 	)
-	(global_label "SLID_1"
-		(shape input)
-		(at 138.43 139.7 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "0cb155c4-acb5-49b4-aa9e-1470ad9a0974")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 129.1553 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "DN"
 		(shape input)
 		(at 25.4 187.96 180)
@@ -13437,6 +13505,28 @@
 			)
 		)
 	)
+	(global_label "SLID_2"
+		(shape input)
+		(at 138.43 147.32 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "2084ae32-655c-4270-bc9d-f0944827853e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 129.1553 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "GPIO9"
 		(shape input)
 		(at 218.44 24.13 180)
@@ -13457,7 +13547,7 @@
 			)
 		)
 	)
-	(global_label "SLID_1"
+	(global_label "GUARD"
 		(shape input)
 		(at 138.43 134.62 180)
 		(fields_autoplaced yes)
@@ -13467,9 +13557,9 @@
 			)
 			(justify right)
 		)
-		(uuid "23b8d957-72e4-4455-9591-5679fc0ee9ca")
+		(uuid "243d214a-e42f-41c4-bc7b-0c7a03789722")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 129.1553 134.62 0)
+			(at 129.2157 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13951,28 +14041,6 @@
 			)
 		)
 	)
-	(global_label "GUARD"
-		(shape input)
-		(at 138.43 142.24 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "6f3e5f3c-3035-4652-94c1-1ea5c305a988")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 129.2157 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "OLED_RES"
 		(shape input)
 		(at 73.66 77.47 180)
@@ -14289,28 +14357,6 @@
 				(font
 					(size 1.27 1.27)
 				)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SLID_0"
-		(shape input)
-		(at 138.43 144.78 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "9a93fe41-5329-401e-bffd-105adc18b1b3")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 129.1553 144.78 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
 				(hide yes)
 			)
 		)
@@ -14851,6 +14897,28 @@
 	)
 	(global_label "SLID_1"
 		(shape input)
+		(at 138.43 142.24 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "dd6520a3-80eb-4a68-b5d8-df9870be4fe2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 129.1553 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "SLID_1"
+		(shape input)
 		(at 161.29 118.11 0)
 		(fields_autoplaced yes)
 		(effects
@@ -15045,7 +15113,7 @@
 			)
 		)
 	)
-	(global_label "GUARD"
+	(global_label "SLID_0"
 		(shape input)
 		(at 138.43 137.16 180)
 		(fields_autoplaced yes)
@@ -15055,9 +15123,9 @@
 			)
 			(justify right)
 		)
-		(uuid "f09c4940-fb93-435b-9044-4b6a54e5a367")
+		(uuid "f22f8f77-dc1d-4fda-9066-09567410f01b")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 129.2157 137.16 0)
+			(at 129.1553 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15291,7 +15359,7 @@
 	)
 	(symbol
 		(lib_id "Watchy:R")
-		(at 142.24 144.78 270)
+		(at 142.24 147.32 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -15299,7 +15367,7 @@
 		(dnp no)
 		(uuid "0114ef9b-c82e-4ad4-9c5f-b915fea44c5c")
 		(property "Reference" "R8"
-			(at 142.24 147.32 0)
+			(at 142.24 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15308,7 +15376,7 @@
 			)
 		)
 		(property "Value" "10K"
-			(at 142.24 144.78 90)
+			(at 142.24 147.32 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15316,7 +15384,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 142.24 143.002 90)
+			(at 142.24 145.542 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15325,7 +15393,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 142.24 144.78 0)
+			(at 142.24 147.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15334,7 +15402,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 142.24 144.78 0)
+			(at 142.24 147.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15352,6 +15420,73 @@
 			(project "clock-pcb"
 				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
 					(reference "R8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Watchy:R")
+		(at 279.4 50.8 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "037c4077-fe6e-48a4-a4cb-2a030c8fb22e")
+		(property "Reference" "R28"
+			(at 276.86 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10K"
+			(at 279.4 50.8 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 281.178 50.8 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 279.4 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 279.4 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "277d336a-2e6a-4214-921a-faa4cbae5979")
+		)
+		(pin "2"
+			(uuid "dc90d557-ff1f-45b0-aa78-7522a79003c8")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "R28")
 					(unit 1)
 				)
 			)
@@ -16623,6 +16758,72 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:GND")
+		(at 205.74 62.23 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1a56964e-6864-4a45-991b-092df1cb0e59")
+		(property "Reference" "#PWR012"
+			(at 199.39 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 206.248 64.262 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 205.74 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 205.74 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 205.74 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3093424d-17df-4656-9ece-c858050fcb4f")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "#PWR012")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Watchy:R")
 		(at 25.4 163.83 90)
 		(unit 1)
@@ -16955,6 +17156,72 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:GND")
+		(at 248.92 62.23 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1ed38b3b-31d4-4f5a-a6b1-49f5be6c7126")
+		(property "Reference" "#PWR013"
+			(at 242.57 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 249.428 64.516 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 248.92 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 248.92 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 248.92 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "53d963e6-c8ae-4732-8d82-2b23f711ec25")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "#PWR013")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "clock:C")
 		(at 186.69 91.44 270)
 		(unit 1)
@@ -17016,74 +17283,6 @@
 			(project "clock-pcb"
 				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
 					(reference "C9")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Watchy:R")
-		(at 142.24 137.16 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "20f8e65e-1a56-4049-badd-a8e7877afeb7")
-		(property "Reference" "R15"
-			(at 142.24 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "10K"
-			(at 142.24 137.16 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 142.24 135.382 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 142.24 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 142.24 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "1382330f-b186-4d5a-b480-9b9c3dfa656b")
-		)
-		(pin "2"
-			(uuid "bd5f978a-148b-409d-9363-67e3d9f6b69e")
-		)
-		(instances
-			(project "clock-pcb"
-				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
-					(reference "R15")
 					(unit 1)
 				)
 			)
@@ -18877,7 +19076,7 @@
 	)
 	(symbol
 		(lib_id "Watchy:R")
-		(at 142.24 142.24 270)
+		(at 142.24 134.62 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -18885,7 +19084,7 @@
 		(dnp no)
 		(uuid "44b4b38e-4b0c-4b8e-8d36-c005893dde5a")
 		(property "Reference" "R9"
-			(at 142.24 144.78 0)
+			(at 142.24 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18894,7 +19093,7 @@
 			)
 		)
 		(property "Value" "10K"
-			(at 142.24 142.24 90)
+			(at 142.24 134.62 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18902,7 +19101,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 142.24 140.462 90)
+			(at 142.24 132.842 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18911,7 +19110,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 142.24 142.24 0)
+			(at 142.24 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18920,7 +19119,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 142.24 142.24 0)
+			(at 142.24 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19548,6 +19747,72 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:GND")
+		(at 236.22 62.23 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4e789496-248f-4b7f-98ad-efc83f3ca57d")
+		(property "Reference" "#PWR011"
+			(at 242.57 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 235.712 64.516 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 236.22 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 236.22 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 236.22 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "73dd1878-cc36-4110-9d0c-f7bf0552fd7b")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "#PWR011")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 26.67 93.98 90)
 		(unit 1)
@@ -19948,7 +20213,7 @@
 	)
 	(symbol
 		(lib_id "Watchy:R")
-		(at 142.24 139.7 270)
+		(at 142.24 142.24 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -19956,7 +20221,7 @@
 		(dnp no)
 		(uuid "51f0fb9f-2fda-4cff-855d-5d2bddc102a8")
 		(property "Reference" "R10"
-			(at 142.24 142.24 0)
+			(at 142.24 144.78 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19965,7 +20230,7 @@
 			)
 		)
 		(property "Value" "10K"
-			(at 142.24 139.7 90)
+			(at 142.24 142.24 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19973,7 +20238,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 142.24 137.922 90)
+			(at 142.24 140.462 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19982,7 +20247,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 142.24 139.7 0)
+			(at 142.24 142.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19991,7 +20256,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 142.24 139.7 0)
+			(at 142.24 142.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20141,71 +20406,6 @@
 			(project "clock-pcb"
 				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
 					(reference "#PWR095")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Watchy:+3V3-power")
-		(at 205.74 62.23 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "569fda2e-69f6-4a92-9d8d-5feace930a81")
-		(property "Reference" "#PWR011"
-			(at 209.55 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 201.93 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 205.74 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 205.74 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 205.74 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "7d3e69b5-9a28-4589-89e4-410ba1f2bdac")
-		)
-		(instances
-			(project "clock-pcb"
-				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
-					(reference "#PWR011")
 					(unit 1)
 				)
 			)
@@ -20872,6 +21072,72 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:GND")
+		(at 279.4 62.23 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5eb4bf0e-f849-4fdf-9ff5-f149bc85a8b5")
+		(property "Reference" "#PWR014"
+			(at 285.75 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 278.892 64.77 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 279.4 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 279.4 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 279.4 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c8771a3d-42d7-4aa1-a94e-0e8bfd3f3b1a")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "#PWR014")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Jumper:SolderJumper_2_Open")
 		(at 71.12 53.34 0)
 		(unit 1)
@@ -21509,32 +21775,32 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x05_Socket")
-		(at 151.13 139.7 0)
+		(lib_id "Watchy:R")
+		(at 236.22 50.8 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "6f35d660-5c17-46f8-8814-feafec71521d")
-		(property "Reference" "J10"
-			(at 141.732 146.812 0)
+		(uuid "6e65700b-a038-4d42-9df6-80e47bf0c3f6")
+		(property "Reference" "R15"
+			(at 233.68 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "Conn_01x05_Socket"
-			(at 141.478 148.59 0)
+		(property "Value" "10K"
+			(at 236.22 50.8 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical"
-			(at 151.13 139.7 0)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 237.998 50.8 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21543,7 +21809,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 151.13 139.7 0)
+			(at 236.22 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21551,34 +21817,25 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x05, script generated"
-			(at 151.13 139.7 0)
+		(property "Description" "Resistor"
+			(at 236.22 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(pin "2"
-			(uuid "b0d9daea-fbe1-4447-830e-dcc041a7d180")
-		)
-		(pin "4"
-			(uuid "3a89fd18-1971-40f9-b8c0-3232c6738a5c")
-		)
-		(pin "5"
-			(uuid "c7d2310e-75a4-4210-b803-882e5ff026ac")
 		)
 		(pin "1"
-			(uuid "4a162715-f6dc-4108-8b3d-2af85ff8df75")
+			(uuid "c4e9f6b4-02be-4c57-bb7e-eb082ed81e49")
 		)
-		(pin "3"
-			(uuid "982434c0-69d3-4831-a2bd-59e56de46ef8")
+		(pin "2"
+			(uuid "42ab242a-3cce-46bb-91d4-c390502285d0")
 		)
 		(instances
-			(project ""
+			(project "clock-pcb"
 				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
-					(reference "J10")
+					(reference "R15")
 					(unit 1)
 				)
 			)
@@ -22053,6 +22310,71 @@
 			(project "clock-pcb"
 				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
 					(reference "R25")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:+3V3")
+		(at 279.4 46.99 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "79448b07-698f-44c9-98c7-d103f1794835")
+		(property "Reference" "#PWR088"
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 284.48 46.99 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 279.4 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 279.4 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 279.4 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c4ab6731-08d9-4b78-bb1f-2a22e378b140")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "#PWR088")
 					(unit 1)
 				)
 			)
@@ -23195,6 +23517,71 @@
 		)
 	)
 	(symbol
+		(lib_id "Watchy:GND-power")
+		(at 146.05 144.78 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8bb1b5de-d33f-4016-88b7-2820eb1555b2")
+		(property "Reference" "#PWR050"
+			(at 139.7 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 140.716 144.78 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 146.05 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 146.05 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 146.05 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f274305f-a3fb-4bf4-9203-31b983d41961")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "#PWR050")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "clock:R")
 		(at 251.46 80.01 270)
 		(unit 1)
@@ -23857,71 +24244,6 @@
 			(project "clock-pcb"
 				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
 					(reference "#PWR03")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Watchy:+3V3-power")
-		(at 236.22 62.23 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "92926c5e-f07d-4ceb-81bc-fc39b11c82b0")
-		(property "Reference" "#PWR012"
-			(at 232.41 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 240.03 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 236.22 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 236.22 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 236.22 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d2c59f94-ac42-4d7e-8bed-13202cdb2464")
-		)
-		(instances
-			(project "clock-pcb"
-				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
-					(reference "#PWR012")
 					(unit 1)
 				)
 			)
@@ -26632,71 +26954,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Watchy:+3V3-power")
-		(at 279.4 62.23 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "c8efd521-2e76-4736-ae46-ee788b97c92e")
-		(property "Reference" "#PWR014"
-			(at 275.59 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 283.21 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 279.4 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 279.4 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 279.4 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "92cc189c-2b2d-4b95-9634-12c0c3e1c425")
-		)
-		(instances
-			(project "clock-pcb"
-				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
-					(reference "#PWR014")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Watchy:GND-power")
 		(at 31.75 147.32 180)
 		(unit 1)
@@ -26962,71 +27219,6 @@
 	)
 	(symbol
 		(lib_id "Watchy:+3V3-power")
-		(at 248.92 62.23 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "d15cdc92-853b-4fe1-966f-8a8e9a3f45ee")
-		(property "Reference" "#PWR013"
-			(at 252.73 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 245.11 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 248.92 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 248.92 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 248.92 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "70792eac-d203-4628-88cd-b4778082c1b0")
-		)
-		(instances
-			(project "clock-pcb"
-				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
-					(reference "#PWR013")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Watchy:+3V3-power")
 		(at 168.91 134.62 270)
 		(unit 1)
 		(exclude_from_sim no)
@@ -27159,6 +27351,71 @@
 	)
 	(symbol
 		(lib_id "Watchy:GND-power")
+		(at 146.05 139.7 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d741263c-3113-4fc4-b0b2-3448848cb2a9")
+		(property "Reference" "#PWR036"
+			(at 139.7 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 140.716 139.7 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 146.05 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 146.05 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 146.05 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5e19eacd-77bd-44ca-a3bf-30bbdb1374ca")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "#PWR036")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Watchy:GND-power")
 		(at 87.63 48.26 270)
 		(unit 1)
 		(exclude_from_sim no)
@@ -27218,6 +27475,88 @@
 			(project "clock-pcb"
 				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
 					(reference "#PWR087")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_01x06_Socket")
+		(at 151.13 139.7 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d88c1fc5-64f5-4f63-94bf-63447b680fce")
+		(property "Reference" "J11"
+			(at 152.4 139.6999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Conn_01x06_Socket"
+			(at 152.4 142.2399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical"
+			(at 151.13 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 151.13 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x06, script generated"
+			(at 151.13 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "c7c36917-94b5-4d37-8b34-a9e1d9465ba6")
+		)
+		(pin "1"
+			(uuid "93b724a2-3030-451f-9688-3ab29006e20a")
+		)
+		(pin "2"
+			(uuid "52355863-648d-4b44-af84-f07c56ea9c62")
+		)
+		(pin "6"
+			(uuid "c059c3e0-335b-4c4e-bf2f-1c003ec25de0")
+		)
+		(pin "5"
+			(uuid "13ac839c-7f3d-454f-85bb-7487cd4ad9ca")
+		)
+		(pin "4"
+			(uuid "21ffd105-4b32-4a1d-9a28-17701f3f6845")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "J11")
 					(unit 1)
 				)
 			)
@@ -27845,6 +28184,71 @@
 		)
 	)
 	(symbol
+		(lib_id "clock:+3V3")
+		(at 236.22 46.99 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e4882411-8c02-42ca-9dd0-0a4dd21c4477")
+		(property "Reference" "#PWR058"
+			(at 232.41 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 241.3 46.99 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 236.22 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 236.22 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 236.22 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d34e784a-4bb0-4da5-a39a-199d84b3fe83")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "#PWR058")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 161.29 105.41 270)
 		(unit 1)
@@ -28320,7 +28724,7 @@
 	)
 	(symbol
 		(lib_id "Watchy:R")
-		(at 142.24 134.62 270)
+		(at 142.24 137.16 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -28328,7 +28732,7 @@
 		(dnp no)
 		(uuid "ec917ad2-ba0a-4fd2-ad5f-b9a25c2c0bba")
 		(property "Reference" "R16"
-			(at 142.24 137.16 0)
+			(at 142.24 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -28337,7 +28741,7 @@
 			)
 		)
 		(property "Value" "10K"
-			(at 142.24 134.62 90)
+			(at 142.24 137.16 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -28345,7 +28749,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 142.24 132.842 90)
+			(at 142.24 135.382 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -28354,7 +28758,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 142.24 134.62 0)
+			(at 142.24 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -28363,7 +28767,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 142.24 134.62 0)
+			(at 142.24 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
