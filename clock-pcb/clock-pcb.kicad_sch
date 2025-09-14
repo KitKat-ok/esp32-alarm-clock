@@ -8941,6 +8941,113 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "clock:TestPoint"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.762)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "TP"
+				(at 0 6.858 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TestPoint"
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 5.08 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 5.08 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "test point"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "test point tp"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Pin* Test*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "TestPoint_0_1"
+				(circle
+					(center 0 3.302)
+					(radius 0.762)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "TestPoint_1_1"
+				(pin passive line
+					(at 0 0 90)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "clock:VBUS"
 			(power)
 			(pin_numbers
@@ -9758,6 +9865,12 @@
 		(uuid "54bb1d42-f219-4009-b882-b6fec0279670")
 	)
 	(junction
+		(at 179.07 63.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "555e9b89-8d59-4d73-9fd7-fe78e240e78a")
+	)
+	(junction
 		(at 72.39 137.16)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9876,6 +9989,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "75d5af28-9116-4a97-b840-dd0e8aae204d")
+	)
+	(junction
+		(at 186.69 63.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "76ecec76-1123-4964-b5fa-c6de3f3e9519")
 	)
 	(junction
 		(at 171.45 62.23)
@@ -10160,6 +10279,12 @@
 		(uuid "ca392178-821f-4c9b-a679-2da61ddd071b")
 	)
 	(junction
+		(at 186.69 71.12)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "ca9cfa43-f0b2-4ef5-b121-3f84f3971228")
+	)
+	(junction
 		(at 237.49 87.63)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -10296,10 +10421,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ff7230ba-2a21-4fbc-8000-c097ae2fd6a6")
-	)
-	(no_connect
-		(at 80.01 181.61)
-		(uuid "1abd7271-1faf-4fa1-8c37-bed3cfa427ad")
 	)
 	(no_connect
 		(at 161.29 125.73)
@@ -11391,6 +11512,16 @@
 	)
 	(wire
 		(pts
+			(xy 186.69 71.12) (xy 186.69 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6ab621b0-1efe-41de-8c5a-9eb84e032533")
+	)
+	(wire
+		(pts
 			(xy 279.4 54.61) (xy 279.4 59.69)
 		)
 		(stroke
@@ -11751,7 +11882,7 @@
 	)
 	(wire
 		(pts
-			(xy 179.07 62.23) (xy 179.07 68.58)
+			(xy 179.07 62.23) (xy 179.07 63.5)
 		)
 		(stroke
 			(width 0)
@@ -11941,6 +12072,16 @@
 	)
 	(wire
 		(pts
+			(xy 80.01 181.61) (xy 82.55 181.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9e58237c-9743-4a41-9cf0-97646e63dd6a")
+	)
+	(wire
+		(pts
 			(xy 171.45 109.22) (xy 171.45 110.49)
 		)
 		(stroke
@@ -12099,6 +12240,16 @@
 		)
 		(uuid "ac0b34e4-50de-4b9e-968a-07d11611e685")
 	)
+	(wire
+		(pts
+			(xy 179.07 63.5) (xy 179.07 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "acf4e4b6-f69c-4d25-b1f4-6c481140d34f")
+	)
 	(polyline
 		(pts
 			(xy 130.81 78.74) (xy 100.33 78.74)
@@ -12161,7 +12312,7 @@
 	)
 	(wire
 		(pts
-			(xy 186.69 68.58) (xy 186.69 74.93)
+			(xy 186.69 68.58) (xy 186.69 71.12)
 		)
 		(stroke
 			(width 0)
@@ -14357,6 +14508,28 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "HALL_SENS"
+		(shape input)
+		(at 85.09 151.13 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a1f2677a-9fb2-49dc-bf5b-fda70eb96b2c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 85.09 137.8034 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -17751,6 +17924,73 @@
 			(project ""
 				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
 					(reference "C26")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 80.01 151.13 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2c1de5c2-6162-4d4e-8dfb-195dd66e7b54")
+		(property "Reference" "TP10"
+			(at 80.01 146.812 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 81.2799 146.05 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_THTPad_1.0x1.0mm_Drill0.5mm"
+			(at 85.09 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 85.09 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 80.01 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "130410fc-ff75-43ec-bde2-4964ca29a0e7")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "TP10")
 					(unit 1)
 				)
 			)
@@ -22194,6 +22434,7 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
 			)
 		)
 		(property "Value" "6.4pF"
@@ -22203,6 +22444,7 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
@@ -23280,7 +23522,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" "TS2134035BK160SMTTR"
+		(property "Footprint" "clock:TS2134035BK160SMTTR"
 			(at 255.27 112.7 0)
 			(effects
 				(font
@@ -24810,6 +25052,75 @@
 		)
 	)
 	(symbol
+		(lib_id "Watchy:C")
+		(at 182.88 63.5 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a0299b84-ea05-4a3d-8b1d-3b3ef8eaac6d")
+		(property "Reference" "C22"
+			(at 186.944 64.008 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "6.4pF"
+			(at 185.166 63.246 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_01005_0402Metric"
+			(at 179.07 64.4652 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 182.88 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 182.88 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e368690f-d8b6-4c5d-ae6e-53b8dd34b941")
+		)
+		(pin "2"
+			(uuid "05972c5c-f9be-4494-b351-419527372c6c")
+		)
+		(instances
+			(project "clock-pcb"
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "C22")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "SFV25R-2STE1HLF:SFV25R-2STE1HLF")
 		(at 115.57 45.72 0)
 		(mirror x)
@@ -25350,7 +25661,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" "TS2134035BK160SMTTR"
+		(property "Footprint" "clock:TS2134035BK160SMTTR"
 			(at 293.37 112.7 0)
 			(effects
 				(font
@@ -26624,7 +26935,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
+		(property "Footprint" "clock:TLV75733PDYDR"
 			(at 198.12 85.725 0)
 			(effects
 				(font
@@ -26781,7 +27092,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" "TS2134035BK160SMTTR"
+		(property "Footprint" "clock:TS2134035BK160SMTTR"
 			(at 265.43 195.25 0)
 			(effects
 				(font
@@ -28717,6 +29028,72 @@
 			(project "clock-pcb"
 				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
 					(reference "#PWR068")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "clock:TestPoint")
+		(at 186.69 71.12 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ec33f8e4-b592-4ec8-ae52-dd78313fcc39")
+		(property "Reference" "TP2"
+			(at 190.754 69.85 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 190.754 72.39 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 186.69 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 186.69 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 186.69 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d866621e-d20c-4bae-8afb-89f9cb7116ea")
+		)
+		(instances
+			(project ""
+				(path "/9078aa69-f03e-4e40-986d-59a1325173fe"
+					(reference "TP2")
 					(unit 1)
 				)
 			)

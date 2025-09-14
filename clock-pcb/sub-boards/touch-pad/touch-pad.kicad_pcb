@@ -1780,8 +1780,8 @@
 		(at 146.219 68.29 90)
 		(descr "Through hole straight pin header, 1x01, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x01 2.54mm single row")
-		(property "Reference" "J1"
-			(at 0 2.33 90)
+		(property "Reference" "GND"
+			(at -2.185 0.036 180)
 			(layer "B.SilkS")
 			(uuid "7cc9a18a-4602-4662-b137-c40165b9a04a")
 			(effects
@@ -2029,7 +2029,7 @@
 		(at 190.665 70.49 180)
 		(descr "Through hole straight pin header, 1x01, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x01 2.54mm single row")
-		(property "Reference" "J2"
+		(property "Reference" "Slid 1"
 			(at 0 2.33 0)
 			(layer "B.SilkS")
 			(uuid "72b7e017-3f4e-44b0-b133-a1b6d2c52635")
@@ -2278,8 +2278,8 @@
 		(at 207.0225 68.29 180)
 		(descr "Through hole straight pin header, 1x01, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x01 2.54mm single row")
-		(property "Reference" "J3"
-			(at 0 2.33 0)
+		(property "Reference" "GND"
+			(at -0.0475 -2.115 0)
 			(layer "B.SilkS")
 			(uuid "b691e75b-f47c-468f-9bb0-9835150f198b")
 			(effects
@@ -2527,8 +2527,8 @@
 		(at 131.605 70.49 180)
 		(descr "Through hole straight pin header, 1x01, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x01 2.54mm single row")
-		(property "Reference" "J6"
-			(at 0 2.33 0)
+		(property "Reference" "slid 2"
+			(at -0.065 2.005 0)
 			(layer "B.SilkS")
 			(uuid "d3b75ea5-9c4e-46e0-bb51-4e0118770a72")
 			(effects
@@ -2776,7 +2776,7 @@
 		(at 160.833 70.49 180)
 		(descr "Through hole straight pin header, 1x01, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x01 2.54mm single row")
-		(property "Reference" "J4"
+		(property "Reference" "Slid 0"
 			(at 0 2.33 0)
 			(layer "B.SilkS")
 			(uuid "0d6ce240-fa46-4ad2-b929-bb1e8538ab3d")
@@ -3025,8 +3025,8 @@
 		(at 176.38 68.29 180)
 		(descr "Through hole straight pin header, 1x01, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x01 2.54mm single row")
-		(property "Reference" "J5"
-			(at 0.87 2.33 0)
+		(property "Reference" "GUARD"
+			(at -0.06 -2.16 0)
 			(layer "B.SilkS")
 			(uuid "c5b352f5-09f3-4e91-8fab-a22d66fff97a")
 			(effects
