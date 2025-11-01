@@ -165,14 +165,14 @@ void showMainPage()
             previousMillisFirstMenu = millis() - intervalFirstMenu;
             displayedWeather = false;
             Serial.println("resetting menus");
-            manager.sendOledAction(OLED_STOP_SCROLL);
+            //oledMana.sendOledAction(OLED_STOP_SCROLL);
             setupScreensaver();
         }
         else
         {
             if (PageNumberToShow == 1)
             {
-                manager.sendOledAction(OLED_STOP_SCROLL);
+                //oledMana.sendOledAction(OLED_STOP_SCROLL);
                 LastPageShown = 1;
                 if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
                 {
@@ -185,7 +185,7 @@ void showMainPage()
                 displayedWeather = true;
                 LastPageShown = 2;
                 display.clearDisplay();
-                manager.sendOledAction(OLED_DISPLAY);
+                oledMana.display();
                 currentWeather();
             }
             else if (PageNumberToShow == 3)
@@ -237,7 +237,7 @@ void turnOffScreensaver()
     displayedWeather = false;
     if (LastPageShown != 1)
     {
-        manager.sendOledAction(OLED_STOP_SCROLL);
+        //oledMana.sendOledAction(OLED_STOP_SCROLL);
     }
 
     previousMillisFirstMenu = millis() - intervalFirstMenu;
@@ -254,8 +254,8 @@ void showFirstPage()
     centerText(getCurrentWeekdayName(), SCREEN_HEIGHT / 2);
     centerText(getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
     centerText("Light: " + String(getLightLevel()) + " lux", SCREEN_HEIGHT / 2 + 23);
-    display.drawLine(26 - 8, 45, 102 + 8, 45, WHITE);
-    manager.sendOledAction(OLED_DISPLAY);
+    display.drawLine(26 - 8, 45, 102 + 8, 45, SSD1327_WHITE);
+    oledMana.display();
 }
 
 auto formatTemperature = [](float minTemp, float maxTemp)
@@ -295,7 +295,7 @@ void showForecastPage()
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     delay(10);
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
 }
 
 void displayWiFiSignal(int x, int y)
@@ -330,7 +330,7 @@ void displayWiFiSignal(int x, int y)
     }
 
     // Display the selected icon
-    display.drawBitmap(x, y, wifiIcon, 48, 48, BLACK, WHITE);
+    display.drawBitmap(x, y, wifiIcon, 48, 48, SSD1327_BLACK, SSD1327_WHITE);
 }
 
 void showInfoPage()
@@ -341,15 +341,15 @@ void showInfoPage()
     displayWiFiSignal(0, 24);
     if (charging == true)
     {
-        display.drawBitmap(32 - 24, 8, battery_charging_full_90deg_24x24, 24, 24, BLACK, WHITE);
+        display.drawBitmap(32 - 24, 8, battery_charging_full_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
     }
     else
     {
-        display.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, BLACK, WHITE);
-        display.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 14), 6, SSD1306_WHITE);
+        display.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+        display.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 14), 6, SSD1306_SSD1327_WHITE);
     }
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
-    display.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, WHITE);
+    display.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, SSD1327_WHITE);
     display.setCursor(48, 37);
     display.println("WiFi SSID:");
     display.setCursor(48, 45);
@@ -367,7 +367,7 @@ void showInfoPage()
     display.setCursor(5 + 35 + 50, 25);
     display.print(String(getBatteryVoltage()) + "V");
     delay(10);
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
@@ -375,28 +375,28 @@ void showSensorPage()
 {
     display.clearDisplay();
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
-    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18, house_thermometer_24x24, 24, 24, BLACK, WHITE);
+    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18, house_thermometer_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
     display.setCursor(2, 35);
     String tempText = "Temp: " + String(readTemperature()) + "C";
     display.print(tempText);
     int16_t x, y;
     uint16_t w, h;
     display.getTextBounds(tempText, 0, 0, &x, &y, &w, &h);
-    display.drawLine(2, 26, 2 + w, 26, SSD1306_WHITE);
+    display.drawLine(2, 26, 2 + w, 26, SSD1306_SSD1327_WHITE);
     uint16_t tempLenght = w;
     display.getTextBounds("SHT40 Sens", 0, 0, &x, &y, &w, &h);
     display.setCursor(tempLenght / 2 - w / 2, 24);
     display.print("SHT40 Sens");
     display.setCursor(2, 35 + 24);
     display.print("Hum: " + String(readHumidity()) + "%");
-    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, house_raindrops_24x24, 24, 24, BLACK, WHITE);
+    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, house_raindrops_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
 
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
 }
 
 void cyclePages()
 {
-    manager.sendOledAction(OLED_STOP_SCROLL);
+    //oledMana.sendOledAction(OLED_STOP_SCROLL);
     if (LastPageShown == 1)
     {
         PageNumberToShow = 2;
@@ -421,7 +421,7 @@ void cyclePages()
 
 void cyclePagesDown()
 {
-    manager.sendOledAction(OLED_STOP_SCROLL);
+    //oledMana.sendOledAction(OLED_STOP_SCROLL);
     if (LastPageShown == 1)
     {
         PageNumberToShow = 2;
@@ -446,7 +446,7 @@ void cyclePagesDown()
 
 void cyclePagesUp()
 {
-    manager.sendOledAction(OLED_STOP_SCROLL);
+    //oledMana.sendOledAction(OLED_STOP_SCROLL);
     if (LastPageShown == 1)
     {
         PageNumberToShow = 5;
@@ -514,8 +514,8 @@ void showScreensaver()
         f = (flyer[i].frame == 255) ? 4 : (flyer[i].frame++ & 3);
         x = flyer[i].x / 16;
         y = flyer[i].y / 16;
-        display.drawBitmap(x, y, mask[f], 32, 32, BLACK);
-        display.drawBitmap(x, y, img[f], 32, 32, WHITE);
+        display.drawBitmap(x, y, mask[f], 32, 32, SSD1327_BLACK);
+        display.drawBitmap(x, y, img[f], 32, 32, SSD1327_WHITE);
 
         flyer[i].x -= flyer[i].depth * 2;
         flyer[i].y += flyer[i].depth;
@@ -541,5 +541,5 @@ void showScreensaver()
     {
         qsort(flyer, N_FLYERS, sizeof(struct Flyer), compare);
     }
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
 }

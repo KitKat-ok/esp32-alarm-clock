@@ -61,9 +61,10 @@ void createScaledArray(const float *inputArray, int size, int cellVerticalCount,
     }
 }
 
-const ColorMapArray<2> really_black{
-    white,
-    white};
+const ColorMapArray<2> black_and_white{
+	black,
+	white
+};
 
 // Interval in milliseconds (30 seconds)
 const unsigned long interval = 30000;
@@ -298,7 +299,7 @@ void showChart(float *data, uint dataCount, String chartName)
     }
 
     showSideText(bothList, bothSize);
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
 }
 
 void loopGraph(const char *title, float *dataArray, size_t dataSize, float yMin, float yMax, float (*readValue)())

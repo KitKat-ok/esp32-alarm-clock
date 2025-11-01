@@ -98,11 +98,11 @@ void oledWakeupTask(void *pvParameters)
             maxBrightness = true;
             lastActionTime = millis();
 
-            manager.sendOledAction(OLED_ENABLE);
+            oledMana.enable();
 
-            if (manager.dimmed)
+            if (oledMana.dimmed)
             {
-                manager.sendOledAction(OLED_FADE_IN);
+                oledMana.fadeIn();
                 delay(5);
             }
             inputDetected = false;
@@ -118,9 +118,9 @@ void oledWakeupTask(void *pvParameters)
                     inputDetected = false;
                     lastActionTime = millis();
 
-                    if (!manager.ScreenEnabled)
+                    if (!oledMana.ScreenEnabled)
                     {
-                        manager.sendOledAction(OLED_ENABLE);
+                        oledMana.enable();
                     }
 
                     vTaskDelay(pdMS_TO_TICKS(5));
@@ -216,22 +216,22 @@ void dimOledDisplay()
 {
     if (shouldTurnOffDisplay(lightLevel) == true || (mmwaveState == 0 && WiFi.SSID() == SSID1 && mmwaveState != 3 && WiFi.isConnected() == true))
     {
-        manager.sendOledAction(OLED_DISABLE);
+        oledMana.disable();
 
-        if (manager.dimmed == false)
+        if (oledMana.dimmed == false)
         {
-            manager.sendOledAction(OLED_FADE_OUT);
+            oledMana.fadeOut();
             delay(50);
         }
         delay(50);
     }
     else
     {
-        manager.sendOledAction(OLED_ENABLE);
+        oledMana.enable();
 
-        if (manager.dimmed == false)
+        if (oledMana.dimmed == false)
         {
-            manager.sendOledAction(OLED_FADE_OUT);
+            oledMana.fadeOut();
         }
     }
 }
@@ -291,13 +291,13 @@ void dimLedDisplay()
         else if (lightLevel > LED_DIM_THRESHOLD)
         {
             displayON = true;
-            LedDisplay.setBrightness(mapWithHysteresis(lightLevel));
+            LedDisplay.setIntensity(mapWithHysteresis(lightLevel));
             Serial.println("Brightness of Led display " + String(map(constrain(lightLevel, 0, LED_DIM_THRESHOLD), 0, LED_DIM_THRESHOLD, 0, 7)));
         }
         else
         {
             displayON = true;
-            LedDisplay.setBrightness(0);
+            LedDisplay.setIntensity(0);
             Serial.println("Brightness of Led display 0");
         }
     }

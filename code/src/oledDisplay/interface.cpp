@@ -72,7 +72,7 @@ void showMenu()
     pageNumber = ((data.isSubmenu ? data.submenuCount : data.totalMenus) + data.itemsOnPage - 1) / data.itemsOnPage;
 
     display.setCursor(0, 0);
-    display.setTextColor(SSD1306_WHITE);
+    display.setTextColor(SSD1327_WHITE);
 
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     display.setCursor(0, 10);
@@ -111,12 +111,12 @@ void showMenu()
 
         if (data.currentButton == i)
         {
-            display.fillRect(0, boxY, SCREEN_WIDTH, boxHeight, SSD1306_WHITE);
-            display.setTextColor(SSD1306_BLACK);
+            display.fillRect(0, boxY, SCREEN_WIDTH, boxHeight, SSD1327_WHITE);
+            display.setTextColor(SSD1327_BLACK);
         }
         else
         {
-            display.setTextColor(SSD1306_WHITE);
+            display.setTextColor(SSD1327_WHITE);
         }
 
         int verticalOffset = (boxHeight - textHeight) / 2;
@@ -128,9 +128,9 @@ void showMenu()
         y += boxHeight + BUTTONS_OFFSET;
     }
 
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    display.setTextColor(SSD1306_WHITE);
+    display.setTextColor(SSD1327_WHITE);
 }
 
 void initMenu(entryMenu *entryList, int totalMenus, String menuName, int textSize, int linesThick)

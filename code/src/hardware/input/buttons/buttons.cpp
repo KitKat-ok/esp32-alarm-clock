@@ -80,7 +80,7 @@ void setButton(inkButtonStates button)
     buttMut.lock();
     buttonPressed = button;
     buttMut.unlock();
-    
+
     Serial.println("setButton done");
 }
 
@@ -241,5 +241,11 @@ void turnOnButtons()
 
 bool buttonRead(uint8_t pin)
 {
-    return digitalRead(pin);
+    // It will return false from digitalRead if this fails
+    if (rM.gpioExpander.simplerInit() == false)
+    {
+        return false;
+    }
+    // NOT here
+    return !rM.gpioExpander.digitalRead(pin);
 }

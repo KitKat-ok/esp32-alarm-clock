@@ -22,6 +22,10 @@ void createLedDisplayTask()
   );
 }
 
+void showCurrentTime() {
+  LedDisplay.display(String(String(hour()) + "." + String(minute())).c_str());
+}
+
 void showTimeTask(void *pvParameters)
 {
   unsigned long previousMillis = 0;
@@ -41,7 +45,7 @@ void showTimeTask(void *pvParameters)
 
         if (displayON == true)
         {
-          LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+          showCurrentTime();
         }
       }
       vTaskDelay(10);
@@ -51,28 +55,28 @@ void showTimeTask(void *pvParameters)
 
     if (hour() >= 23 || hour() < 10)
     {
-      LedDisplay.setBrightness(2);
-      LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+      LedDisplay.setIntensity(2);
+      showCurrentTime();
       while (maxBrightness == true)
       {
-        LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+        showCurrentTime();
         vTaskDelay(1000);
       }
       dimLedDisplay();
-      LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+      showCurrentTime();
     }
     else
     {
-      LedDisplay.setBrightness(7);
-      LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+      LedDisplay.setIntensity(7);
+      showCurrentTime();
       while (maxBrightness == true)
       {
 
-        LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+        showCurrentTime();
         vTaskDelay(1000);
       }
       dimLedDisplay();
-      LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+      showCurrentTime();
     }
   }
 }

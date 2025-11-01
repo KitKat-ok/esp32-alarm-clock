@@ -84,7 +84,7 @@ void manageBattery(void *parameter)
       if (!setPowerSettings)
       {
         Serial.println("Setting power settings");
-        touchSetCycles(0x500, 0x500);
+        //touchSetCycles(0x500, 0x500);
         lightMeter.setActiveMode();
         vTaskResume(oledWakeupTaskHandle);
         vTaskResume(LedTask);
@@ -122,7 +122,7 @@ void manageBattery(void *parameter)
       {
         Serial.println("Setting battery settings");
         turnOffWifi();
-        touchSetCycles(0x5000, 0x5000);
+        //touchSetCycles(0x5000, 0x5000);
         vTaskSuspend(oledWakeupTaskHandle);
         vTaskSuspend(LedTask);
         vTaskSuspend(dimmingTaskHandle);
@@ -156,9 +156,9 @@ void manageBattery(void *parameter)
           waitForInput = true;
           vTaskResume(menuTaskHandle);
           inputDetected = false;
-          manager.sendOledAction(OLED_ENABLE);
-          LedDisplay.setBrightness(2);
-          LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+          oledMana.enable();
+          LedDisplay.setIntensity(2);
+          showCurrentTime();
           if (useAllTouch() != No_Seg)
           {
             useTouch();
@@ -202,9 +202,9 @@ void manageBattery(void *parameter)
               Serial.println("Input or Alarm detected waiting more in timer");
               vTaskResume(menuTaskHandle);
               waitForInput = true;
-              manager.sendOledAction(OLED_ENABLE);
-              LedDisplay.setBrightness(2);
-              LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+              oledMana.enable();
+              LedDisplay.setIntensity(2);
+              showCurrentTime();
             }
             Serial.println("resetting sleep timer");
             delay(10);
@@ -250,9 +250,9 @@ void manageBattery(void *parameter)
               Serial.println("Input or Alarm detected waiting more in touch");
               vTaskResume(menuTaskHandle);
               waitForInput = true;
-              manager.sendOledAction(OLED_ENABLE);
-              LedDisplay.setBrightness(2);
-              LedDisplay.showNumberDecEx(hour() * 100 + minute(), 0b11100000, true);
+              oledMana.enable();
+              LedDisplay.setIntensity(2);
+              showCurrentTime();
             }
             Serial.println("resetting sleep timer");
             delay(10);
@@ -306,13 +306,6 @@ uint64_t pinToMask(uint8_t pin)
 
 void initSleep()
 {
-  touchSleepWakeUpEnable(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD_SLEEP);
-  // touchSleepWakeUpEnable(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD_SLEEP);
-  // touchSleepWakeUpEnable(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD_SLEEP);
-  // touchSleepWakeUpEnable(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_SLEEP);
-  // touchSleepWakeUpEnable(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_SLEEP);
-
-  esp_sleep_enable_touchpad_wakeup();
   esp_sleep_enable_ext1_wakeup(1ULL << POWER_STATE_PIN, ESP_EXT1_WAKEUP_ANY_HIGH);
   esp_sleep_enable_timer_wakeup(SLEEPING_TIME);
 }
@@ -322,10 +315,10 @@ void enableSleep()
 
   delay(500);
   vTaskSuspend(menuTaskHandle);
-  manager.sendOledAction(OLED_DISABLE);
-  display.ssd1306_command(SSD1306_DISPLAYOFF); // Just to make sure because manager can take a bit before reacting if many write operations are ordered
+  oledMana.disable();
+  oledMana.disable(); // Just to make sure because manager can take a bit before reacting if many write operations are ordered
   delay(500);
-  LedDisplay.setBrightness(0);
+  LedDisplay.setIntensity(0);
   delay(100);
   LedDisplay.clear();
   initSleep();

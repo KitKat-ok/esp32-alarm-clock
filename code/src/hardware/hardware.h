@@ -3,7 +3,7 @@
 
 #include "../defines.h"
 
-extern TM1637Display LedDisplay;
+extern AS1115 LedDisplay;
 
 extern LTR_F216A lightMeter;
 

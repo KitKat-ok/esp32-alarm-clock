@@ -1,6 +1,6 @@
 #include "hardware.h"
 
-TM1637Display LedDisplay = TM1637Display(CLK, DIO);
+AS1115 LedDisplay = AS1115(0x00);
 LTR_F216A lightMeter;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
@@ -25,10 +25,8 @@ void initHardware()
       .light_sleep_enable = true,
   };
   esp_pm_configure(&pm_config);
-  pinMode(VOLTAGE_DIVIDER_PIN, INPUT);
-  pinMode(POWER_STATE_PIN, INPUT);
-  pinMode(HALL_SWITCH, INPUT);
-  pinMode(CHARGER_CONTROL_PIN, OUTPUT);
+  initI2C();
+  oledMana.initDisplay();
   initButtons();
   initTouch();
   initBuzzer();
@@ -69,31 +67,24 @@ bool readHallSwitch()
 
 void initOledDisplay()
 {
-  manager.createTask();
+  oledMana.initDisplay();
   display.clearDisplay();
   display.setTextSize(1);
   display.setCursor(0, 0);
-  display.setTextColor(SSD1306_WHITE);
-  manager.sendOledAction(OLED_DISPLAY);
+  oledMana.display();
 
   centerText("Oled Initialized", SCREEN_HEIGHT / 2);
   centerText((resetReasonToString(esp_reset_reason())), 10);
 
-  manager.sendOledAction(OLED_DISPLAY);
-  manager.sendOledAction(OLED_ENABLE);
-  display.ssd1306_command(0x81);
-  display.ssd1306_command(130);
-  delay(100);
-  display.ssd1306_command(0xD9);
-  display.ssd1306_command(30);
-  manager.sendOledAction(OLED_FADE_OUT);
+  oledMana.display();
+  oledMana.enable();
   Serial.println("OLed display initialized");
 }
 
 void initLedDisplay()
 {
-  LedDisplay.setBrightness(0);
-  LedDisplay.showNumberDecEx(8888, 0b11100000);
+  LedDisplay.init(4, 6);
+  LedDisplay.clear();
   Serial.println("Led display initialized");
 }
 
@@ -107,16 +98,11 @@ void initLightSensor()
 
 void initTouch()
 {
-  touchSetCycles(0x500, 0x500);
   turnOnTouch();
 }
 
 void initButtons()
 {
-  pinMode(UP_PIN, INPUT_PULLUP);
-  pinMode(DOWN_PIN, INPUT_PULLUP);
-  pinMode(MENU_PIN, INPUT_PULLUP);
-  pinMode(BACK_PIN, INPUT_PULLUP);
   turnOnButtons();
   Serial.println("Buttons initialized");
 }

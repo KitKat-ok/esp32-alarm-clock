@@ -75,10 +75,7 @@ void setTouch(touchStates touch)
 
     Serial.println("setTouch done" + String(touch));
     TouchConfig currentTouch = getTouchConfig(touch);
-    while (touchRead(currentTouch.pin) < currentTouch.threshold)
-    {
-        delay(SMALL_BUTTON_DELAY_MS);
-    }
+
 }
 
 void loopTouchTask(void *parameter)

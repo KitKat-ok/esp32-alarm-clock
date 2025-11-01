@@ -9823,6 +9823,12 @@
 		(uuid "3be941de-7e4f-4708-87a3-046dc5e4e470")
 	)
 	(junction
+		(at 186.69 50.8)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3c07b709-0127-40d4-b07b-0cc39811668f")
+	)
+	(junction
 		(at 204.47 138.43)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9839,6 +9845,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "442a2133-14d1-46c2-a1c4-df5d6e698a7a")
+	)
+	(junction
+		(at 186.69 58.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "44739647-c85c-4e0c-a7b0-14c370736dc6")
 	)
 	(junction
 		(at 163.83 54.61)
@@ -9875,12 +9887,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "55b18b58-fe28-4285-aa74-860050491f0a")
-	)
-	(junction
-		(at 186.69 55.88)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "5886dcc8-324d-4dd9-ac6e-97fd7cce6aeb")
 	)
 	(junction
 		(at 19.05 17.78)
@@ -10181,12 +10187,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "9f4f9cf2-4792-4516-9147-4358316763cb")
-	)
-	(junction
-		(at 186.69 52.07)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a28bdf8c-3659-48e3-a024-be9284408764")
 	)
 	(junction
 		(at 160.02 62.23)
@@ -10822,6 +10822,16 @@
 	)
 	(wire
 		(pts
+			(xy 186.69 50.8) (xy 191.77 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "23ed0942-2f99-45f5-aa49-f8fc4d66fc15")
+	)
+	(wire
+		(pts
 			(xy 137.16 167.64) (xy 139.7 167.64)
 		)
 		(stroke
@@ -11042,6 +11052,16 @@
 	)
 	(wire
 		(pts
+			(xy 186.69 58.42) (xy 186.69 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3c45d9b0-0ed7-44c4-8e24-8e854dffbe22")
+	)
+	(wire
+		(pts
 			(xy 226.06 132.08) (xy 226.06 134.62)
 		)
 		(stroke
@@ -11242,6 +11262,16 @@
 	)
 	(wire
 		(pts
+			(xy 186.69 50.8) (xy 186.69 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5036321e-3a5a-4f50-8a4c-991c5d9db338")
+	)
+	(wire
+		(pts
 			(xy 167.64 167.64) (xy 170.18 167.64)
 		)
 		(stroke
@@ -11252,7 +11282,7 @@
 	)
 	(wire
 		(pts
-			(xy 186.69 45.72) (xy 186.69 52.07)
+			(xy 186.69 45.72) (xy 186.69 50.8)
 		)
 		(stroke
 			(width 0)
@@ -11582,16 +11612,6 @@
 	)
 	(wire
 		(pts
-			(xy 186.69 52.07) (xy 186.69 55.88)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6d5eea11-12fc-452a-8a81-89990ff8120f")
-	)
-	(wire
-		(pts
 			(xy 179.07 55.88) (xy 179.07 54.61)
 		)
 		(stroke
@@ -11899,6 +11919,16 @@
 			(type default)
 		)
 		(uuid "8c038170-7036-4a7b-b539-607678b9869a")
+	)
+	(wire
+		(pts
+			(xy 186.69 55.88) (xy 186.69 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8c77dca1-4211-4cdf-922a-657dcfd4ea92")
 	)
 	(wire
 		(pts
@@ -12569,6 +12599,16 @@
 			(type default)
 		)
 		(uuid "c93fadc5-fec7-4bc2-a04e-2c5d6722be9c")
+	)
+	(wire
+		(pts
+			(xy 191.77 58.42) (xy 186.69 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ca915df5-3707-40af-be66-13ba5d386935")
 	)
 	(polyline
 		(pts
@@ -21797,7 +21837,7 @@
 	)
 	(symbol
 		(lib_id "Device:D")
-		(at 186.69 59.69 90)
+		(at 191.77 54.61 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -21805,7 +21845,7 @@
 		(dnp no)
 		(uuid "6b9a8a2f-9ec4-48fd-8f8a-083fd292f8c0")
 		(property "Reference" "D3"
-			(at 187.706 63.754 0)
+			(at 192.786 58.674 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21814,7 +21854,7 @@
 			)
 		)
 		(property "Value" "NSVR0340HT1G"
-			(at 189.23 63.754 0)
+			(at 194.31 58.674 0)
 			(effects
 				(font
 					(size 0.762 0.762)
@@ -21823,7 +21863,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-323"
-			(at 186.69 59.69 0)
+			(at 191.77 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21832,7 +21872,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 186.69 59.69 0)
+			(at 191.77 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21841,7 +21881,7 @@
 			)
 		)
 		(property "Description" "Diode"
-			(at 186.69 59.69 0)
+			(at 191.77 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21850,7 +21890,7 @@
 			)
 		)
 		(property "Sim.Device" "D"
-			(at 186.69 59.69 0)
+			(at 191.77 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21859,7 +21899,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 186.69 59.69 0)
+			(at 191.77 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23053,7 +23093,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
+		(property "Footprint" "clock:PinHeader_1x04_P2.54mm_Vertical"
 			(at 195.58 20.32 0)
 			(effects
 				(font

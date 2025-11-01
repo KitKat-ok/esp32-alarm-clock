@@ -2,19 +2,6 @@
 
 #include "defines.h"
 
-typedef enum
-{
-    Unknown = 0, // For the task to look for answers, used on the yatchy
-    None = 1,
-    Back = 2,
-    Menu = 3,
-    Up = 4,
-    Down = 5,
-    LongBack = 6,
-    LongMenu = 7,
-    LongUp = 8,
-    LongDown = 9,
-} inkButtonStates;
 
 extern bool buttonsActivated;
 extern std::mutex buttMut;

@@ -23,7 +23,7 @@ void checkForRunOta()
 
         int lastTwoDigitsInt = lastTwoDigits.toInt();
 
-        LedDisplay.showNumberDec(lastTwoDigitsInt);
+        LedDisplay.display(lastTwoDigitsInt);
 
         saveOtaValue(false);
 
@@ -34,15 +34,15 @@ void checkForRunOta()
             centerText("IP Address:", 20);
             centerText(WiFi.localIP().toString(), 30);
             centerText("Running", 40);
-            manager.sendOledAction(OLED_DISPLAY);
+            oledMana.display();
             ArduinoOTA.handle();
             display.clearDisplay();
             centerText("OTA:Enabled!", 10);
             centerText("IP Address:", 20);
             centerText(WiFi.localIP().toString(), 30);
-            manager.sendOledAction(OLED_DISPLAY);
+            oledMana.display();
         }
-        manager.sendOledAction(OLED_DISABLE);
+        oledMana.disable();
     }
 }
 

@@ -7,6 +7,7 @@ extern bool LedTaskRunning;
 
 extern TaskHandle_t LedTask;
 
+void showCurrentTime();
 void createLedDisplayTask();
 
 #endif

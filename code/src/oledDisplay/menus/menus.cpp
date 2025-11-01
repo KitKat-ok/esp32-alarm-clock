@@ -12,7 +12,7 @@ void checkExit()
 
     if (shouldExitLoop() == true)
     {
-        manager.sendOledAction(OLED_STOP_SCROLL);
+        //oledMana.sendOledAction(OLED_STOP_SCROLL);
         displayed = false;
         exitLoopFunction = true;
     }
@@ -44,7 +44,7 @@ void currentWeather()
     display.print(getCurrentWeekdayName());
 
     // Draw a separator line
-    display.drawLine(58, 25, 127, 25, WHITE);
+    display.drawLine(58, 25, 127, 25, SSD1327_WHITE);
 
     // Display the current temperature
     display.setCursor(58, 40);
@@ -60,7 +60,7 @@ void currentWeather()
     // Display the weather condition description
     display.setCursor(1, SCREEN_HEIGHT - 5);
     display.setFont(&Roboto_Black_9);
-    display.fillRect(0, SCREEN_HEIGHT - 16, SCREEN_WIDTH, 16, SSD1306_BLACK);
+    display.fillRect(0, SCREEN_HEIGHT - 16, SCREEN_WIDTH, 16, SSD1327_BLACK);
     if (isWeatherAvailable == true)
     {
         display.print(" " + currentWeatherData.main); // Print the weather condition description
@@ -79,8 +79,8 @@ void currentWeather()
 
     display.println(String(day()) + "." + String(month()) + "." + String(year()));
     delay(10);
-    manager.sendOledAction(OLED_DISPLAY);
-    manager.sendOledAction(OLED_SCROLL_LEFT, 0x06, 0x07, 2);
+    oledMana.display();
+    oledMana.sendOledAction(OLED_SCROLL_LEFT, 0x06, 0x07, 2);
 
     // Restore the font settings
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
@@ -93,13 +93,13 @@ void displayWeatherCast(int dayIndex)
     {
         displayed = true;
         display.clearDisplay();
-        display.setTextColor(SSD1306_WHITE);
+        display.setTextColor(SSD1327_WHITE);
         displaywidget(weatherDailyForecastData[dayIndex].weatherConditionId);
         display.setTextSize(1);
         display.setCursor(55, 10);
         display.setFont(&DejaVu_LGC_Sans_Bold_9);
         display.print(getNextDayName(dayIndex));
-        display.drawLine(57, 15, 127, 15, WHITE);
+        display.drawLine(57, 15, 127, 15, SSD1327_WHITE);
         display.setFont(&DejaVu_LGC_Sans_Bold_10);
 
         float tmax = weatherDailyForecastData[dayIndex].maxTemp;
@@ -117,7 +117,7 @@ void displayWeatherCast(int dayIndex)
 
         display.setCursor(0, SCREEN_HEIGHT - 5);
         display.setFont(&DejaVu_LGC_Sans_Bold_9);
-        display.fillRect(0, SCREEN_HEIGHT - 16, SCREEN_WIDTH, 16, SSD1306_BLACK);
+        display.fillRect(0, SCREEN_HEIGHT - 16, SCREEN_WIDTH, 16, SSD1327_BLACK);
 
         if (isWeatherAvailable == true)
         {
@@ -132,8 +132,8 @@ void displayWeatherCast(int dayIndex)
             display.print("");
         }
 
-        manager.sendOledAction(OLED_DISPLAY);
-        manager.sendOledAction(OLED_SCROLL_LEFT, 0x06, 0x07, 2);
+        oledMana.display();
+        oledMana.sendOledAction(OLED_SCROLL_LEFT, 0x06, 0x07, 2);
         display.setFont(&DejaVu_LGC_Sans_Bold_10);
     }
 }
@@ -176,13 +176,13 @@ void fpsCalc()
         display.clearDisplay();
         for (int x = 0; x < SCREEN_WIDTH; x += 2)
         {
-            display.drawLine(x, 0, SCREEN_WIDTH - x, SCREEN_HEIGHT - 1, SSD1306_WHITE); // Draw line
+            display.drawLine(x, 0, SCREEN_WIDTH - x, SCREEN_HEIGHT - 1, SSD1327_WHITE); // Draw line
         }
         for (int y = 0; y < SCREEN_HEIGHT; y += 2)
         {
-            display.drawLine(0, y, SCREEN_WIDTH - 1, SCREEN_HEIGHT - y, SSD1306_WHITE); // Draw line
+            display.drawLine(0, y, SCREEN_WIDTH - 1, SCREEN_HEIGHT - y, SSD1327_WHITE); // Draw line
         }
-        manager.sendOledAction(OLED_DISPLAY); // Refresh display
+        oledMana.display(); // Refresh display
     }
     endTime = millis();
     float elapsedTime = (endTime - startTime) / 1000.0; // Convert to seconds
@@ -191,11 +191,11 @@ void fpsCalc()
     // Display FPS for line drawing on OLED
     display.clearDisplay();
     display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
+    display.setTextColor(SSD1327_WHITE);
     display.setCursor(0, 0);
     display.print("Line Drawing FPS: ");
     display.print(fps, 1); // Display FPS with one decimal place
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
     delay(5000); // Show FPS for 5 seconds
 
     // Measure FPS for drawing text
@@ -207,10 +207,10 @@ void fpsCalc()
         {
             display.setCursor(0, y);
             display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
+            display.setTextColor(SSD1327_WHITE);
             display.print("FPS Test");
         }
-        manager.sendOledAction(OLED_DISPLAY); // Refresh display
+        oledMana.display(); // Refresh display
     }
     endTime = millis();
     elapsedTime = (endTime - startTime) / 1000.0; // Convert to seconds
@@ -219,11 +219,11 @@ void fpsCalc()
     // Display FPS for text drawing on OLED
     display.clearDisplay();
     display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
+    display.setTextColor(SSD1327_WHITE);
     display.setCursor(0, 0);
     display.print("Text Drawing FPS: ");
     display.print(fps, 1); // Display FPS with one decimal place
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
     delay(5000); // Show FPS for 5 seconds
 }
 
@@ -232,7 +232,7 @@ void wifiDebugMenu()
     checkExit();
     display.clearDisplay();
     centerText("WiFi debug", 10);
-    display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1306_WHITE);
+    display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1327_WHITE);
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
     display.setCursor(0, 24);
     display.println("WiFi SSID: " + String(WiFi.SSID()));
@@ -241,7 +241,7 @@ void wifiDebugMenu()
     centerText("Mac address: ", 53);
     centerText(String(WiFi.macAddress()), 63);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
     delay(10);
 }
 
@@ -250,7 +250,7 @@ void CPUDebugMenu()
     checkExit();
     display.clearDisplay();
     centerText("CPU debug", 10);
-    display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1306_WHITE);
+    display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1327_WHITE);
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
     display.setCursor(0, 24);
     display.println("CPU freq: " + String(getCpuFrequencyMhz()) + " Mhz");
@@ -259,7 +259,7 @@ void CPUDebugMenu()
     centerText("Chip model:", 44);
     centerText(String(ESP.getChipModel()), 54);
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
     delay(10);
 }
 
@@ -268,7 +268,7 @@ void generalDebugMenu()
     checkExit();
     display.clearDisplay();
     centerText("General debug ", 10);
-    display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1306_WHITE);
+    display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1327_WHITE);
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
     centerText("Reset reason:", 23);
     centerText(resetReasonToString(esp_reset_reason()), 33);
@@ -280,10 +280,10 @@ void generalDebugMenu()
     display.println("Battery Vol: " + String(getBatteryVoltage()));
     if (charging == true)
     {
-        display.fillCircle((SCREEN_WIDTH - 20), 60, 3, SSD1306_WHITE);
+        display.fillCircle((SCREEN_WIDTH - 20), 60, 3, SSD1327_WHITE);
     }
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
     delay(10);
 }
 
@@ -294,7 +294,7 @@ void touchDebugMenu()
     Serial.println(" finished checking Exit");
     display.clearDisplay();
     centerText("Touch Debug ", 10);
-    display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1306_WHITE);
+    display.drawRect(0, SCREEN_HEIGHT / 3 - 8, SCREEN_WIDTH, 2, SSD1327_WHITE);
     display.setFont(&DejaVu_LGC_Sans_Bold_9);
     display.setCursor(0, 23);
     display.println("First Seg " + String(touchRead(TOUCH_1_Seg_PIN)));
@@ -308,7 +308,7 @@ void touchDebugMenu()
     display.println("Fourth Seg " + String(touchRead(TOUCH_5_Seg_PIN)));
     display.setFont(&DejaVu_LGC_Sans_Bold_10);
     Serial.println("Starting Display");
-    manager.sendOledAction(OLED_DISPLAY);
+    oledMana.display();
     Serial.println("Finished Display");
     delay(10);
 }

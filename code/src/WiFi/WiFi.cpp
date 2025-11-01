@@ -210,7 +210,7 @@ void WiFiEvent(WiFiEvent_t event)
       createWeatherTask();
       int currentHour = hour();
       int currentMinute = minute();
-      LedDisplay.showNumberDecEx(currentHour * 100 + currentMinute, 0b11100000, true);
+      showCurrentTime();
       tasksLaunched = true;
     }
     break;

@@ -45,9 +45,5 @@ void downIntBut()
 
 void turnOnInterrupts()
 {
-    attachInterrupt(digitalPinToInterrupt(BACK_PIN), backIntBut, BUTTON_INTER_COND);
-    attachInterrupt(digitalPinToInterrupt(MENU_PIN), menuIntBut, BUTTON_INTER_COND);
-    attachInterrupt(digitalPinToInterrupt(UP_PIN), upIntBut, BUTTON_INTER_COND);
-    attachInterrupt(digitalPinToInterrupt(DOWN_PIN), downIntBut, BUTTON_INTER_COND);
-    Serial.println("Attached button interrupts!");
+    rM.gpioExpander.setDefaultInterruptsEsp();
 }

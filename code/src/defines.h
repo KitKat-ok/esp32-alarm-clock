@@ -6,8 +6,8 @@
 #include <Arduino.h>
 #include <LittleFS.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-#include <TM1637Display.h>
+#include <Adafruit_SSD1327.h>
+#include <AS1115.h>
 #include <LTR_F216A.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
@@ -15,8 +15,7 @@
 #include <NTPClient.h>
 #include <Preferences.h>
 #include <Adafruit_SHT4x.h>
-#include <oledManager.h>
-// #include <buttonManager.h>
+// #include <buttonoledMana.h>
 #include <Grafici.h>
 #include <Timezone.h>
 
@@ -28,9 +27,25 @@
 #include "../icons/icons/icons_32x32.h"
 #include "../icons/icons/icons_48x48.h"
 
-// Led Display
-#define CLK  18 
-#define DIO  19 
+// Display
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 128
+
+// Used for software SPI
+#define OLED_CLK 20
+#define OLED_MOSI 19
+
+// Used for software or hardware SPI
+#define OLED_CS 22
+#define OLED_DC 21
+
+// Used for I2C or SPI
+#define OLED_RESET -1
+
+// I2C
+#define I2C_SCL_PIN  GPIO_NUM_8 
+#define I2C_SDA_PIN  GPIO_NUM_7
+#define I2C_FREQ 100
 
 // WiFi
 #define SIZE_WIFI_CRED_STAT 3
@@ -67,13 +82,13 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define LED_BRIGHTNESS_MAX 7
 
 // Inputs
-#define HALL_SWITCH GPIO_NUM_39 // Hall switch only used to turn off alarm currently
+#define HALL_SWITCH -1 // Hall switch only used to turn off alarm currently
 
 // Button stuf
-#define MENU_PIN GPIO_NUM_25
-#define BACK_PIN GPIO_NUM_26
-#define DOWN_PIN GPIO_NUM_13
-#define UP_PIN GPIO_NUM_12
+#define MENU_PIN -1
+#define BACK_PIN -1
+#define DOWN_PIN -1
+#define UP_PIN -1
 
 #define SMALL_BUTTON_DELAY_MS 15
 
@@ -86,15 +101,15 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define BUTTON_INTER_COND FALLING
 
 // Touch stuff I guess beh
-#define TOUCH_1_Seg_PIN GPIO_NUM_33
+#define TOUCH_1_Seg_PIN 0
 #define TOUCH_1_Seg_THRESHOLD 4
-#define TOUCH_2_Seg_PIN GPIO_NUM_4
+#define TOUCH_2_Seg_PIN 0
 #define TOUCH_2_Seg_THRESHOLD 4
-#define TOUCH_3_Seg_PIN GPIO_NUM_32
+#define TOUCH_3_Seg_PIN 0
 #define TOUCH_3_Seg_THRESHOLD 5
-#define TOUCH_4_Seg_PIN GPIO_NUM_27
+#define TOUCH_4_Seg_PIN 0
 #define TOUCH_4_Seg_THRESHOLD 5
-#define TOUCH_5_Seg_PIN GPIO_NUM_2
+#define TOUCH_5_Seg_PIN 0
 #define TOUCH_5_Seg_THRESHOLD 5
 
 // On battery
@@ -125,7 +140,7 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define N_FLYERS 5  // Number of flyers on screensaver
 
 // Buzzer
-#define BUZZER_PIN GPIO_NUM_14
+#define BUZZER_PIN GPIO_NUM_18
 #define START_SOUND true // uncomment to enable start sound
 
 // Power management
@@ -136,9 +151,9 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define ADC_VOLTAGE_DIVIDER 710.094f // 300K and 806K
 #define ADC_OFFSET 77 // It subtracts from the read milivolts to calibrate the adc a bit its not great but it works
 
-#define POWER_STATE_PIN GPIO_NUM_36
+#define POWER_STATE_PIN -1
 
-#define CHARGER_CONTROL_PIN GPIO_NUM_23
+#define CHARGER_CONTROL_PIN -1
 #define BATT_TARGET_VOLTAGE 3.85   // Target voltage in volts
 #define BATT_HYSTERESIS 0.15       // charging Hysteresis in volts
 
@@ -155,8 +170,26 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 
 #include "confidential.h"
 
+typedef enum
+{
+    Unknown = 0, // For the task to look for answers, used on the yatchy
+    None = 1,
+    Back = 2,
+    Menu = 3,
+    Up = 4,
+    Down = 5,
+    LongBack = 6,
+    LongMenu = 7,
+    LongUp = 8,
+    LongDown = 9,
+} inkButtonStates;
+
+#include "hardware/i2c/i2c.h"
 #include "hardware/hardware.h"
+#include "hardware/display/display.h"
 #include "hardware/input/buttons/buttons.h"
+#include "hardware/mcp23018/mcp23018.h"
+#include "rtcMem/rtcMem.h"
 #include "hardware/input/buttons/combinations.h"
 #include "hardware/input/touch/touch.h"
 #include "functions.h"
