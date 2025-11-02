@@ -19,6 +19,6 @@ public:
     bool scrolling;
 };
 
-extern Adafruit_SSD1327 display;
+extern Adafruit_SSD1327 oled;
 
 extern OLED_MANAGER oledMana;

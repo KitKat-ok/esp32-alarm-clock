@@ -25,14 +25,14 @@ void initWifi()
 {
 
   Serial.println("Starting Wifi Task");
-  xTaskCreatePinnedToCore(
+  xTaskCreate(
       initWiFiHandle, // Task function
       "WiFiTask",     // Task name
       4096,           // Stack size
       NULL,           // Task parameters
       2,              // Priority
-      &wifiTask,      // Task handle
-      0);
+      &wifiTask      // Task handle
+      );
 }
 
 WiFiCred *wifiCredStatic[SIZE_WIFI_CRED_STAT];
@@ -139,14 +139,14 @@ void createWifiTask()
   wifi_init_config_t wifi_init_config = WIFI_INIT_CONFIG_DEFAULT();
 
   esp_wifi_init(&wifi_init_config);
-  xTaskCreatePinnedToCore(
+  xTaskCreate(
       connectToWiFi, // Task function
       "WiFiTask",    // Task name
       4096,         // Stack size
       NULL,          // Task parameters
       10,            // Priority
-      &wifiTask,     // Task handle
-      0);            // Core (0 or 1)
+      &wifiTask     // Task handle
+      );            // Core (0 or 1)
 }
 
 bool isWifiTaskCheck()
@@ -208,8 +208,6 @@ void WiFiEvent(WiFiEvent_t event)
       Serial.println("Synchronized Time");
       delay(1000);
       createWeatherTask();
-      int currentHour = hour();
-      int currentMinute = minute();
       showCurrentTime();
       tasksLaunched = true;
     }

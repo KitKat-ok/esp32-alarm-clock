@@ -15,14 +15,13 @@ void syncTimeTask(void *parameter);
 
 void createTimeTask()
 {
-  xTaskCreatePinnedToCore(
+  xTaskCreate(
       syncTimeTask,   
       "SyncTimeTask", 
       2048,          
       NULL,           
       1,              
-      &NTPTask,       
-      1               
+      &NTPTask       
   );
 }
 

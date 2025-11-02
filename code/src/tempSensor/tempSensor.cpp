@@ -50,13 +50,12 @@ void createTempTask()
         humidityArray[i] = readHumidity();
     }
 
-    xTaskCreatePinnedToCore(
+    xTaskCreate(
         tempTask, /* Task function */
         "TempTask",     /* String with name of task */
         2048,          /* Stack size in words */
         NULL,           /* Parameter passed as input of the task */
         1,              /* Priority of the task */
-        NULL,           /* Task handle */
-        1               /* Core where the task should run */
+        NULL           /* Task handle */
     );
 }

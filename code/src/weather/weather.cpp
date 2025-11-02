@@ -12,14 +12,13 @@ void dumpWeather();
 
 void createWeatherTask()
 {
-    xTaskCreatePinnedToCore(
+    xTaskCreate(
         weatherTask,       // Function to implement the task
         "Syncing Weather", // Name of the task
         4096,             // Stack size (words)
         NULL,              // Parameter to pass
         1,                 // Priority
-        &WeatherTask,      // Task handle
-        1                  // Core to run the task on (Core 1)
+        &WeatherTask      // Task handle
     );
 }
 
@@ -308,11 +307,11 @@ void displaywidget(int weatherCode)
             break;
         }
 
-        display.drawBitmap(0, 3, bitmap, 50, 50, BLACK, WHITE); // Adjust color as needed
+oled.drawBitmap(0, 3, bitmap, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
     else
     {
-        display.drawBitmap(0, 3, wi_cloud_down_50x50, 50, 50, BLACK, WHITE); // Adjust color as needed
+oled.drawBitmap(0, 3, wi_cloud_down_50x50, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
 }
 
@@ -382,10 +381,10 @@ void displaySmallWidget(int weatherCode, int x, int y)
             break;
         }
 
-        display.drawBitmap(x, y, bitmap, 40, 40, BLACK, WHITE); // Adjust color as needed
+oled.drawBitmap(x, y, bitmap, 40, 40, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
     else
     {
-        display.drawBitmap(x, y, wi_cloud_down_40x40, 40, 40, BLACK, WHITE); // Adjust color as needed
+oled.drawBitmap(x, y, wi_cloud_down_40x40, 40, 40, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
 }

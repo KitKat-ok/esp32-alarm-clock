@@ -114,16 +114,16 @@ void showMainPage()
 
             bool stillHeld = false;
 
-            if (lastFirstSeg)
-                stillHeld |= touchRead(TOUCH_1_Seg_PIN) < (powerConnected ? TOUCH_1_Seg_THRESHOLD : TOUCH_1_Seg_THRESHOLD_BAT);
-            if (lastSecondSeg)
-                stillHeld |= touchRead(TOUCH_2_Seg_PIN) < (powerConnected ? TOUCH_2_Seg_THRESHOLD : TOUCH_2_Seg_THRESHOLD_BAT);
-            if (lastThirdSeg)
-                stillHeld |= touchRead(TOUCH_3_Seg_PIN) < (powerConnected ? TOUCH_3_Seg_THRESHOLD : TOUCH_3_Seg_THRESHOLD_BAT);
-            if (lastFourthSeg)
-                stillHeld |= touchRead(TOUCH_4_Seg_PIN) < (powerConnected ? TOUCH_4_Seg_THRESHOLD : TOUCH_4_Seg_THRESHOLD_BAT);
-            if (lastFifthSeg)
-                stillHeld |= touchRead(TOUCH_5_Seg_PIN) < (powerConnected ? TOUCH_5_Seg_THRESHOLD : TOUCH_5_Seg_THRESHOLD_BAT);
+            // if (lastFirstSeg)
+            //     stillHeld |= touchRead(TOUCH_1_Seg_PIN) < (powerConnected ? TOUCH_1_Seg_THRESHOLD : TOUCH_1_Seg_THRESHOLD_BAT);
+            // if (lastSecondSeg)
+            //     stillHeld |= touchRead(TOUCH_2_Seg_PIN) < (powerConnected ? TOUCH_2_Seg_THRESHOLD : TOUCH_2_Seg_THRESHOLD_BAT);
+            // if (lastThirdSeg)
+            //     stillHeld |= touchRead(TOUCH_3_Seg_PIN) < (powerConnected ? TOUCH_3_Seg_THRESHOLD : TOUCH_3_Seg_THRESHOLD_BAT);
+            // if (lastFourthSeg)
+            //     stillHeld |= touchRead(TOUCH_4_Seg_PIN) < (powerConnected ? TOUCH_4_Seg_THRESHOLD : TOUCH_4_Seg_THRESHOLD_BAT);
+            // if (lastFifthSeg)
+            //     stillHeld |= touchRead(TOUCH_5_Seg_PIN) < (powerConnected ? TOUCH_5_Seg_THRESHOLD : TOUCH_5_Seg_THRESHOLD_BAT);
 
             if (!stillHeld)
             {
@@ -184,7 +184,7 @@ void showMainPage()
             {
                 displayedWeather = true;
                 LastPageShown = 2;
-                display.clearDisplay();
+oled.clearDisplay();
                 oledMana.display();
                 currentWeather();
             }
@@ -245,16 +245,16 @@ void turnOffScreensaver()
 
 void showFirstPage()
 {
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setFont(&DejaVu_Sans_Bold_16);
+oled.clearDisplay();
+oled.setTextSize(1);
+oled.setFont(&DejaVu_Sans_Bold_16);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), SCREEN_HEIGHT / 2 - 10);
-    display.setTextSize(1);
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setTextSize(1);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(getCurrentWeekdayName(), SCREEN_HEIGHT / 2);
     centerText(getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
     centerText("Light: " + String(getLightLevel()) + " lux", SCREEN_HEIGHT / 2 + 23);
-    display.drawLine(26 - 8, 45, 102 + 8, 45, SSD1327_WHITE);
+oled.drawLine(26 - 8, 45, 102 + 8, 45, SSD1327_WHITE);
     oledMana.display();
 }
 
@@ -270,29 +270,29 @@ void showForecastPage()
 {
     int y = 20;
     int x = 5;
-    display.clearDisplay();
+oled.clearDisplay();
     delay(10);
 
-    display.setCursor(x + 3, y);
-    display.print(getShortNextDay(0));
-    display.setCursor(x + 44 + 3, y);
-    display.print(getShortNextDay(1));
-    display.setCursor(x + 88 + 3, y);
-    display.print(getShortNextDay(2));
+oled.setCursor(x + 3, y);
+oled.print(getShortNextDay(0));
+oled.setCursor(x + 44 + 3, y);
+oled.print(getShortNextDay(1));
+oled.setCursor(x + 88 + 3, y);
+oled.print(getShortNextDay(2));
     displaySmallWidget(weatherDailyForecastData[0].weatherConditionId, x + 0, y);
     displaySmallWidget(weatherDailyForecastData[1].weatherConditionId, x + 44, y);
     displaySmallWidget(weatherDailyForecastData[2].weatherConditionId, x + 88, y);
-    display.setFont(&DejaVu_LGC_Sans_Bold_9);
-    display.setCursor(x - 3, y + 3 + 40);
-    display.print(formatTemperature(weatherDailyForecastData[0].minTemp, weatherDailyForecastData[0].maxTemp));
+oled.setFont(&DejaVu_LGC_Sans_Bold_9);
+oled.setCursor(x - 3, y + 3 + 40);
+oled.print(formatTemperature(weatherDailyForecastData[0].minTemp, weatherDailyForecastData[0].maxTemp));
 
-    display.setCursor(x + 44 - 3, y + 3 + 40);
-    display.print(formatTemperature(weatherDailyForecastData[1].minTemp, weatherDailyForecastData[1].maxTemp));
+oled.setCursor(x + 44 - 3, y + 3 + 40);
+oled.print(formatTemperature(weatherDailyForecastData[1].minTemp, weatherDailyForecastData[1].maxTemp));
 
-    display.setCursor(x + 88 - 3, y + 3 + 40);
-    display.print(formatTemperature(weatherDailyForecastData[2].minTemp, weatherDailyForecastData[2].maxTemp));
+oled.setCursor(x + 88 - 3, y + 3 + 40);
+oled.print(formatTemperature(weatherDailyForecastData[2].minTemp, weatherDailyForecastData[2].maxTemp));
 
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     delay(10);
     oledMana.display();
@@ -330,66 +330,66 @@ void displayWiFiSignal(int x, int y)
     }
 
     // Display the selected icon
-    display.drawBitmap(x, y, wifiIcon, 48, 48, SSD1327_BLACK, SSD1327_WHITE);
+oled.drawBitmap(x, y, wifiIcon, 48, 48, SSD1327_BLACK, SSD1327_WHITE);
 }
 
 void showInfoPage()
 {
-    display.clearDisplay();
+oled.clearDisplay();
     delay(10);
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     displayWiFiSignal(0, 24);
     if (charging == true)
     {
-        display.drawBitmap(32 - 24, 8, battery_charging_full_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+oled.drawBitmap(32 - 24, 8, battery_charging_full_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
     }
     else
     {
-        display.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
-        display.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 14), 6, SSD1306_SSD1327_WHITE);
+oled.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+oled.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 14), 6, SSD1327_WHITE);
     }
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
-    display.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, SSD1327_WHITE);
-    display.setCursor(48, 37);
-    display.println("WiFi SSID:");
-    display.setCursor(48, 45);
-    display.setFont(&DejaVu_LGC_Sans_Bold_8);
-    display.println(String(WiFi.SSID()));
-    display.setCursor(48, 55);
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, SSD1327_WHITE);
+oled.setCursor(48, 37);
+oled.println("WiFi SSID:");
+oled.setCursor(48, 45);
+oled.setFont(&DejaVu_LGC_Sans_Bold_8);
+oled.println(String(WiFi.SSID()));
+oled.setCursor(48, 55);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     String signalQuality = getSignalQuality(WiFi.RSSI());
-    display.print("Sig:" + signalQuality);
-    display.setCursor(48, 64);
-    display.print("Channel: " + String(WiFi.channel()));
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    display.setCursor(5 + 32, 25);
-    display.println(String(getBatteryPercentage()) + "%");
-    display.setCursor(5 + 35 + 50, 25);
-    display.print(String(getBatteryVoltage()) + "V");
+oled.print("Sig:" + signalQuality);
+oled.setCursor(48, 64);
+oled.print("Channel: " + String(WiFi.channel()));
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setCursor(5 + 32, 25);
+oled.println(String(getBatteryPercentage()) + "%");
+oled.setCursor(5 + 35 + 50, 25);
+oled.print(String(getBatteryVoltage()) + "V");
     delay(10);
     oledMana.display();
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
 void showSensorPage()
 {
-    display.clearDisplay();
+oled.clearDisplay();
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
-    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18, house_thermometer_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
-    display.setCursor(2, 35);
+oled.drawBitmap(SCREEN_WIDTH - 24 - 10, 18, house_thermometer_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+oled.setCursor(2, 35);
     String tempText = "Temp: " + String(readTemperature()) + "C";
-    display.print(tempText);
+oled.print(tempText);
     int16_t x, y;
     uint16_t w, h;
-    display.getTextBounds(tempText, 0, 0, &x, &y, &w, &h);
-    display.drawLine(2, 26, 2 + w, 26, SSD1306_SSD1327_WHITE);
+oled.getTextBounds(tempText, 0, 0, &x, &y, &w, &h);
+oled.drawLine(2, 26, 2 + w, 26, SSD1327_WHITE);
     uint16_t tempLenght = w;
-    display.getTextBounds("SHT40 Sens", 0, 0, &x, &y, &w, &h);
-    display.setCursor(tempLenght / 2 - w / 2, 24);
-    display.print("SHT40 Sens");
-    display.setCursor(2, 35 + 24);
-    display.print("Hum: " + String(readHumidity()) + "%");
-    display.drawBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, house_raindrops_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+oled.getTextBounds("SHT40 Sens", 0, 0, &x, &y, &w, &h);
+oled.setCursor(tempLenght / 2 - w / 2, 24);
+oled.print("SHT40 Sens");
+oled.setCursor(2, 35 + 24);
+oled.print("Hum: " + String(readHumidity()) + "%");
+oled.drawBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, house_raindrops_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
 
     oledMana.display();
 }
@@ -483,7 +483,7 @@ static int compare(const void *a, const void *b)
 
 void setupScreensaver()
 {
-    display.clearDisplay();
+oled.clearDisplay();
     for (uint8_t i = 0; i < N_FLYERS; i++)
     {
         flyer[i].x = (-32 + random(160)) * 16;
@@ -500,7 +500,7 @@ void showScreensaver()
     int16_t x, y;
     boolean resort = false;
 
-    display.clearDisplay();
+oled.clearDisplay();
 
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
     {
@@ -514,8 +514,8 @@ void showScreensaver()
         f = (flyer[i].frame == 255) ? 4 : (flyer[i].frame++ & 3);
         x = flyer[i].x / 16;
         y = flyer[i].y / 16;
-        display.drawBitmap(x, y, mask[f], 32, 32, SSD1327_BLACK);
-        display.drawBitmap(x, y, img[f], 32, 32, SSD1327_WHITE);
+oled.drawBitmap(x, y, mask[f], 32, 32, SSD1327_BLACK);
+oled.drawBitmap(x, y, img[f], 32, 32, SSD1327_WHITE);
 
         flyer[i].x -= flyer[i].depth * 2;
         flyer[i].y += flyer[i].depth;

@@ -17,14 +17,13 @@ void controlCharger();
 
 void createBatteryTask()
 {
-  xTaskCreatePinnedToCore(
+  xTaskCreate(
       manageBattery, // Function to implement the task
       "Battery",     // Task name
       4096,          // Stack size (words)
       NULL,          // Task input parameter
       3,             // Priority (0 is lowest)
-      NULL,          // Task handle
-      0              // Core to run the task on (0 or 1)
+      NULL          // Task handle
   );
 }
 
@@ -90,11 +89,11 @@ void manageBattery(void *parameter)
         vTaskResume(LedTask);
         vTaskResume(alarmTaskHandle);
         vTaskResume(menuTaskHandle);
-        setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD);
-        setTouchInterrupt(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD);
-        setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD);
-        setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD);
-        setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD);
+        // setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD);
+        // setTouchInterrupt(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD);
+        // setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD);
+        // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD);
+        // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD);
         esp_pm_config_t pm_config = {
             .max_freq_mhz = 80,
             .min_freq_mhz = 10,
@@ -128,11 +127,11 @@ void manageBattery(void *parameter)
         vTaskSuspend(dimmingTaskHandle);
         vTaskSuspend(alarmTaskHandle);
         vTaskSuspend(menuTaskHandle);
-        setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD_BAT);
-        setTouchInterrupt(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD_BAT);
-        setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD_BAT);
-        setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
-        setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
+        // setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD_BAT);
+        // setTouchInterrupt(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD_BAT);
+        // setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD_BAT);
+        // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
+        // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
         digitalWrite(CHARGER_CONTROL_PIN, LOW);
         lightMeter.setStandbyMode();
         batterySettingsTime = now;
@@ -341,11 +340,11 @@ void enableSleep()
   {
     Serial.printf("Unexpected sleep error: %d\n", sleep_result);
   }
-  setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD_BAT);
-  setTouchInterrupt(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD_BAT);
-  setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD_BAT);
-  setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
-  setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
+  // setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD_BAT);
+  // setTouchInterrupt(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD_BAT);
+  // setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD_BAT);
+  // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
+  // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
   syncTimeLibWithRTC();
   checkPower();
   checkAlarms();

@@ -38,14 +38,13 @@ void lightTask(void *pvParameters)
 
 void createLightTask()
 {
-    xTaskCreatePinnedToCore(
+    xTaskCreate(
         lightTask,   /* Task function. */
         "lightTask", /* String with name of task. */
         2048,        /* Stack size in words. */
         NULL,        /* Parameter passed as input of the task */
         1,           /* Priority of the task. */
-        NULL,        /* Task handle. */
-        1            /* Core where the task should run. */
+        NULL        /* Task handle. */
     );
 }
 
@@ -56,24 +55,22 @@ void createDimmingTask()
         lightArray[i] = getLightLevel();
     }
     Serial.print("creating dimmingTask");
-    xTaskCreatePinnedToCore(
+    xTaskCreate(
         dimmingTask,        /* Task function. */
         "DimTask",          /* String with name of task. */
         4096,               /* Stack size in words. */
         NULL,               /* Parameter passed as input of the task */
         1,                  /* Priority of the task. */
-        &dimmingTaskHandle, /* Task handle. */
-        1                   /* Core where the task should run. */
+        &dimmingTaskHandle /* Task handle. */
     );
 
-    xTaskCreatePinnedToCore(
+    xTaskCreate(
         oledWakeupTask,        /* Task function. */
         "InputOledTask",       /* String with name of task. */
         4096,                  /* Stack size in words. */
         NULL,                  /* Parameter passed as input of the task */
         3,                     /* Priority of the task. */
-        &oledWakeupTaskHandle, /* Task handle. */
-        1                      /* Core where the task should run. */
+        &oledWakeupTaskHandle /* Task handle. */
     );
 }
 

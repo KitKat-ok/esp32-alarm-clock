@@ -1,6 +1,6 @@
 #include "charts.h"
 
-Grafici plot{display}; // Initialize the plot with the display
+Grafici plot{oled}; // Initialize the plot with the display
 
 // Arrays to hold temperature, humidity, and light data
 float temperatureArray[CHART_READINGS];
@@ -61,10 +61,9 @@ void createScaledArray(const float *inputArray, int size, int cellVerticalCount,
     }
 }
 
-const ColorMapArray<2> black_and_white{
-	black,
-	white
-};
+const ColorMapArray<2> black_and_white_ssd{
+    black,
+    white};
 
 // Interval in milliseconds (30 seconds)
 const unsigned long interval = 30000;
@@ -100,7 +99,7 @@ float findLowest(float *data, uint dataCount)
 
 void showSideText(float *bothList, int bothSize)
 {
-    display.setFont(&DejaVu_LGC_Sans_Bold_8);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_8);
 
     // Sort the input list
     sortList(bothList, bothSize);
@@ -169,12 +168,12 @@ void showSideText(float *bothList, int bothSize)
         Serial.println(scaledValues[i]);
     }
 
-    display.setFont(&DejaVu_Sans_Condensed_Bold_7);
+    oled.setFont(&DejaVu_Sans_Condensed_Bold_7);
 
-    float currentHeightDown = display.height() - 7;
+    float currentHeightDown = oled.height() - 7;
     float currentHeightUp = SIDE_TEXT_OFFSET;
 
-    float offset = (display.height() - (SIDE_TEXT_OFFSET - SIDE_TEXT_REPAIR)) / CELL_VERTICAL_COUNT;
+    float offset = (oled.height() - (SIDE_TEXT_OFFSET - SIDE_TEXT_REPAIR)) / CELL_VERTICAL_COUNT;
     bool down = false;
 
     // Display the scaled values
@@ -186,11 +185,11 @@ void showSideText(float *bothList, int bothSize)
 
         if (down == true)
         {
-            display.setCursor(0, round(currentHeightDown));
+            oled.setCursor(0, round(currentHeightDown));
         }
         else
         {
-            display.setCursor(0, round(currentHeightUp));
+            oled.setCursor(0, round(currentHeightUp));
         }
 
         String number;
@@ -216,7 +215,7 @@ void showSideText(float *bothList, int bothSize)
             /*
             if (isDecimalZero(bothList[i]) == true && String(int(bothList[i])).length() <= 3)
             {
-              display.print(String(int(bothList[i])));
+oled.print(String(int(bothList[i])));
             }
             else
             */
@@ -226,17 +225,17 @@ void showSideText(float *bothList, int bothSize)
             {
                 part2 = part2.substring(0, 3);
             }
-            display.println(part1);
-            display.setCursor(0, display.getCursorY() - 3);
-            display.print(part2);
+            oled.println(part1);
+            oled.setCursor(0, oled.getCursorY() - 3);
+            oled.print(part2);
         }
         else
         {
             if (down == true)
             {
-                display.setCursor(0, display.getCursorY() + 7);
+                oled.setCursor(0, oled.getCursorY() + 7);
             }
-            display.print(number);
+            oled.print(number);
         }
 
         if (down == true)
@@ -252,18 +251,18 @@ void showSideText(float *bothList, int bothSize)
 
     if (values[0] == 0.0)
     {
-        display.setCursor(0, round(currentHeightUp));
-        display.print("0");
+        oled.setCursor(0, round(currentHeightUp));
+        oled.print("0");
     }
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
 // Show the chart with the given title and data
 void showChart(float *data, uint dataCount, String chartName)
 {
-    display.clearDisplay(); // Clear the display
+    oled.clearDisplay(); // Clear the display
     float highNum = findHighest(data, dataCount);
     float lowNum = findLowest(data, dataCount);
 
@@ -279,7 +278,7 @@ void showChart(float *data, uint dataCount, String chartName)
     DataArray<float> dataArr{data, dataCount, {lowNum - offsetMin, highNum + offsetMax}};
     DataLinear x{dataCount, {0.0 + X_MINIMUM_VALUE_OFFSET, float(dataCount + X_MAX_VALUE_OFFSET)}};
 
-    plot.set_color_map(black_and_white);
+    plot.set_color_map(black_and_white_ssd);
     PlotOptions opts = plot_options.thickness(0.0).bar_filled(true);
 
     // Define the plotting window

@@ -1,5 +1,4 @@
 #include "alarms.h"
-#include <HTTPClient.h>
 
 Alarm alarms[MAX_ALARMS];
 
@@ -34,14 +33,13 @@ void initialzeAlarmArray()
 
 void createAlarmTask()
 {
-  xTaskCreatePinnedToCore(
+  xTaskCreate(
       checkAlarmsTask,  // Function to implement the task
       "Alarms",         // Task name
       2048,             // Stack size (words)
       NULL,             // Task input parameter
       1,                // Priority (0 is lowest)
-      &alarmTaskHandle, // Task handle
-      0                 // Core to run the task on (0 or 1)
+      &alarmTaskHandle // Task handle
   );
 }
 
@@ -124,14 +122,13 @@ TaskHandle_t Alarm;
 
 void createRiningingTask()
 {
-  xTaskCreatePinnedToCore(
+  xTaskCreate(
       ringAlarm,   // Function to implement the task
       "ringAlarm", // Name of the task
       4096,        // Stack size (words)
       NULL,        // Parameter to pass
       4,           // Priority
-      &Alarm,      // Task handle
-      1            // Core to run the task on (Core 0)
+      &Alarm      // Task handle
   );
 }
 

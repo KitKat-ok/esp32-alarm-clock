@@ -4,26 +4,26 @@ void centerText(String text, int y, int x)
 {
   int16_t x1, y1;
   uint16_t w, h;
-  display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
+  oled.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
   if (x == -1)
   {
     x = (SCREEN_WIDTH - w) / 2;
   }
-  display.setCursor(x, y);
-  display.print(text);
+  oled.setCursor(x, y);
+  oled.print(text);
 }
 
 void leftAlignText(String text, int y,int offset, int x)
 {
   int16_t x1, y1;
   uint16_t w, h;
-  display.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
+  oled.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
   if (x == -1)
   {
     x = ((SCREEN_WIDTH - w) - offset) - 2;
   }
-  display.setCursor(x, y);
-  display.print(text);
+  oled.setCursor(x, y);
+  oled.print(text);
 }
 
 String formatWithLeadingZero(int number)

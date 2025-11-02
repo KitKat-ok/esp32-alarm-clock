@@ -11,14 +11,13 @@ void createLedDisplayTask()
 
   Serial.print("creating Led display task");
 
-  xTaskCreatePinnedToCore(
+  xTaskCreate(
       showTimeTask, /* Task function. */
       "LedTask",    /* String with name of task. */
       2048,         /* Stack size in words. */
       NULL,         /* Parameter passed as input of the task */
       1,            /* Priority of the task. */
-      &LedTask,     /* Task handle. */
-      0             /* Core where the task should run. */
+      &LedTask     /* Task handle. */
   );
 }
 

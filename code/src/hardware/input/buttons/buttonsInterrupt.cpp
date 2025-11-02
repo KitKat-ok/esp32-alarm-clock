@@ -1,4 +1,5 @@
 #include "buttons.h"
+#include "rtcMem/rtcMem.h"
 
 inkButtonStates interruptedButton = None;
 

@@ -68,9 +68,9 @@ bool readHallSwitch()
 void initOledDisplay()
 {
   oledMana.initDisplay();
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(0, 0);
+  oled.clearDisplay();
+  oled.setTextSize(1);
+  oled.setCursor(0, 0);
   oledMana.display();
 
   centerText("Oled Initialized", SCREEN_HEIGHT / 2);

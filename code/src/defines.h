@@ -1,5 +1,4 @@
-#ifndef DEFINES_H
-#define DEFINES_H
+#pragma once
 
 #include "fonts/fonts.h"
 
@@ -11,6 +10,7 @@
 #include <LTR_F216A.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
+#include <HTTPClient.h>
 #include <TimeLib.h>
 #include <NTPClient.h>
 #include <Preferences.h>
@@ -43,8 +43,8 @@
 #define OLED_RESET -1
 
 // I2C
-#define I2C_SCL_PIN  GPIO_NUM_8 
-#define I2C_SDA_PIN  GPIO_NUM_7
+#define I2C_SCL_PIN  GPIO_NUM_7 
+#define I2C_SDA_PIN  GPIO_NUM_6
 #define I2C_FREQ 100
 
 // WiFi
@@ -85,10 +85,10 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define HALL_SWITCH -1 // Hall switch only used to turn off alarm currently
 
 // Button stuf
-#define MENU_PIN -1
-#define BACK_PIN -1
-#define DOWN_PIN -1
-#define UP_PIN -1
+#define MENU_PIN 2
+#define BACK_PIN 1
+#define DOWN_PIN 4
+#define UP_PIN 3
 
 #define SMALL_BUTTON_DELAY_MS 15
 
@@ -189,7 +189,6 @@ typedef enum
 #include "hardware/display/display.h"
 #include "hardware/input/buttons/buttons.h"
 #include "hardware/mcp23018/mcp23018.h"
-#include "rtcMem/rtcMem.h"
 #include "hardware/input/buttons/combinations.h"
 #include "hardware/input/touch/touch.h"
 #include "functions.h"
@@ -208,6 +207,3 @@ typedef enum
 #include "alarms/alarms.h"
 #include "battery/battery.h"
 #include "tempSensor/tempSensor.h"
-
-
-#endif

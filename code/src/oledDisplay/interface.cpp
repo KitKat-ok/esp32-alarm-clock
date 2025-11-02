@@ -20,9 +20,9 @@ bool exitLoopFunction = false;
 
 void showMenu()
 {
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    display.clearDisplay();
-    display.setTextSize(data.textSize);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.clearDisplay();
+oled.setTextSize(data.textSize);
     int currentPage = 0;
     int maxItems = 4;
     int minItems = 1;
@@ -36,13 +36,13 @@ void showMenu()
         auto &entry = data.isSubmenu ? data.currentSubmenu[i] : data.entryList[i];
 
         if (entry.font)
-            display.setFont(entry.font); // Set font for this entry
+oled.setFont(entry.font); // Set font for this entry
 
         String text = data.isSubmenu ? data.currentSubmenu[i].text : data.entryList[i].text;
 
         int16_t x1, y1;
         uint16_t textWidth, textHeight;
-        display.getTextBounds(text, 0, 0, &x1, &y1, &textWidth, &textHeight);
+oled.getTextBounds(text, 0, 0, &x1, &y1, &textWidth, &textHeight);
 
         int lineHeight = (textWidth > SCREEN_WIDTH) ? (textHeight * 2) : textHeight;
 
@@ -62,7 +62,7 @@ void showMenu()
         }
 
         usedHeight += lineHeight + BUTTONS_OFFSET;
-        display.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     }
 
     data.itemsOnPage = tmpItemsOnPage;
@@ -71,12 +71,12 @@ void showMenu()
     currentPage = data.currentButton / data.itemsOnPage;
     pageNumber = ((data.isSubmenu ? data.submenuCount : data.totalMenus) + data.itemsOnPage - 1) / data.itemsOnPage;
 
-    display.setCursor(0, 0);
-    display.setTextColor(SSD1327_WHITE);
+oled.setCursor(0, 0);
+oled.setTextColor(SSD1327_WHITE);
 
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    display.setCursor(0, 10);
-    display.print(String(currentPage + 1) + "/" + String(pageNumber));
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setCursor(0, 10);
+oled.print(String(currentPage + 1) + "/" + String(pageNumber));
 
     centerText(data.menuName, 10);
 
@@ -86,12 +86,12 @@ void showMenu()
         auto &entry = data.isSubmenu ? data.currentSubmenu[i] : data.entryList[i];
 
         if (entry.font)
-            display.setFont(entry.font); // Set font for this entry
+oled.setFont(entry.font); // Set font for this entry
 
         String displayText = data.isSubmenu ? data.currentSubmenu[i].text : data.entryList[i].text;
         int16_t x1, y1;
         uint16_t textWidth, textHeight;
-        display.getTextBounds(displayText, 0, 0, &x1, &y1, &textWidth, &textHeight);
+oled.getTextBounds(displayText, 0, 0, &x1, &y1, &textWidth, &textHeight);
 
         // Adjust for smaller fonts to ensure proper line height
         if (textHeight < 10)
@@ -111,26 +111,26 @@ void showMenu()
 
         if (data.currentButton == i)
         {
-            display.fillRect(0, boxY, SCREEN_WIDTH, boxHeight, SSD1327_WHITE);
-            display.setTextColor(SSD1327_BLACK);
+oled.fillRect(0, boxY, SCREEN_WIDTH, boxHeight, SSD1327_WHITE);
+oled.setTextColor(SSD1327_BLACK);
         }
         else
         {
-            display.setTextColor(SSD1327_WHITE);
+oled.setTextColor(SSD1327_WHITE);
         }
 
         int verticalOffset = (boxHeight - textHeight) / 2;
 
-        display.setCursor(1, y + verticalOffset);
-        display.print(displayText);
+oled.setCursor(1, y + verticalOffset);
+oled.print(displayText);
 
         // Increase Y based on text height and lines
         y += boxHeight + BUTTONS_OFFSET;
     }
 
     oledMana.display();
-    display.setFont(&DejaVu_LGC_Sans_Bold_10);
-    display.setTextColor(SSD1327_WHITE);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setTextColor(SSD1327_WHITE);
 }
 
 void initMenu(entryMenu *entryList, int totalMenus, String menuName, int textSize, int linesThick)
@@ -604,13 +604,12 @@ void initMenus()
              },
              4, "Main Menu", 1, 1);
     initAlarmMenus();
-    xTaskCreatePinnedToCore(
+    xTaskCreate(
         menuTask,        // Task function
         "Menu Task",     // Task name
         4096,            // Stack size in bytes
         NULL,            // Task parameter
         3,               // Task priority
-        &menuTaskHandle, // Task handle
-        0                // Core number (0 or 1 for ESP32)
+        &menuTaskHandle // Task handle
     );
 }

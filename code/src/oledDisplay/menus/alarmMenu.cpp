@@ -91,15 +91,15 @@ void addNewAlarm()
     int rectX = (SCREEN_WIDTH - rectWidth) / 2;
     int rectY = (SCREEN_HEIGHT - rectHeight) / 2;
 
-    display.fillRect(rectX, rectY, rectWidth, rectHeight, BLACK);
-    display.drawRect(rectX - 1, rectY - 1, rectWidth + 2, rectHeight + 2, WHITE);
+oled.fillRect(rectX, rectY, rectWidth, rectHeight, SSD1327_BLACK);
+oled.drawRect(rectX - 1, rectY - 1, rectWidth + 2, rectHeight + 2, SSD1327_WHITE);
 
-    display.setTextColor(WHITE);
-    display.setCursor(rectX + 10, rectY + 10);
-    display.print("Max alarm");
-    display.setCursor(rectX + 10, rectY + 20);
-    display.print("number reached");
-    display.display();
+oled.setTextColor(SSD1327_WHITE);
+oled.setCursor(rectX + 10, rectY + 10);
+oled.print("Max alarm");
+oled.setCursor(rectX + 10, rectY + 20);
+oled.print("number reached");
+oled.display();
     delay(5000);
 }
 
@@ -170,31 +170,31 @@ void manageAlarms()
     {
         int16_t x1, y1;
         uint16_t w, h;
-        display.getTextBounds(label, x, y, &x1, &y1, &w, &h);
+oled.getTextBounds(label, x, y, &x1, &y1, &w, &h);
 
         if (editing)
-            display.drawRect(x1 - 2, y1 - 2, w + 4, h + 4, WHITE);
+oled.drawRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
         else if (selected)
         {
-            display.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, WHITE);
-            display.setTextColor(BLACK, WHITE);
+oled.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
+oled.setTextColor(SSD1327_BLACK, SSD1327_WHITE);
         }
         else
-            display.setTextColor(WHITE, BLACK);
+oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
 
-        display.setCursor(x, y);
-        display.print(label);
+oled.setCursor(x, y);
+oled.print(label);
     };
 
     auto drawBitmapOption = [&](int16_t x, int16_t y, bool selected, bool editing)
     {
         if (editing || selected)
         {
-            display.drawRect(x - 2, y - 2, 22, 22, WHITE);
-            display.drawBitmap(x, y, remove_18x18, 18, 18, WHITE);
+oled.drawRect(x - 2, y - 2, 22, 22, SSD1327_WHITE);
+oled.drawBitmap(x, y, remove_18x18, 18, 18, SSD1327_WHITE);
         }
         else
-            display.drawBitmap(x, y, remove_18x18, 18, 18, BLACK, WHITE);
+oled.drawBitmap(x, y, remove_18x18, 18, 18, SSD1327_BLACK, SSD1327_WHITE);
     };
 
     auto drawDaySelection = [&](int16_t x, int16_t y, bool selected, int dayIndex, bool groupSelected, bool buttonSelected)
@@ -202,22 +202,22 @@ void manageAlarms()
         String dayLabel = getShorterWeekdayName(dayIndex + 1);
         int16_t x1, y1;
         uint16_t w, h;
-        display.getTextBounds(dayLabel, 0, 0, &x1, &y1, &w, &h);
+oled.getTextBounds(dayLabel, 0, 0, &x1, &y1, &w, &h);
         labelWidth = w;
 
-        display.setTextColor(buttonSelected ? BLACK : WHITE, buttonSelected ? WHITE : BLACK);
-        display.setCursor(x, y);
-        display.print(dayLabel);
+oled.setTextColor(buttonSelected ? SSD1327_BLACK : SSD1327_WHITE, buttonSelected ? SSD1327_WHITE : SSD1327_BLACK);
+oled.setCursor(x, y);
+oled.print(dayLabel);
 
         if (selected && !buttonSelected)
-            display.drawRect(x - 1, y - 10, w + 4, 12, WHITE);
+oled.drawRect(x - 1, y - 10, w + 4, 12, SSD1327_WHITE);
         if (buttonSelected)
         {
-            display.fillRect(x - 1, y - 10, w + 4, 12, WHITE);
+oled.fillRect(x - 1, y - 10, w + 4, 12, SSD1327_WHITE);
             if (selected)
-                display.drawRect(x - 3, y - 12, w + 8, 16, WHITE);
-            display.setCursor(x, y);
-            display.print(dayLabel);
+oled.drawRect(x - 3, y - 12, w + 8, 16, SSD1327_WHITE);
+oled.setCursor(x, y);
+oled.print(dayLabel);
         }
     };
 
@@ -234,20 +234,20 @@ void manageAlarms()
 
     auto redrawDisplay = [&]()
     {
-        display.clearDisplay();
-        display.setTextColor(WHITE, BLACK);
-        display.setCursor(1, 8);
-        display.println("Alarm " + String(alarmIndex));
-        display.setFont(&font4pt7b);
-        display.setCursor(70, 7);
-        display.print("Today:" + getShortCurrentWeekdayName());
+oled.clearDisplay();
+oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
+oled.setCursor(1, 8);
+oled.println("Alarm " + String(alarmIndex));
+oled.setFont(&font4pt7b);
+oled.setCursor(70, 7);
+oled.print("Today:" + getShortCurrentWeekdayName());
 
-        display.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
         centerText(":", 19, 34);
         drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 17, 19, !inDaySelectionMode && alarmCurrentState == 0, isEditingAlarm && alarmCurrentState == 0);
         drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 39, 19, !inDaySelectionMode && alarmCurrentState == 1, isEditingAlarm && alarmCurrentState == 1);
 
-        display.setFont(&DejaVu_LGC_Sans_Bold_9);
+oled.setFont(&DejaVu_LGC_Sans_Bold_9);
         if (inDaySelectionMode)
             drawDaySelectionGroup(2, 46);
         else
@@ -260,17 +260,17 @@ void manageAlarms()
                 startX += labelWidth + 5;
             }
             if (alarmCurrentState == 3)
-                display.drawRect(0, 34, SCREEN_WIDTH - 1, 16, WHITE);
+oled.drawRect(0, 34, SCREEN_WIDTH - 1, 16, SSD1327_WHITE);
         }
 
-        display.setTextColor(WHITE, BLACK);
-        display.setFont(&DejaVu_LGC_Sans_Bold_10);
+oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
+oled.setFont(&DejaVu_LGC_Sans_Bold_10);
         drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 32, !inDaySelectionMode && alarmCurrentState == 2, isEditingAlarm && alarmCurrentState == 2);
         drawMenuOption("Sound:" + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 59, !inDaySelectionMode && alarmCurrentState == 4, isEditingAlarm && alarmCurrentState == 4);
         drawMenuOption("Light:" + String(alarms[alarmIndex].lightOn ? "On" : "Off"), 84 - 15, 59, !inDaySelectionMode && alarmCurrentState == 5, isEditingAlarm && alarmCurrentState == 5);
         drawBitmapOption(SCREEN_WIDTH - 30, 14, !inDaySelectionMode && alarmCurrentState == 6, !inDaySelectionMode && isEditingAlarm && alarmCurrentState == 6);
 
-        display.display();
+oled.display();
     };
 
     auto updateAlarmValueUp = [&]()
