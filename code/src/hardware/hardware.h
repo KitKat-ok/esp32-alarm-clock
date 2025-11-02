@@ -5,7 +5,7 @@
 
 extern AS1115 LedDisplay;
 
-extern LTR_F216A lightMeter;
+extern SparkFun_Ambient_Light lightMeter;
 
 extern Adafruit_SHT4x sht4;
 

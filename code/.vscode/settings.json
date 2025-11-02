@@ -18,7 +18,8 @@
         "format": "cpp",
         "initializer_list": "cpp",
         "span": "cpp",
-        "text_encoding": "cpp"
+        "text_encoding": "cpp",
+        "unordered_set": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "cmake.configureOnOpen": false

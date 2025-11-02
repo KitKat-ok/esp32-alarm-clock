@@ -7,7 +7,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1327.h>
 #include <AS1115.h>
-#include <LTR_F216A.h>
+#include <SparkFun_VEML6030_Ambient_Light_Sensor.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
 #include <HTTPClient.h>
@@ -26,6 +26,27 @@
 #include "../icons/icons/icons_24x24.h"
 #include "../icons/icons/icons_32x32.h"
 #include "../icons/icons/icons_48x48.h"
+
+// MCP
+#define MCP23018_ADDRESS 0x27 // https://www.chiark.greenend.org.uk/~peterb/electronics/mcp23018/addr
+
+#define MENU_PIN 1
+#define BACK_PIN 0
+#define DOWN_PIN 3
+#define UP_PIN 2
+
+#define HALL_SWITCH -1 // Hall switch only used to turn off alarm currently
+
+#define MCP_STAT_IN 6 // A6
+#define MCP_STAT_OUT 7 // A7
+#define MCP_5V 4 // B7
+
+#define CHARGER_CONTROL_PIN -1
+
+// Interrupts
+
+#define MCP_INTERRUPT_PIN 5
+#define TOUCH_INTERRUPT 3
 
 // Display
 #define SCREEN_WIDTH 128
@@ -81,15 +102,7 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define LED_BRIGHTNESS_MIN 0
 #define LED_BRIGHTNESS_MAX 7
 
-// Inputs
-#define HALL_SWITCH -1 // Hall switch only used to turn off alarm currently
-
-// Button stuf
-#define MENU_PIN 2
-#define BACK_PIN 1
-#define DOWN_PIN 4
-#define UP_PIN 3
-
+// Button stuff
 #define SMALL_BUTTON_DELAY_MS 15
 
 #define BUTTON_TASK_DELAY 10 // In ms, lower means faster button detection but more cpu usage
@@ -147,13 +160,10 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define MIN_VOLTAGE 3.30  // Minimum voltage of LiPo battery
 #define MAX_VOLTAGE 4.20  // Maximum voltage of LiPo battery
 
-#define VOLTAGE_DIVIDER_PIN 34 
+#define VOLTAGE_DIVIDER_PIN GPIO_NUM_4
 #define ADC_VOLTAGE_DIVIDER 710.094f // 300K and 806K
 #define ADC_OFFSET 77 // It subtracts from the read milivolts to calibrate the adc a bit its not great but it works
 
-#define POWER_STATE_PIN -1
-
-#define CHARGER_CONTROL_PIN -1
 #define BATT_TARGET_VOLTAGE 3.85   // Target voltage in volts
 #define BATT_HYSTERESIS 0.15       // charging Hysteresis in volts
 

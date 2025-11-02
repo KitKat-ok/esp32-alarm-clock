@@ -302,7 +302,7 @@ void dimLedDisplay()
 
 float getLightLevel()
 {
-    float currentLightLevel = lightMeter.readBrightnessInLux(); // Read the current light level from BH1750 sensor
+    float currentLightLevel = lightMeter.readLight(); // Read the current light level from BH1750 sensor
     return currentLightLevel;
 }
 

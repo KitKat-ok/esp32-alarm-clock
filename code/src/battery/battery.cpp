@@ -1,4 +1,5 @@
 #include "battery.h"
+#include "rtcMem/rtcMem.h"
 
 int batteryPercentage;
 float batteryVoltage;
@@ -29,7 +30,7 @@ void createBatteryTask()
 
 bool checkPower()
 {
-  int chargingState = digitalRead(POWER_STATE_PIN);
+  int chargingState = rM.gpioExpander.digitalRead(MCP_5V);
   Serial.print("Charging State: ");
   Serial.println(chargingState);
   if (chargingState == HIGH)
@@ -84,7 +85,7 @@ void manageBattery(void *parameter)
       {
         Serial.println("Setting power settings");
         //touchSetCycles(0x500, 0x500);
-        lightMeter.setActiveMode();
+        //lightMeter.setActiveMode();
         vTaskResume(oledWakeupTaskHandle);
         vTaskResume(LedTask);
         vTaskResume(alarmTaskHandle);
@@ -133,7 +134,7 @@ void manageBattery(void *parameter)
         // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
         // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
         digitalWrite(CHARGER_CONTROL_PIN, LOW);
-        lightMeter.setStandbyMode();
+        //lightMeter.setStandbyMode();
         batterySettingsTime = now;
         waitingForPower = true;
         setPowerSettings = false;
@@ -305,7 +306,7 @@ uint64_t pinToMask(uint8_t pin)
 
 void initSleep()
 {
-  esp_sleep_enable_ext1_wakeup(1ULL << POWER_STATE_PIN, ESP_EXT1_WAKEUP_ANY_HIGH);
+  esp_sleep_enable_ext1_wakeup((1ULL << TOUCH_INTERRUPT) | (1ULL << MCP_INTERRUPT_PIN), ESP_EXT1_WAKEUP_ANY_LOW);
   esp_sleep_enable_timer_wakeup(SLEEPING_TIME);
 }
 

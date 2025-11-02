@@ -1,7 +1,9 @@
 #include "hardware.h"
+#include "rtcMem/rtcMem.h"
 
 AS1115 LedDisplay = AS1115(0x00);
-LTR_F216A lightMeter;
+#define AL_ADDR 0x10
+SparkFun_Ambient_Light lightMeter(AL_ADDR);
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
@@ -14,9 +16,34 @@ void initTempSensor();
 void initTouch();
 void mountLittlefs();
 
+void waitForSerialInput() {
+    const int theDelay = 500;
+    Serial.flush();
+
+    while (true) {
+        delay(theDelay / 2);
+        if (Serial.available() > 0) {
+            String input = Serial.readString();
+            if (input.indexOf("123") >= 0) {
+                Serial.println("Received input! launching in 3..");
+                delay(theDelay);
+                Serial.println("2...");
+                delay(theDelay);
+                Serial.println("1...");
+                delay(theDelay);
+                Serial.println("Go!");
+                break;
+            }
+        }
+    }
+}
+
+
 void initHardware()
 {
   Serial.begin(115200);
+  Serial.setDebugOutput(true);
+  waitForSerialInput();
   Serial.println("Initializing Hardware");
   setCpuFrequencyMhz(80); // stable 160,80,240 needs to be 80 for wifi
   esp_pm_config_t pm_config = {
@@ -27,6 +54,7 @@ void initHardware()
   esp_pm_configure(&pm_config);
   initI2C();
   oledMana.initDisplay();
+  rM.gpioExpander.simplerInit(true);
   initButtons();
   initTouch();
   initBuzzer();
@@ -90,10 +118,34 @@ void initLedDisplay()
 
 void initLightSensor()
 {
-  lightMeter.begin();
-  lightMeter.setActiveMode();
-  lightMeter.setGain(0x04);
-  lightMeter.configureMeasurement(0x00, 0x02);
+  // Possible values: .125, .25, 1, 2
+  // Both .125 and .25 should be used in most cases except darker rooms.
+  // A gain of 2 should only be used if the sensor will be covered by a dark
+  // glass.
+  float gain = .125;
+
+  // Possible integration times in milliseconds: 800, 400, 200, 100, 50, 25
+  // Higher times give higher resolutions and should be used in darker light.
+  int time = 100;
+
+  if (lightMeter.begin(Wire))
+    Serial.println("Ready to sense some light!");
+  else
+    Serial.println("Could not communicate with the sensor!");
+
+  // Again the gain and integration times determine the resolution of the lux
+  // value, and give different ranges of possible light readings. Check out
+  // hoookup guide for more info.
+  lightMeter.setGain(gain);
+  lightMeter.setIntegTime(time);
+
+  Serial.println("Reading settings...");
+  Serial.print("Gain: ");
+  float gainVal = lightMeter.readGain();
+  Serial.print(gainVal, 3);
+  Serial.print(" Integration Time: ");
+  int timeVal = lightMeter.readIntegTime();
+  Serial.println(timeVal);
 }
 
 void initTouch()

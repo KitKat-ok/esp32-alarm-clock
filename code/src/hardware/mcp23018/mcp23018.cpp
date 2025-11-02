@@ -6,9 +6,6 @@
 bool ignoreInterrupt = false;
 void manageGpioExpanderInt()
 {
-#if DEBUG
-  // Serial.println("mcpI"); // Potential crash
-#endif
   if (ignoreInterrupt == false)
   {
 #if DEBUG
@@ -88,13 +85,11 @@ inkButtonStates mcp23018::manageInterrupts()
 
   // I want a break call here
 
-#ifdef YATCHY_BACK_BTN
   if (checkBit(gpio_cause, BACK_PIN) == true)
   {
     Serial.println("Gpio expander back");
     return Back;
   }
-#endif
 
   if (checkBit(gpio_cause, MENU_PIN) == true)
   {
@@ -252,7 +247,7 @@ bool mcp23018::resetVerify(bool withDefault)
 
 void mcp23018::setDefaultPinStates()
 {
-  // isDebug(dumpAllRegisters());
+  Serial.println("setting mcp defaults");
 
   // Set pins to inputs as they are outputs now
   setPinMode(MCP_5V, MCP_INPUT);
@@ -302,8 +297,6 @@ bool mcp23018::digitalRead(uint8_t pin)
 
 void mcp23018::setDefaultInterrupts()
 {
-
-
     setInterruptCause(BACK_PIN, true, false);
     setPinPullUp(BACK_PIN, true);
     setInterrupt(BACK_PIN, true);

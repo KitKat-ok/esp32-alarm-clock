@@ -149,6 +149,14 @@ void loopButtonsTask(void *parameter)
         // Serial.println("interruptedButtonCopy: " + getButtonString(interruptedButtonCopy));
         // Serial.println("buttonPressed: " + getButtonString(buttonPressed));
 
+        if (interruptedButtonCopy == Unknown)
+        {
+            interruptedButtonCopy = rM.gpioExpander.manageInterrupts();
+            interruptedButton = interruptedButtonCopy; // to make sure it can "rest" at the end
+            Serial.println("Received button from gpio expander: " + getButtonString(interruptedButtonCopy));
+        }
+        Serial.println("help: " + getButtonString(interruptedButtonCopy));
+
         buttMut.lock();
         if (interruptedButtonCopy == Back && buttonPressed != LongBack)
         {
@@ -249,4 +257,33 @@ bool buttonRead(uint8_t pin)
     }
     // NOT here
     return !rM.gpioExpander.digitalRead(pin);
+}
+
+String getButtonString(inkButtonStates state)
+{
+    switch (state)
+    {
+    case Unknown:
+        return "Unknown";
+    case None:
+        return "None";
+    case Back:
+        return "Back";
+    case Menu:
+        return "Menu";
+    case Up:
+        return "Up";
+    case Down:
+        return "Down";
+    case LongBack:
+        return "LongBack";
+    case LongMenu:
+        return "LongMenu";
+    case LongUp:
+        return "LongUp";
+    case LongDown:
+        return "LongDown";
+    default:
+        return "Really unknown";
+    }
 }

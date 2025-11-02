@@ -22,3 +22,4 @@ void turnOnInterrupts();
 void resumeButtonTask();
 extern inkButtonStates interruptedButton;
 bool buttonRead(uint8_t pin); // Wrapper for digitalRead for buttons
+String getButtonString(inkButtonStates state);

@@ -2,15 +2,6 @@
 
 #include "../../defines.h"
 
-#define MCP23018_ADDRESS 0x27 // https://www.chiark.greenend.org.uk/~peterb/electronics/mcp23018/addr
-// gpio20 on prototype PCB but gpio6 as ADC pin fix
-#define MCP_INTERRUPT_PIN 5 // Pin on esp for the interrupt
-
-// Charger
-#define MCP_STAT_IN 6 // A6
-#define MCP_STAT_OUT 7 // A7
-#define MCP_5V 15 // B7
-
 /*
 #define MCP23018_SDA_PIN 22
 #define MCP23018_SCL_PIN 23
