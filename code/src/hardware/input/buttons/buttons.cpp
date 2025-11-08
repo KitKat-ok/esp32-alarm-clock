@@ -134,15 +134,30 @@ void longButtonCheck(int buttonPin, inkButtonStates normalButton, inkButtonState
 
 void loopButtonsTask(void *parameter)
 {
+    Serial.println("Starting Button Task");
     buttonsActivated = true;
     // Wait for all buttons to drop down, helpfull for manageButtonWakeUp
-    while (buttonRead(BACK_PIN) == BUT_CLICK_STATE || buttonRead(MENU_PIN) == BUT_CLICK_STATE || buttonRead(UP_PIN) == BUT_CLICK_STATE || buttonRead(DOWN_PIN) == BUT_CLICK_STATE)
+    while (
+        buttonRead(BACK_PIN) == BUT_CLICK_STATE ||
+        buttonRead(MENU_PIN) == BUT_CLICK_STATE ||
+        buttonRead(UP_PIN) == BUT_CLICK_STATE ||
+        buttonRead(DOWN_PIN) == BUT_CLICK_STATE)
     {
+        if (buttonRead(BACK_PIN) == BUT_CLICK_STATE)
+            Serial.println("BACK_PIN true");
+        if (buttonRead(MENU_PIN) == BUT_CLICK_STATE)
+            Serial.println("MENU_PIN true");
+        if (buttonRead(UP_PIN) == BUT_CLICK_STATE)
+            Serial.println("UP_PIN true");
+        if (buttonRead(DOWN_PIN) == BUT_CLICK_STATE)
+            Serial.println("DOWN_PIN true");
         delay(SMALL_BUTTON_DELAY_MS);
     }
+
     interruptedButton = None;
     while (true)
     {
+        Serial.println("Button Task Woke up");
         wasCombination = false;
         // Serial.println("Button task looping...");
         inkButtonStates interruptedButtonCopy = interruptedButton;
@@ -185,6 +200,10 @@ void loopButtonsTask(void *parameter)
         buttMut.unlock();
         if (interruptedButtonCopy == interruptedButton || wasCombination == true)
         {
+            if (rM.gpioExpander.manageInterruptsExit() == false)
+            {
+                continue;
+            }
             interruptedButton = None;
             wasCombination = false;
             Serial.println("Button task going to sleep!"); // That's normal and very efficient

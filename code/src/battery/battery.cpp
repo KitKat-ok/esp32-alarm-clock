@@ -133,7 +133,7 @@ void manageBattery(void *parameter)
         // setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD_BAT);
         // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
         // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
-        digitalWrite(CHARGER_CONTROL_PIN, LOW);
+        rM.gpioExpander.setPinState(MCP_CHARGER_CONTROL_PIN, false);
         //lightMeter.setStandbyMode();
         batterySettingsTime = now;
         waitingForPower = true;
@@ -279,7 +279,7 @@ void controlCharger()
     if (batteryVoltage >= BATT_TARGET_VOLTAGE)
     {
       charging = false;
-      digitalWrite(CHARGER_CONTROL_PIN, LOW); // Stop charging
+      rM.gpioExpander.setPinState(MCP_CHARGER_CONTROL_PIN, false); // Stop charging
       Serial.println("Charging stopped (target voltage reached).");
     }
   }
@@ -288,7 +288,7 @@ void controlCharger()
     if (batteryVoltage <= (BATT_TARGET_VOLTAGE - BATT_HYSTERESIS))
     {
       charging = true;
-      digitalWrite(CHARGER_CONTROL_PIN, HIGH); // Start charging
+      rM.gpioExpander.setPinState(MCP_CHARGER_CONTROL_PIN, true); // Start charging
       Serial.println("Charging started (voltage dropped).");
     }
   }

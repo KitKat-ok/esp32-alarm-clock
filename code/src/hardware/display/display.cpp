@@ -1,7 +1,7 @@
 #include "display.h"
 
 SPIClass spi(FSPI); // ESP32-C6 uses FSPI as its main hardware SPI bus
-Adafruit_SSD1327 oled(128, 128, &spi, OLED_DC, OLED_RESET, OLED_CS);
+Adafruit_SSD1327 oled(128, 128, &spi, OLED_DC, OLED_RESET, OLED_CS,10000000UL);
 
 OLED_MANAGER oledMana;
 

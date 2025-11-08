@@ -53,12 +53,13 @@ bool mcp23018::simplerInit(bool withDefault)
 
 void mcp23018::setDefaultInterruptsEsp()
 {
-// This is not needed here?
-// if (simplerInit() == false)
-//{
-// return;
-//}
+  // This is not needed here?
+  // if (simplerInit() == false)
+  //{
+  // return;
+  //}
   Serial.println("Attaching gpio expander interrupt pin");
+  pinMode(MCP_INTERRUPT_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(MCP_INTERRUPT_PIN), manageGpioExpanderInt, FALLING);
 }
 
@@ -68,6 +69,7 @@ inkButtonStates mcp23018::manageInterrupts()
   {
     return Unknown;
   }
+  digitalRead(MCP_INTERRUPT_PIN);
   Serial.println("Launched manageInterrupts");
   // For an unknown reason to me, it doesn't work if this is not called here:
   // Maybe it clears the interrupt or something, idk, not worth my time
@@ -76,15 +78,16 @@ inkButtonStates mcp23018::manageInterrupts()
   uint16_t gpio_cause = readRegister(INTF);
   // Then we read the interrupts
   uint16_t gpio_ints = readRegister(INTCAP);
+  mcp23018::digitalRead(MCP_5V);
   // We disable all interrupts, we don't want new ones now
   // writeRegister(GPINTEN, EMPTY_REG); // or not OR NOT we can't in fact do that
   Serial.println("Interrupt bits: " + uint16ToBinaryString(gpio_ints));
   Serial.println("Interrupt cause: " + uint16ToBinaryString(gpio_cause));
   // dumpAllRegisters();
+  int interrupt_state = digitalRead(MCP_INTERRUPT_PIN);
+  Serial.println("Interrupt State" + String(interrupt_state));
   //  What is going on here
-
   // I want a break call here
-
   if (checkBit(gpio_cause, BACK_PIN) == true)
   {
     Serial.println("Gpio expander back");
@@ -114,15 +117,17 @@ inkButtonStates mcp23018::manageInterrupts()
 
 bool mcp23018::manageInterruptsExit()
 {
-#if MCP_GPIO_EXPANDER_DISABLE_INTERRUPTS == true && DEBUG == true
-  return true;
-#endif
   if (simplerInit() == false)
   {
-    return true; // True here because of infinite loop
+    return false;
   }
+  uint16_t gpio_ints = readRegister(INTCAP);
+  Serial.println("Interrupt bits: " + uint16ToBinaryString(gpio_ints));
   Serial.println("Restoring interrupts");
   Serial.println("Exiting the interrupt thing");
+
+  int tete = digitalRead(MCP_INTERRUPT_PIN);
+  Serial.println("State" + String(tete));
   ignoreInterrupt = false;
   return true;
 }
@@ -205,7 +210,7 @@ bool mcp23018::resetVerify(bool withDefault)
   }
 #endif
 
-  uint8_t iocon = 0b01000001 | (1 << bitToHigh);
+  uint8_t iocon = 0b01000001;
   Serial.println("Final iocon is: " + uint8ToBinaryString(iocon));
 
   writeSingleRegister(IOCON, iocon);
@@ -251,9 +256,8 @@ void mcp23018::setDefaultPinStates()
 
   // Set pins to inputs as they are outputs now
   setPinMode(MCP_5V, MCP_INPUT);
-#ifdef YATCHY_BACK_BTN
+
   setPinMode(BACK_PIN, MCP_INPUT);
-#endif
   setPinMode(MENU_PIN, MCP_INPUT);
   setPinMode(DOWN_PIN, MCP_INPUT);
   setPinMode(UP_PIN, MCP_INPUT);
@@ -266,8 +270,8 @@ void mcp23018::setDefaultPinStates()
   // setPinMode(RGB_DIODE_BLUE_PIN, MCP_OUTPUT);
 #endif
 
-  setPinState(MCP_STAT_OUT, true);
-  setPinMode(MCP_STAT_OUT, MCP_OUTPUT);
+  setPinState(MCP_CHARGER_CONTROL_PIN, false);
+  setPinMode(MCP_CHARGER_CONTROL_PIN, MCP_OUTPUT);
 
   setDefaultInterrupts();
 
@@ -297,22 +301,22 @@ bool mcp23018::digitalRead(uint8_t pin)
 
 void mcp23018::setDefaultInterrupts()
 {
-    setInterruptCause(BACK_PIN, true, false);
-    setPinPullUp(BACK_PIN, true);
-    setInterrupt(BACK_PIN, true);
+  setInterruptCause(BACK_PIN, true, false);
+  setPinPullUp(BACK_PIN, true);
+  setInterrupt(BACK_PIN, true);
 
-    setInterruptCause(MENU_PIN, true, false);
-    setPinPullUp(MENU_PIN, true);
-    setInterrupt(MENU_PIN, true);
+  setInterruptCause(MENU_PIN, true, false);
+  setPinPullUp(MENU_PIN, true);
+  setInterrupt(MENU_PIN, true);
 
-    setInterruptCause(DOWN_PIN, true, false);
-    setPinPullUp(DOWN_PIN, true);
-    setInterrupt(DOWN_PIN, true);
+  setInterruptCause(DOWN_PIN, true, false);
+  setPinPullUp(DOWN_PIN, true);
+  setInterrupt(DOWN_PIN, true);
 
-    setInterruptCause(UP_PIN, true, false);
-    setPinPullUp(UP_PIN, true);
-    setInterrupt(UP_PIN, true);
-
+  setInterruptCause(UP_PIN, true, false);
+  setPinPullUp(UP_PIN, true);
+  setInterrupt(UP_PIN, true);
+  Serial.println("Setting Mcp interrupts");
 }
 
 void mcp23018::setInterrupt(uint8_t pin, bool interrupt)
@@ -489,8 +493,6 @@ String decimalToHexString(int decimal)
   }
   return "0x" + str;
 }
-
-
 
 void mcp23018::dumpAllRegisters()
 {

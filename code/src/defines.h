@@ -35,13 +35,11 @@
 #define DOWN_PIN 3
 #define UP_PIN 2
 
-#define HALL_SWITCH -1 // Hall switch only used to turn off alarm currently
+#define HALL_SWITCH 12 // Hall switch only used to turn off alarm currently
 
-#define MCP_STAT_IN 6 // A6
-#define MCP_STAT_OUT 7 // A7
 #define MCP_5V 4 // B7
 
-#define CHARGER_CONTROL_PIN -1
+#define MCP_CHARGER_CONTROL_PIN 5
 
 // Interrupts
 
@@ -109,8 +107,8 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define ADD_BUTTON_DELAY 1
 #define BUTTON_LONG_PRESS_MS 1000     // Duration until long press registers in miliseconds
 
-#define BUT_STATE HIGH
-#define BUT_CLICK_STATE LOW
+#define BUT_STATE LOW
+#define BUT_CLICK_STATE HIGH
 #define BUTTON_INTER_COND FALLING
 
 // Touch stuff I guess beh

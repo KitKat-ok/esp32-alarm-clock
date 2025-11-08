@@ -69,14 +69,14 @@ void initHardware()
 
 void mountLittlefs()
 {
-  if (!LittleFS.begin())
+  if (!LittleFS.begin(false, "/littlefs", 65, "littlefs"))
   {
     Serial.println("LittleFS mount failed, formatting...");
     if (!LittleFS.format())
     {
       Serial.println("LittleFS format failed");
     }
-    if (!LittleFS.begin())
+    if (!LittleFS.begin(false, "/littlefs", 65, "littlefs"))
     {
       Serial.println("LittleFS mount failed after format continue and see what happens :3");
     }

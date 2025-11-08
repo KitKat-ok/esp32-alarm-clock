@@ -2,7 +2,7 @@
 
 void checkForRunOta()
 {
-    if (buttonRead(UP_PIN) == HIGH || readOtaValue() == true)
+    if (buttonRead(UP_PIN) == BUT_CLICK_STATE || readOtaValue() == true)
     {
         setCpuFrequencyMhz(240); // stable 160,80,240
         Serial.println("button is pressed or ota enabled from last boot");

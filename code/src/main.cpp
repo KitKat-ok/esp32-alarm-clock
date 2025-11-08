@@ -20,5 +20,7 @@ void setup()
 
 void loop()
 {
-  delay(100000);
+  delay(1000);
+  int tete = digitalRead(MCP_INTERRUPT_PIN);
+  Serial.println("State" + String(tete));
 }
