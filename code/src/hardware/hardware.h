@@ -9,6 +9,8 @@ extern SparkFun_Ambient_Light lightMeter;
 
 extern Adafruit_SHT4x sht4;
 
+extern AT42QT2120 touch_sensor;
+
 void initHardware();
 bool readHallSwitch();
 

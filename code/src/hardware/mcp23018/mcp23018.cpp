@@ -84,10 +84,20 @@ inkButtonStates mcp23018::manageInterrupts()
   Serial.println("Interrupt bits: " + uint16ToBinaryString(gpio_ints));
   Serial.println("Interrupt cause: " + uint16ToBinaryString(gpio_cause));
   // dumpAllRegisters();
-  int interrupt_state = digitalRead(MCP_INTERRUPT_PIN);
-  Serial.println("Interrupt State" + String(interrupt_state));
+  int interrupt_state = ::digitalRead(MCP_INTERRUPT_PIN);
+  Serial.println("MCP Interrupt State " + String(interrupt_state));
   //  What is going on here
   // I want a break call here
+  bool fiveVPin = checkBit(gpio_cause, MCP_5V);
+  if (fiveVPin == true)
+  {
+    if (fiveVPin == true)
+    {
+      powerConnected = mcp23018::digitalRead(MCP_5V);
+    }
+    return None;
+  }
+
   if (checkBit(gpio_cause, BACK_PIN) == true)
   {
     Serial.println("Gpio expander back");
@@ -125,9 +135,15 @@ bool mcp23018::manageInterruptsExit()
   Serial.println("Interrupt bits: " + uint16ToBinaryString(gpio_ints));
   Serial.println("Restoring interrupts");
   Serial.println("Exiting the interrupt thing");
-
-  int tete = digitalRead(MCP_INTERRUPT_PIN);
-  Serial.println("State" + String(tete));
+  int interrupt_state = ::digitalRead(MCP_INTERRUPT_PIN);
+  Serial.println("MCP Interrupt State " + String(interrupt_state));
+  if (interrupt_state == 0)
+  {
+    Serial.println("Voltage still low after reading register, running again...");
+    ignoreInterrupt = false;
+    manageGpioExpanderInt();
+    return false;
+  }
   ignoreInterrupt = false;
   return true;
 }
@@ -316,6 +332,9 @@ void mcp23018::setDefaultInterrupts()
   setInterruptCause(UP_PIN, true, false);
   setPinPullUp(UP_PIN, true);
   setInterrupt(UP_PIN, true);
+
+  setInterrupt(MCP_5V, true);
+
   Serial.println("Setting Mcp interrupts");
 }
 

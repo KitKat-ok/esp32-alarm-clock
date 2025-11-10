@@ -319,7 +319,8 @@ oled.display();
     case LongDown:
         if (isEditingAlarm)
         {
-            while (digitalRead(DOWN_PIN) == LOW)
+            delay(100);
+            while (buttonRead(DOWN_PIN) == BUT_CLICK_STATE)
             {
                 if ((millis() - lastRepeatTime > 200))
                 {
@@ -331,13 +332,15 @@ oled.display();
                     }
                     lastRepeatTime = millis();
                 }
+                delay(50);
             }
         }
         break;
     case LongUp:
         if (isEditingAlarm)
         {
-            while (digitalRead(UP_PIN) == LOW)
+            delay(100);
+            while (buttonRead(UP_PIN) == BUT_CLICK_STATE)
             {
                 if ((millis() - lastRepeatTime > 200))
                 {
@@ -349,6 +352,7 @@ oled.display();
                     }
                     lastRepeatTime = millis();
                 }
+                delay(50);
             }
         }
         break;

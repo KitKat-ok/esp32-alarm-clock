@@ -5,7 +5,7 @@ touchStates interruptedTouch = No_Seg;
 // No logs here because interrupts don't like them
 void resumeTouchTask()
 {
-    //Serial.println("Resuming button task");
+    Serial.println("Resuming Touch task");
     eTaskState taskState = eTaskGetState(touchTask);
     if(taskState == eSuspended) {
         vTaskResume(touchTask);
@@ -19,38 +19,16 @@ void resumeTouchTask()
 #endif
 }
 
-void firstSegInt()
+void touchInt()
 {
     interruptedTouch = First_Seg;
     resumeTouchTask();
 }
 
-void secondSegInt()
-{
-    interruptedTouch = Second_Seg;
-    resumeTouchTask();
-}
-
-void thirdSegInt()
-{
-    interruptedTouch = Third_Seg;
-    resumeTouchTask();
-}
-
-void fourthSegInt()
-{
-    interruptedTouch = Fourt_Seg;
-    resumeTouchTask();
-}
-
-void fifthSegInt()
-{
-    interruptedTouch = Fifth_Seg;
-    resumeTouchTask();
-}
 
 void turnOnTouchInterrupts()
 {
+    touch_sensor.attachChangeCallback(touchInt);
     Serial.println("Attached touch interrupts!");
 }
 

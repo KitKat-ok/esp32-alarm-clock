@@ -7,6 +7,8 @@ SparkFun_Ambient_Light lightMeter(AL_ADDR);
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
+AT42QT2120 touch_sensor(Wire, TOUCH_INTERRUPT);
+
 void initOledDisplay();
 void initLedDisplay();
 void initLightSensor();
@@ -16,28 +18,31 @@ void initTempSensor();
 void initTouch();
 void mountLittlefs();
 
-void waitForSerialInput() {
-    const int theDelay = 500;
-    Serial.flush();
+void waitForSerialInput()
+{
+  const int theDelay = 500;
+  Serial.flush();
 
-    while (true) {
-        delay(theDelay / 2);
-        if (Serial.available() > 0) {
-            String input = Serial.readString();
-            if (input.indexOf("123") >= 0) {
-                Serial.println("Received input! launching in 3..");
-                delay(theDelay);
-                Serial.println("2...");
-                delay(theDelay);
-                Serial.println("1...");
-                delay(theDelay);
-                Serial.println("Go!");
-                break;
-            }
-        }
+  while (true)
+  {
+    delay(theDelay / 2);
+    if (Serial.available() > 0)
+    {
+      String input = Serial.readString();
+      if (input.indexOf("123") >= 0)
+      {
+        Serial.println("Received input! launching in 3..");
+        delay(theDelay);
+        Serial.println("2...");
+        delay(theDelay);
+        Serial.println("1...");
+        delay(theDelay);
+        Serial.println("Go!");
+        break;
+      }
     }
+  }
 }
-
 
 void initHardware()
 {
@@ -122,11 +127,11 @@ void initLightSensor()
   // Both .125 and .25 should be used in most cases except darker rooms.
   // A gain of 2 should only be used if the sensor will be covered by a dark
   // glass.
-  float gain = .125;
+  float gain = 1;
 
   // Possible integration times in milliseconds: 800, 400, 200, 100, 50, 25
   // Higher times give higher resolutions and should be used in darker light.
-  int time = 100;
+  int time = 400;
 
   if (lightMeter.begin(Wire))
     Serial.println("Ready to sense some light!");
@@ -150,6 +155,76 @@ void initLightSensor()
 
 void initTouch()
 {
+  pinMode(TOUCH_INTERRUPT, INPUT);
+
+  touch_sensor.begin();
+  Serial.println("reseting touch sensor...");
+  touch_sensor.reset();
+  delay(RESET_DELAY_TOUCH);
+  touch_sensor.triggerCalibration();
+  delay(CALIBRATION_LOOP_DELAY_TOUCH);
+  while (touch_sensor.calibrating())
+  {
+    Serial.println("calibrating touch sensor...");
+    delay(CALIBRATION_LOOP_DELAY_TOUCH);
+  }
+  uint8_t aksg = 1;
+
+  AT42QT2120::KeyControl key_control_guard;
+  key_control_guard.adjacent_key_suppression_group = aksg;
+  key_control_guard.enable_key_output = 1;
+  uint8_t guard = 1;
+  key_control_guard.guard = guard;
+  touch_sensor.setKeyControl(3, key_control_guard);
+
+  AT42QT2120::KeyControl key_control_0;
+  key_control_0.adjacent_key_suppression_group = aksg;
+  key_control_0.enable_key_output = 1;
+  guard = 0;
+  key_control_0.guard = guard;
+  touch_sensor.setKeyControl(0, key_control_0);
+
+  AT42QT2120::KeyControl key_control_1;
+  key_control_1.adjacent_key_suppression_group = aksg;
+  key_control_1.enable_key_output = 1;
+  guard = 0;
+  key_control_1.guard = guard;
+  touch_sensor.setKeyControl(1, key_control_1);
+
+  AT42QT2120::KeyControl key_control_2;
+  key_control_2.adjacent_key_suppression_group = aksg;
+  key_control_2.enable_key_output = 1;
+  guard = 0;
+  key_control_2.guard = guard;
+  touch_sensor.setKeyControl(2, key_control_2);
+
+  touch_sensor.enableSlider();
+  Serial.println("triggerCalibration touch");
+  AT42QT2120::Status status = touch_sensor.getStatus();
+
+  String any_key_touched = String(status.any_key_touched);
+  String slider_or_wheel = String(status.slider_or_wheel);
+  String overflow = String(status.overflow);
+  String calibrating = String(status.calibrating);
+  String keys = String(status.keys);
+  String slider_or_wheel_position = String(status.slider_or_wheel_position);
+  String bytes = String(status.bytes);
+
+  Serial.println("any_key_touched: " + any_key_touched);
+  Serial.println("slider_or_wheel: " + slider_or_wheel);
+  Serial.println("overflow: " + overflow);
+  Serial.println("calibrating: " + calibrating);
+  Serial.println("keys: " + keys);
+  Serial.println("slider_or_wheel_position: " + slider_or_wheel_position);
+  Serial.println("bytes: " + bytes);
+
+  int interrupt_state = ::digitalRead(TOUCH_INTERRUPT);
+  Serial.println("Interrupt State" + String(interrupt_state));
+  if (touch_sensor.sliderOrWheelEnabled() == true)
+  {
+    Serial.println("Slider Enabled");
+  }
+
   turnOnTouch();
 }
 

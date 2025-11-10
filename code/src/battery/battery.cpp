@@ -71,7 +71,6 @@ void manageBattery(void *parameter)
     if (now - lastRunBatChe >= batCheInterval)
     {
       lastRunBatChe = now;
-      powerConnected = checkPower();
       batteryVoltage = getBatteryVoltage();
       if (powerConnected == true)
       {
@@ -188,7 +187,6 @@ void manageBattery(void *parameter)
           if (!wokeUp)
           {
             Serial.println("Woke up, waiting for input...");
-            powerConnected = checkPower();
             wokeUp = true;
             waitForInput = false;
             wakeupTime = now;
@@ -236,7 +234,6 @@ void manageBattery(void *parameter)
           if (!wokeUp)
           {
             Serial.println("Woke up, waiting for input...");
-            powerConnected = checkPower();
             wokeUp = true;
             wakeupTime = now;
             inputDetected = true;
@@ -274,23 +271,23 @@ void manageBattery(void *parameter)
 
 void controlCharger()
 {
-  if (charging)
+  bool newChargingState = charging;
+
+  if (charging && batteryVoltage >= BATT_TARGET_VOLTAGE)
   {
-    if (batteryVoltage >= BATT_TARGET_VOLTAGE)
-    {
-      charging = false;
-      rM.gpioExpander.setPinState(MCP_CHARGER_CONTROL_PIN, false); // Stop charging
-      Serial.println("Charging stopped (target voltage reached).");
-    }
+    newChargingState = false;
+    Serial.println("Charging stopped (target voltage reached).");
   }
-  else
+  else if (!charging && batteryVoltage <= (BATT_TARGET_VOLTAGE - BATT_HYSTERESIS))
   {
-    if (batteryVoltage <= (BATT_TARGET_VOLTAGE - BATT_HYSTERESIS))
-    {
-      charging = true;
-      rM.gpioExpander.setPinState(MCP_CHARGER_CONTROL_PIN, true); // Start charging
-      Serial.println("Charging started (voltage dropped).");
-    }
+    newChargingState = true;
+    Serial.println("Charging started (voltage dropped).");
+  }
+
+  if (newChargingState != charging)
+  {
+    charging = newChargingState;
+    rM.gpioExpander.setPinState(MCP_CHARGER_CONTROL_PIN, charging);
   }
 
   Serial.print("Battery Voltage: ");
@@ -298,6 +295,7 @@ void controlCharger()
   Serial.print(" V - Charging: ");
   Serial.println(charging ? "ON" : "OFF");
 }
+
 
 uint64_t pinToMask(uint8_t pin)
 {
@@ -347,7 +345,6 @@ void enableSleep()
   // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
   // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
   syncTimeLibWithRTC();
-  checkPower();
   checkAlarms();
   delay(200);
 }

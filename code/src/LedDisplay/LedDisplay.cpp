@@ -17,12 +17,19 @@ void createLedDisplayTask()
       2048,         /* Stack size in words. */
       NULL,         /* Parameter passed as input of the task */
       1,            /* Priority of the task. */
-      &LedTask     /* Task handle. */
+      &LedTask      /* Task handle. */
   );
 }
 
-void showCurrentTime() {
-  LedDisplay.display(String(String(hour()) + "." + String(minute())).c_str());
+void showCurrentTime()
+{
+  String h = String(hour());
+  String m = String(minute());
+  if (hour() < 10)
+    h = "0" + h;
+  if (minute() < 10)
+    m = "0" + m;
+  LedDisplay.display((h + "." + m).c_str());
 }
 
 void showTimeTask(void *pvParameters)

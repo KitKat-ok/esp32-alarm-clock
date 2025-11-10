@@ -519,7 +519,7 @@ oled.drawBitmap(x, y, img[f], 32, 32, SSD1327_WHITE);
 
         flyer[i].x -= flyer[i].depth * 2;
         flyer[i].y += flyer[i].depth;
-        if ((flyer[i].y >= (64 * 16)) || (flyer[i].x <= (-32 * 16)))
+        if ((flyer[i].y >= (128 * 16)) || (flyer[i].x <= (-32 * 16)))
         {
             if (random(7) < 5)
             {
@@ -529,7 +529,7 @@ oled.drawBitmap(x, y, img[f], 32, 32, SSD1327_WHITE);
             else
             {
                 flyer[i].x = 128 * 16;
-                flyer[i].y = random(64) * 16;
+                flyer[i].y = random(128) * 16;
             }
             flyer[i].frame = random(3) ? random(4) : 255;
             flyer[i].depth = 10 + random(16);

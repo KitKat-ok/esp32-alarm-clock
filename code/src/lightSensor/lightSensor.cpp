@@ -303,6 +303,7 @@ void dimLedDisplay()
 float getLightLevel()
 {
     float currentLightLevel = lightMeter.readLight(); // Read the current light level from BH1750 sensor
+    Serial.println("sensor raw: " + String(lightMeter.readLight()));
     return currentLightLevel;
 }
 

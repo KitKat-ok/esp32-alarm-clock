@@ -18,6 +18,7 @@
 // #include <buttonoledMana.h>
 #include <Grafici.h>
 #include <Timezone.h>
+#include <AT42QT2120.h>
 
 #include "esp_pm.h"
 #include "esp_wifi.h"
@@ -112,6 +113,9 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define BUTTON_INTER_COND FALLING
 
 // Touch stuff I guess beh
+#define RESET_DELAY_TOUCH 2000
+#define CALIBRATION_LOOP_DELAY_TOUCH 50
+
 #define TOUCH_1_Seg_PIN 0
 #define TOUCH_1_Seg_THRESHOLD 4
 #define TOUCH_2_Seg_PIN 0
