@@ -170,7 +170,6 @@ void loopButtonsTask(void *parameter)
             interruptedButton = interruptedButtonCopy; // to make sure it can "rest" at the end
             Serial.println("Received button from gpio expander: " + getButtonString(interruptedButtonCopy));
         }
-        Serial.println("help: " + getButtonString(interruptedButtonCopy));
 
         buttMut.lock();
         if (interruptedButtonCopy == Back && buttonPressed != LongBack)

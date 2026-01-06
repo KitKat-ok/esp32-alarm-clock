@@ -64,7 +64,6 @@ void tryToConnectWifi()
     delay(100);
     setWifiCountryCode();
     WiFi.begin(wifiCredStatic[i]->ssid, wifiCredStatic[i]->password);
-    setWifiCountryCode();
 
     for (int i = 0; i < WIFI_SYNC_TIME / 1000; i++)
     {
@@ -92,6 +91,7 @@ void connectToWiFi(void *parameter)
   while (WifiOn)
   {
     WiFi.mode(WIFI_STA);
+    WiFi.setTxPower(WIFI_POWER_21dBm);
     WiFi.setSleep(WIFI_PS_MAX_MODEM);
     WiFi.setAutoReconnect(true);
 

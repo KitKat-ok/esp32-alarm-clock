@@ -70,7 +70,7 @@
 // WiFi
 #define SIZE_WIFI_CRED_STAT 3
 
-#define WIFI_SYNC_TIME 50000
+#define WIFI_SYNC_TIME 10000
 
 #define WIFI_COUNTRY_FIX 1 // Enable this to 1 to enable the fix
 /*

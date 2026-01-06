@@ -32,12 +32,14 @@ touchStates useAllTouch()
     return touchPressedTmp;
 }
 
-typedef struct {
+typedef struct
+{
     gpio_num_t pin;
     uint8_t threshold;
 } TouchConfig;
 
-TouchConfig getTouchConfig(touchStates state) {
+TouchConfig getTouchConfig(touchStates state)
+{
     // bool onBattery = !powerConnected;
 
     // switch (state) {
@@ -63,19 +65,11 @@ TouchConfig getTouchConfig(touchStates state) {
     //     }
     //     default:
     // }
-    return (TouchConfig){ GPIO_NUM_NC, 0 };
-
+    return (TouchConfig){GPIO_NUM_NC, 0};
 }
-
 
 void setTouch(touchStates touch)
 {
-    touchMut.lock();
-    touchPressed = touch;
-    touchMut.unlock();
-
-    Serial.println("setTouch done" + String(touch));
-    TouchConfig currentTouch = getTouchConfig(touch);
 
 }
 
@@ -86,6 +80,8 @@ void loopTouchTask(void *parameter)
 
     while (true)
     {
+        Serial.println("Touch task awake");
+
         touchStates interruptedTouchCopy;
 
         touchMut.lock();
@@ -113,7 +109,6 @@ void loopTouchTask(void *parameter)
     }
 }
 
-
 void initTouchTask()
 {
     xTaskCreate(
@@ -129,7 +124,7 @@ void turnOnTouch()
 {
     if (touchActivated == false)
     {
-    initTouchTask();
-    turnOnTouchInterrupts();
+        initTouchTask();
+        turnOnTouchInterrupts();
     }
 }

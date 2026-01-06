@@ -118,6 +118,10 @@ void initLedDisplay()
 {
   LedDisplay.init(4, 6);
   LedDisplay.clear();
+  // LedDisplay.writeRegister(DIG01_INTENSITY, 0x0F);
+  // LedDisplay.writeRegister(DIG23_INTENSITY, 0x00);
+  // LedDisplay.writeRegister(DIG45_INTENSITY, 0x0F);
+  // LedDisplay.writeRegister(DIG67_INTENSITY, 0x00);
   Serial.println("Led display initialized");
 }
 
@@ -158,74 +162,49 @@ void initTouch()
   pinMode(TOUCH_INTERRUPT, INPUT);
 
   touch_sensor.begin();
-  Serial.println("reseting touch sensor...");
   touch_sensor.reset();
-  delay(RESET_DELAY_TOUCH);
-  touch_sensor.triggerCalibration();
-  delay(CALIBRATION_LOOP_DELAY_TOUCH);
-  while (touch_sensor.calibrating())
-  {
-    Serial.println("calibrating touch sensor...");
-    delay(CALIBRATION_LOOP_DELAY_TOUCH);
-  }
-  uint8_t aksg = 1;
+  delay(2000);
 
-  AT42QT2120::KeyControl key_control_guard;
-  key_control_guard.adjacent_key_suppression_group = aksg;
-  key_control_guard.enable_key_output = 1;
-  uint8_t guard = 1;
-  key_control_guard.guard = guard;
-  touch_sensor.setKeyControl(3, key_control_guard);
+  AT42QT2120::KeyControl kc;
 
-  AT42QT2120::KeyControl key_control_0;
-  key_control_0.adjacent_key_suppression_group = aksg;
-  key_control_0.enable_key_output = 1;
-  guard = 0;
-  key_control_0.guard = guard;
-  touch_sensor.setKeyControl(0, key_control_0);
+  kc.enable_key_output = 0;
+  kc.key_output = 1;
+  kc.adjacent_key_suppression_group = 1;
+  kc.guard = 0;
 
-  AT42QT2120::KeyControl key_control_1;
-  key_control_1.adjacent_key_suppression_group = aksg;
-  key_control_1.enable_key_output = 1;
-  guard = 0;
-  key_control_1.guard = guard;
-  touch_sensor.setKeyControl(1, key_control_1);
+  touch_sensor.setKeyControl(0, kc);
+  touch_sensor.setKeyControl(1, kc);
+  touch_sensor.setKeyControl(2, kc);
 
-  AT42QT2120::KeyControl key_control_2;
-  key_control_2.adjacent_key_suppression_group = aksg;
-  key_control_2.enable_key_output = 1;
-  guard = 0;
-  key_control_2.guard = guard;
-  touch_sensor.setKeyControl(2, key_control_2);
+  touch_sensor.setKeyDetectThreshold(0, 20);
+  touch_sensor.setKeyDetectThreshold(1, 20);
+  touch_sensor.setKeyDetectThreshold(2, 20);
+
+  // Guard key
+  kc.guard = 1;
+  kc.key_output = 0;
+  kc.adjacent_key_suppression_group = 1;
+  touch_sensor.setKeyControl(3, kc);
+  touch_sensor.setKeyDetectThreshold(3, 18);
+
+  touch_sensor.setDetectionIntegrator(15);
+
+  touch_sensor.setChargeDuration(100);
+
+  touch_sensor.setMeasurementIntervalCount(2);
+
+  touch_sensor.setTowardsDriftCompensationDuration(20);
+  touch_sensor.setAwayDriftCompensationDuration(2);
+  touch_sensor.setDriftCompensationHoldDuration(120);
+
+  touch_sensor.setRecalibrationDelay(255);
 
   touch_sensor.enableSlider();
-  Serial.println("triggerCalibration touch");
-  AT42QT2120::Status status = touch_sensor.getStatus();
 
-  String any_key_touched = String(status.any_key_touched);
-  String slider_or_wheel = String(status.slider_or_wheel);
-  String overflow = String(status.overflow);
-  String calibrating = String(status.calibrating);
-  String keys = String(status.keys);
-  String slider_or_wheel_position = String(status.slider_or_wheel_position);
-  String bytes = String(status.bytes);
-
-  Serial.println("any_key_touched: " + any_key_touched);
-  Serial.println("slider_or_wheel: " + slider_or_wheel);
-  Serial.println("overflow: " + overflow);
-  Serial.println("calibrating: " + calibrating);
-  Serial.println("keys: " + keys);
-  Serial.println("slider_or_wheel_position: " + slider_or_wheel_position);
-  Serial.println("bytes: " + bytes);
-
-  int interrupt_state = ::digitalRead(TOUCH_INTERRUPT);
-  Serial.println("Interrupt State" + String(interrupt_state));
-  if (touch_sensor.sliderOrWheelEnabled() == true)
-  {
-    Serial.println("Slider Enabled");
-  }
-
-  turnOnTouch();
+  touch_sensor.triggerCalibration();
+  while (touch_sensor.calibrating())
+    delay(20);
+    turnOnTouch();
 }
 
 void initButtons()

@@ -140,7 +140,6 @@ oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 
 String convertWindDirection(uint16_t degrees)
 {
-    Serial.println("Current wind direction" + String(degrees));
     if (degrees >= 337.5 || degrees < 22.5)
     {
         return "N";
