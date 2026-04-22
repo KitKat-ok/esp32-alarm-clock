@@ -9,7 +9,7 @@ bool maxBrightness = false;
 
 bool dimmingTaskRunning = false;
 
-bool displayON = true;
+bool LedDisplayOn = true;
 
 bool inputDetected = false;
 
@@ -44,7 +44,7 @@ void createLightTask()
         2048,        /* Stack size in words. */
         NULL,        /* Parameter passed as input of the task */
         1,           /* Priority of the task. */
-        NULL        /* Task handle. */
+        NULL         /* Task handle. */
     );
 }
 
@@ -56,20 +56,20 @@ void createDimmingTask()
     }
     Serial.print("creating dimmingTask");
     xTaskCreate(
-        dimmingTask,        /* Task function. */
-        "DimTask",          /* String with name of task. */
-        4096,               /* Stack size in words. */
-        NULL,               /* Parameter passed as input of the task */
-        1,                  /* Priority of the task. */
+        dimmingTask,       /* Task function. */
+        "DimTask",         /* String with name of task. */
+        4096,              /* Stack size in words. */
+        NULL,              /* Parameter passed as input of the task */
+        1,                 /* Priority of the task. */
         &dimmingTaskHandle /* Task handle. */
     );
 
     xTaskCreate(
-        oledWakeupTask,        /* Task function. */
-        "InputOledTask",       /* String with name of task. */
-        4096,                  /* Stack size in words. */
-        NULL,                  /* Parameter passed as input of the task */
-        3,                     /* Priority of the task. */
+        oledWakeupTask,       /* Task function. */
+        "InputOledTask",      /* String with name of task. */
+        4096,                 /* Stack size in words. */
+        NULL,                 /* Parameter passed as input of the task */
+        3,                    /* Priority of the task. */
         &oledWakeupTaskHandle /* Task handle. */
     );
 }
@@ -84,7 +84,7 @@ void oledWakeupTask(void *pvParameters)
     unsigned long lastActionTime = 0;
     while (true)
     {
-        if (useAllButtons() != None || useAllTouch() != No_Seg || inputDetected == true)
+        if (useAllButtons() != None || useAllTouch().touched == true || inputDetected == true)
         {
             vTaskSuspend(dimmingTaskHandle);
             vTaskResume(LedTask);
@@ -96,6 +96,20 @@ void oledWakeupTask(void *pvParameters)
             lastActionTime = millis();
 
             oledMana.enable();
+            Serial.print("lock mutex");
+            showCurrentTime();
+            LedMut.lock();
+
+            if (currentWeatherData.isDay == false)
+            {
+                LedDisplay.setIntensity(LED_BRIGHTNESS_MAX_NIGHT);
+            }
+            else
+            {
+                LedDisplay.setIntensity(LED_BRIGHTNESS_MAX);
+            }
+            LedMut.unlock();
+            Serial.print("unlock mutex");
 
             if (oledMana.dimmed)
             {
@@ -110,7 +124,7 @@ void oledWakeupTask(void *pvParameters)
             {
                 vTaskDelay(pdMS_TO_TICKS(5));
 
-                if (useAllButtons() != None || useAllTouch() != No_Seg || inputDetected == true)
+                if (useAllButtons() != None || useAllTouch().touched == true || inputDetected == true)
                 {
                     inputDetected = false;
                     lastActionTime = millis();
@@ -122,7 +136,7 @@ void oledWakeupTask(void *pvParameters)
 
                     vTaskDelay(pdMS_TO_TICKS(5));
 
-                    if (useAllButtons() != None || useAllTouch() != No_Seg || inputDetected == true)
+                    if (useAllButtons() != None || useAllTouch().touched == true || inputDetected == true)
                     {
                         inputDetected = false;
                         lastActionTime = millis();
@@ -135,6 +149,7 @@ void oledWakeupTask(void *pvParameters)
             }
             lightLevel = getLightLevel();
             dimOledDisplay();
+            dimLedDisplay();
         }
         else
         {
@@ -178,6 +193,7 @@ void dimmingTask(void *pvParameters)
 
         if (currentMillis - previousMillisDimming >= intervalDimming)
         {
+            dimLedDisplay();
             dimOledDisplay();
             maxBrightness = false;
 
@@ -235,21 +251,23 @@ void dimOledDisplay()
 
 static int ledLastBrightness = LED_BRIGHTNESS_MIN;
 
-int mapWithHysteresis(int lightLevel)
+int mapWithHysteresis(uint8_t lightLevel)
 {
-    if (lightLevel <= LED_DISABLE_THRESHOLD)
+    uint8_t maxBright = LED_BRIGHTNESS_MAX_NIGHT;
+    if (currentWeatherData.isDay == false)
     {
-        ledLastBrightness = LED_BRIGHTNESS_MIN;
-        return ledLastBrightness;
+        maxBright = LED_BRIGHTNESS_MAX_NIGHT;
+    }
+    else
+    {
+        maxBright = LED_BRIGHTNESS_MAX;
     }
 
-    // Manual linear mapping (same as map function)
-    int newBrightness = (lightLevel - LED_DIM_THRESHOLD) * (LED_BRIGHTNESS_MAX - LED_BRIGHTNESS_MIN) /
-                            (LED_MAX_BRIGHTNESS - LED_DIM_THRESHOLD) +
-                        LED_BRIGHTNESS_MIN;
+    uint8_t newBrightness = (lightLevel - LED_DIM_THRESHOLD) * (maxBright - LED_BRIGHTNESS_MIN) /
+                                (LED_MAP_MAX_LIGHT - LED_DIM_THRESHOLD) +
+                            LED_BRIGHTNESS_MIN;
 
-    // Constrain brightness within valid range
-    newBrightness = constrain(newBrightness, LED_BRIGHTNESS_MIN, LED_BRIGHTNESS_MAX);
+    newBrightness = constrain(newBrightness, LED_BRIGHTNESS_MIN, maxBright);
 
     if (newBrightness > ledLastBrightness + LED_HYSTERESIS)
     {
@@ -279,24 +297,26 @@ void dimLedDisplay()
             if (lightLevel <= LED_DISABLE_THRESHOLD - 3 && checkForNight())
                 disableHysteresisState = true;
         }
-
+        LedMut.lock();
         if (disableHysteresisState)
         {
             LedDisplay.clear();
-            displayON = false;
+            LedDisplayOn = false;
         }
         else if (lightLevel > LED_DIM_THRESHOLD)
         {
-            displayON = true;
-            LedDisplay.setIntensity(mapWithHysteresis(lightLevel));
-            Serial.println("Brightness of Led display " + String(map(constrain(lightLevel, 0, LED_DIM_THRESHOLD), 0, LED_DIM_THRESHOLD, 0, 7)));
+            LedDisplayOn = true;
+            uint8_t brightness = mapWithHysteresis(lightLevel);
+            LedDisplay.setIntensity(brightness);
+            Serial.println("Brightness of Led display " + String(brightness));
         }
         else
         {
-            displayON = true;
+            LedDisplayOn = true;
             LedDisplay.setIntensity(0);
             Serial.println("Brightness of Led display 0");
         }
+        LedMut.unlock();
     }
 }
 
@@ -353,19 +373,19 @@ int getMmwaveState()
 
         if (jsonString.length() > 0)
         {
-            break; // Exit the loop if we get a valid response
+            break; 
         }
         else
         {
             Serial.println("Failed to fetch data, retrying...");
-            delay(1000); // Wait 1 second before retrying
+            delay(1000);
         }
     }
 
     if (jsonString.length() == 0)
     {
         Serial.println("Failed to fetch data after multiple attempts.");
-        return 3; // Return an error code if all retries fail
+        return 3;
     }
 
     JsonDocument jsonDoc;

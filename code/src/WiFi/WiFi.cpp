@@ -31,8 +31,8 @@ void initWifi()
       4096,           // Stack size
       NULL,           // Task parameters
       2,              // Priority
-      &wifiTask      // Task handle
-      );
+      &wifiTask       // Task handle
+  );
 }
 
 WiFiCred *wifiCredStatic[SIZE_WIFI_CRED_STAT];
@@ -63,6 +63,7 @@ void tryToConnectWifi()
     Serial.println("Trying to connect to wifi number: " + String(i) + " so: " + String(wifiCredStatic[i]->ssid) + " " + String(wifiCredStatic[i]->password));
     delay(100);
     setWifiCountryCode();
+    WiFi.setSleep(WIFI_PS_MAX_MODEM);
     WiFi.begin(wifiCredStatic[i]->ssid, wifiCredStatic[i]->password);
 
     for (int i = 0; i < WIFI_SYNC_TIME / 1000; i++)
@@ -91,10 +92,9 @@ void connectToWiFi(void *parameter)
   while (WifiOn)
   {
     WiFi.mode(WIFI_STA);
-    WiFi.setTxPower(WIFI_POWER_21dBm);
+    esp_wifi_set_max_tx_power(84);
     WiFi.setSleep(WIFI_PS_MAX_MODEM);
     WiFi.setAutoReconnect(true);
-
     WiFiTaskRunning = true;
 
     esp_wifi_start();
@@ -142,11 +142,11 @@ void createWifiTask()
   xTaskCreate(
       connectToWiFi, // Task function
       "WiFiTask",    // Task name
-      4096,         // Stack size
+      4096,          // Stack size
       NULL,          // Task parameters
       10,            // Priority
-      &wifiTask     // Task handle
-      );            // Core (0 or 1)
+      &wifiTask      // Task handle
+  );                 // Core (0 or 1)
 }
 
 bool isWifiTaskCheck()

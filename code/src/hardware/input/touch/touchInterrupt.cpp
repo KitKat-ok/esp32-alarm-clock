@@ -1,6 +1,6 @@
 #include "touch.h"
 
-touchStates interruptedTouch = No_Seg;
+bool touchInterrupt = false;
 
 void resumeTouchTask()
 {
@@ -13,6 +13,7 @@ void resumeTouchTask()
 
 void touchInt()
 {
+    touchInterrupt = true;
     resumeTouchTask();
 }
 

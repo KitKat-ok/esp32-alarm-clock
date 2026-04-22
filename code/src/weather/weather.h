@@ -10,7 +10,7 @@ struct CurrentWeatherData {
     uint32_t dt; // time, unix
     String main; // Weather condition description
     uint16_t windDirection; // Wind direction in degrees
-    bool isDay; // Temperature in Celsius
+    bool isDay; // Is day??
     float temp; // Temperature in Celsius
     float pressure; // Pressure in hPa
     uint8_t humidity; // Humidity percentage

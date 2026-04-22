@@ -24,7 +24,7 @@ void createBatteryTask()
       4096,          // Stack size (words)
       NULL,          // Task input parameter
       3,             // Priority (0 is lowest)
-      NULL          // Task handle
+      NULL           // Task handle
   );
 }
 
@@ -83,8 +83,8 @@ void manageBattery(void *parameter)
       if (!setPowerSettings)
       {
         Serial.println("Setting power settings");
-        //touchSetCycles(0x500, 0x500);
-        //lightMeter.setActiveMode();
+        // touchSetCycles(0x500, 0x500);
+        // lightMeter.setActiveMode();
         vTaskResume(oledWakeupTaskHandle);
         vTaskResume(LedTask);
         vTaskResume(alarmTaskHandle);
@@ -121,7 +121,7 @@ void manageBattery(void *parameter)
       {
         Serial.println("Setting battery settings");
         turnOffWifi();
-        //touchSetCycles(0x5000, 0x5000);
+        // touchSetCycles(0x5000, 0x5000);
         vTaskSuspend(oledWakeupTaskHandle);
         vTaskSuspend(LedTask);
         vTaskSuspend(dimmingTaskHandle);
@@ -133,7 +133,7 @@ void manageBattery(void *parameter)
         // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
         // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
         rM.gpioExpander.setPinState(MCP_CHARGER_CONTROL_PIN, false);
-        //lightMeter.setStandbyMode();
+        // lightMeter.setStandbyMode();
         batterySettingsTime = now;
         waitingForPower = true;
         setPowerSettings = false;
@@ -150,7 +150,7 @@ void manageBattery(void *parameter)
 
       if (waitingForPower == true)
       {
-        if ((useAllButtons() != None || useAllTouch() != No_Seg || inputDetected == true) || ringing == true)
+        if ((useAllButtons() != None || useAllTouch().touched == true || inputDetected == true) || ringing == true)
         {
           waitForInput = true;
           vTaskResume(menuTaskHandle);
@@ -158,15 +158,15 @@ void manageBattery(void *parameter)
           oledMana.enable();
           LedDisplay.setIntensity(2);
           showCurrentTime();
-          if (useAllTouch() != No_Seg)
-          {
-            useTouch();
-          }
+          // if (useAllTouch() != No_Seg)
+          // {
+          //   useTouch();
+          // }
 
-          if (useAllButtons() != None)
-          {
-            useButton();
-          }
+          // if (useAllButtons() != None)
+          // {
+          //   useButton();
+          // }
           batterySettingsTime = now;
         }
 
@@ -192,7 +192,7 @@ void manageBattery(void *parameter)
             wakeupTime = now;
           }
 
-          if ((useAllButtons() != None || useAllTouch() != No_Seg || inputDetected == true) || ringing == true)
+          if ((useAllButtons() != None || useAllTouch().touched == true || inputDetected == true) || ringing == true)
           {
             inputDetected = false;
             if (waitForInput == false)
@@ -239,7 +239,7 @@ void manageBattery(void *parameter)
             inputDetected = true;
           }
 
-          if ((useAllButtons() != None || useAllTouch() != No_Seg || inputDetected == true) || ringing == true)
+          if ((useAllButtons() != None || useAllTouch().touched == true || inputDetected == true) || ringing == true)
           {
             inputDetected = false;
             if (waitForInput == false)
@@ -295,7 +295,6 @@ void controlCharger()
   Serial.print(" V - Charging: ");
   Serial.println(charging ? "ON" : "OFF");
 }
-
 
 uint64_t pinToMask(uint8_t pin)
 {

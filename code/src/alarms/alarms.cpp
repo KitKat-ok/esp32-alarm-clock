@@ -194,7 +194,7 @@ void ringAlarm(void *parameter)
   {
     if (alarmDetectInput == false)
     {
-      alarmDetectInput = (useAllTouch() != No_Seg);
+      alarmDetectInput = (useAllTouch().touched == true);
     }
     if ((millis() - startTime >= 15000 || WiFi.SSID() != SSID1 || WiFi.status() != WL_CONNECTED || (hour() >= 11 && hour() <= 21)) && ringOn == true)
     {

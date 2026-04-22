@@ -6,6 +6,8 @@ void showTimeTask(void *pvParameters);
 
 TaskHandle_t LedTask;
 
+std::mutex LedMut;
+
 void createLedDisplayTask()
 {
 
@@ -23,6 +25,7 @@ void createLedDisplayTask()
 
 void showCurrentTime()
 {
+  LedMut.lock();
   String h = String(hour());
   String m = String(minute());
   if (hour() < 10)
@@ -30,59 +33,24 @@ void showCurrentTime()
   if (minute() < 10)
     m = "0" + m;
   LedDisplay.display((h + "." + m).c_str());
+  LedMut.unlock();
 }
 
 void showTimeTask(void *pvParameters)
 {
-  unsigned long previousMillis = 0;
-  const long interval = 1000; // 10 seconds interval
+  showCurrentTime();
+
   while (true)
   {
-    while (maxBrightness == false)
+    int s = second();
+    if (s != 0)
+      vTaskDelay(pdMS_TO_TICKS((60 - s) * 1000));
+
+    if (LedDisplayOn)
     {
-      unsigned long currentMillis = millis(); // Get the current time
-      if (currentMillis - previousMillis >= interval)
-      {
-        previousMillis = currentMillis;
-
-        Serial.println("Reading brightness and dimming Led display accordingly");
-
-        dimLedDisplay();
-
-        if (displayON == true)
-        {
-          showCurrentTime();
-        }
-      }
-      vTaskDelay(10);
+      showCurrentTime();
     }
 
-    Serial.println("Setting max brightness Led display");
-
-    if (hour() >= 23 || hour() < 10)
-    {
-      LedDisplay.setIntensity(2);
-      showCurrentTime();
-      while (maxBrightness == true)
-      {
-        showCurrentTime();
-        vTaskDelay(1000);
-      }
-      dimLedDisplay();
-      showCurrentTime();
-    }
-    else
-    {
-      LedDisplay.setIntensity(7);
-      showCurrentTime();
-      while (maxBrightness == true)
-      {
-
-        showCurrentTime();
-        vTaskDelay(1000);
-      }
-      dimLedDisplay();
-      showCurrentTime();
-    }
+    vTaskDelay(pdMS_TO_TICKS(60000));
   }
 }

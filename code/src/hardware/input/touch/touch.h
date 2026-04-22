@@ -2,27 +2,23 @@
 
 #include "defines.h"
 
-typedef enum
+struct touchState
 {
-    No_Seg = 0,
-    First_Seg = 1,
-    Second_Seg = 2,
-    Third_Seg = 3,
-    Fourt_Seg = 4,
-    Fifth_Seg = 5,
-} touchStates;
+    bool touched;
+    bool held;
+    bool longPress;
+    int16_t sliderState;
+};
 
 extern bool touchActivated;
 extern std::mutex touchMut;
-extern touchStates touchPressed;
+extern bool touchInterrupt;
 extern TaskHandle_t touchTask;
 
-touchStates useTouch();
-touchStates useAllTouch();
+touchState useTouch();
+touchState useAllTouch();
 
 void setTouchInterrupt(uint8_t pin, uint16_t threshold);
 void turnOnTouchInterrupts();
 
 void turnOnTouch();
-
-extern touchStates interruptedTouch;

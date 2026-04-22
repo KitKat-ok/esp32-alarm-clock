@@ -2,6 +2,9 @@
 
 #define BUTTONS_OFFSET 1
 #define BUTTON_HEIGHT 10
+#define MAX_ITEMS_ON_PAGE 8
+#define AVAILABLE_HEIGHT SCREEN_HEIGHT - 20
+#define MIN_ITEMS 1
 
 TaskHandle_t menuTaskHandle;
 
@@ -20,29 +23,28 @@ bool exitLoopFunction = false;
 
 void showMenu()
 {
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
-oled.clearDisplay();
-oled.setTextSize(data.textSize);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.clearDisplay();
+    oled.setTextSize(data.textSize);
     int currentPage = 0;
-    int maxItems = 4;
-    int minItems = 1;
     int pageNumber = 0;
-    int availableHeight = SCREEN_HEIGHT - 20;
     int usedHeight = 0;
-    int tmpItemsOnPage = maxItems;
+    int tmpItemsOnPage = MAX_ITEMS_ON_PAGE;
 
-    for (int i = 0; i < maxItems && i < (data.isSubmenu ? data.submenuCount : data.totalMenus); i++)
+    for (int i = 0; i < MAX_ITEMS_ON_PAGE && i < (data.isSubmenu ? data.submenuCount : data.totalMenus); i++)
     {
         auto &entry = data.isSubmenu ? data.currentSubmenu[i] : data.entryList[i];
 
         if (entry.font)
-oled.setFont(entry.font); // Set font for this entry
+        {
+            oled.setFont(entry.font);
+        }
 
         String text = data.isSubmenu ? data.currentSubmenu[i].text : data.entryList[i].text;
 
         int16_t x1, y1;
         uint16_t textWidth, textHeight;
-oled.getTextBounds(text, 0, 0, &x1, &y1, &textWidth, &textHeight);
+        oled.getTextBounds(text, 0, 0, &x1, &y1, &textWidth, &textHeight);
 
         int lineHeight = (textWidth > SCREEN_WIDTH) ? (textHeight * 2) : textHeight;
 
@@ -55,14 +57,14 @@ oled.getTextBounds(text, 0, 0, &x1, &y1, &textWidth, &textHeight);
             lineHeight = textHeight;
         }
 
-        if (usedHeight + lineHeight > availableHeight)
+        if (usedHeight + lineHeight > AVAILABLE_HEIGHT)
         {
-            tmpItemsOnPage = max(minItems, i);
+            tmpItemsOnPage = max(MIN_ITEMS, i);
             break;
         }
 
         usedHeight += lineHeight + BUTTONS_OFFSET;
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+        oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     }
 
     data.itemsOnPage = tmpItemsOnPage;
@@ -71,12 +73,12 @@ oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     currentPage = data.currentButton / data.itemsOnPage;
     pageNumber = ((data.isSubmenu ? data.submenuCount : data.totalMenus) + data.itemsOnPage - 1) / data.itemsOnPage;
 
-oled.setCursor(0, 0);
-oled.setTextColor(SSD1327_WHITE);
+    oled.setCursor(0, 0);
+    oled.setTextColor(SSD1327_WHITE);
 
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
-oled.setCursor(0, 10);
-oled.print(String(currentPage + 1) + "/" + String(pageNumber));
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.setCursor(0, 10);
+    oled.print(String(currentPage + 1) + "/" + String(pageNumber));
 
     centerText(data.menuName, 10);
 
@@ -86,24 +88,23 @@ oled.print(String(currentPage + 1) + "/" + String(pageNumber));
         auto &entry = data.isSubmenu ? data.currentSubmenu[i] : data.entryList[i];
 
         if (entry.font)
-oled.setFont(entry.font); // Set font for this entry
+            oled.setFont(entry.font);
 
         String displayText = data.isSubmenu ? data.currentSubmenu[i].text : data.entryList[i].text;
         int16_t x1, y1;
         uint16_t textWidth, textHeight;
-oled.getTextBounds(displayText, 0, 0, &x1, &y1, &textWidth, &textHeight);
+        oled.getTextBounds(displayText, 0, 0, &x1, &y1, &textWidth, &textHeight);
 
-        // Adjust for smaller fonts to ensure proper line height
         if (textHeight < 10)
         {
-            textHeight = 10; // Adjust textHeight to avoid too small font rendering
+            textHeight = 10;
         }
 
         float floatLines = (float)textHeight / (float)BUTTON_HEIGHT;
         int lines = round(floatLines);
         if (lines == 0)
         {
-            lines = 1; // Ensure at least one line
+            lines = 1;
         }
 
         int boxHeight = (lines * BUTTON_HEIGHT) + (lines * BUTTONS_OFFSET);
@@ -111,26 +112,25 @@ oled.getTextBounds(displayText, 0, 0, &x1, &y1, &textWidth, &textHeight);
 
         if (data.currentButton == i)
         {
-oled.fillRect(0, boxY, SCREEN_WIDTH, boxHeight, SSD1327_WHITE);
-oled.setTextColor(SSD1327_BLACK);
+            oled.fillRect(0, boxY, SCREEN_WIDTH, boxHeight, SSD1327_WHITE);
+            oled.setTextColor(SSD1327_BLACK);
         }
         else
         {
-oled.setTextColor(SSD1327_WHITE);
+            oled.setTextColor(SSD1327_WHITE);
         }
 
         int verticalOffset = (boxHeight - textHeight) / 2;
 
-oled.setCursor(1, y + verticalOffset);
-oled.print(displayText);
+        oled.setCursor(1, y + verticalOffset);
+        oled.print(displayText);
 
-        // Increase Y based on text height and lines
         y += boxHeight + BUTTONS_OFFSET;
     }
 
     oledMana.display();
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
-oled.setTextColor(SSD1327_WHITE);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.setTextColor(SSD1327_WHITE);
 }
 
 void initMenu(entryMenu *entryList, int totalMenus, String menuName, int textSize, int linesThick)
@@ -380,7 +380,7 @@ void loopMenu()
 
     if (menuRunning == true)
     {
-        useTouch();
+        // useTouch();
         switch (useButton())
         {
         case Up:
@@ -535,7 +535,7 @@ void menuTask(void *parameter)
     while (true)
     {
         loopMenu();
-        vTaskDelay(10);
+        vTaskDelay(5);
     }
 }
 
@@ -605,11 +605,11 @@ void initMenus()
              4, "Main Menu", 1, 1);
     initAlarmMenus();
     xTaskCreate(
-        menuTask,        // Task function
-        "Menu Task",     // Task name
-        4096,            // Stack size in bytes
-        NULL,            // Task parameter
-        3,               // Task priority
+        menuTask,       // Task function
+        "Menu Task",    // Task name
+        4096,           // Stack size in bytes
+        NULL,           // Task parameter
+        3,              // Task priority
         &menuTaskHandle // Task handle
     );
 }

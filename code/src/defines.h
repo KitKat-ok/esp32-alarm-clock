@@ -45,7 +45,7 @@
 // Interrupts
 
 #define MCP_INTERRUPT_PIN 5
-#define TOUCH_INTERRUPT 3
+#define TOUCH_INTERRUPT 2
 
 // Display
 #define SCREEN_WIDTH 128
@@ -97,9 +97,10 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define DIM_DELAY 30000 // how long to have max brightness after input gets detected
 
 #define LED_HYSTERESIS 2
-#define LED_MAX_BRIGHTNESS 100
+#define LED_MAP_MAX_LIGHT 100 // range in which the brightness gets mapped
 #define LED_BRIGHTNESS_MIN 0
-#define LED_BRIGHTNESS_MAX 7
+#define LED_BRIGHTNESS_MAX 15
+#define LED_BRIGHTNESS_MAX_NIGHT 4
 
 // Button stuff
 #define SMALL_BUTTON_DELAY_MS 15

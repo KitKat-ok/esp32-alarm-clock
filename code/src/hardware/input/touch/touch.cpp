@@ -1,111 +1,123 @@
 #include "touch.h"
 
+#define TOUCH_DEBOUNCE 100 // Time how long touch has to be detected to be accepted recognized as a proper touch instead of noise
+#define DEBOUNCE_POLL_SPEED 50
+
 bool touchActivated = false;
-touchStates touchPressed = No_Seg;
 TaskHandle_t touchTask = NULL;
+touchState currentTouch;
 std::mutex touchMut;
 
-touchStates useTouch()
+touchState useTouch()
 {
-    touchMut.lock();
-    touchStates touchPressedTmp = touchPressed;
-    touchPressed = No_Seg;
+    touchState touchCopy = currentTouch;
 
-    if (touchPressedTmp != No_Seg)
+    currentTouch.longPress = false;
+    currentTouch.touched = false;
+
+    return touchCopy;
+}
+
+touchState useAllTouch()
+{
+    return currentTouch;
+}
+
+void setTouch(const touchState &touch, bool onlyHeld = false)
+{
+    if (onlyHeld)
     {
-        inputDetected = true;
+        currentTouch.held = touch.held;
+        return;
     }
-    touchMut.unlock();
-    return touchPressedTmp;
-}
 
-touchStates useAllTouch()
-{
-    touchMut.lock();
-    touchStates touchPressedTmp = touchPressed;
-
-    if (touchPressedTmp != No_Seg)
-    {
-        inputDetected = true;
-    }
-    touchMut.unlock();
-    return touchPressedTmp;
-}
-
-typedef struct
-{
-    gpio_num_t pin;
-    uint8_t threshold;
-} TouchConfig;
-
-TouchConfig getTouchConfig(touchStates state)
-{
-    // bool onBattery = !powerConnected;
-
-    // switch (state) {
-    //     case First_Seg: {
-    //         uint8_t thresh = onBattery ? TOUCH_1_Seg_THRESHOLD_BAT : TOUCH_1_Seg_THRESHOLD;
-    //         return (TouchConfig){ TOUCH_1_Seg_PIN, thresh };
-    //     }
-    //     case Second_Seg: {
-    //         uint8_t thresh = onBattery ? TOUCH_2_Seg_THRESHOLD_BAT : TOUCH_2_Seg_THRESHOLD;
-    //         return (TouchConfig){ TOUCH_2_Seg_PIN, thresh };
-    //     }
-    //     case Third_Seg: {
-    //         uint8_t thresh = onBattery ? TOUCH_3_Seg_THRESHOLD_BAT : TOUCH_3_Seg_THRESHOLD;
-    //         return (TouchConfig){ TOUCH_3_Seg_PIN, thresh };
-    //     }
-    //     case Fourt_Seg: {
-    //         uint8_t thresh = onBattery ? TOUCH_4_Seg_THRESHOLD_BAT : TOUCH_4_Seg_THRESHOLD;
-    //         return (TouchConfig){ TOUCH_4_Seg_PIN, thresh };
-    //     }
-    //     case Fifth_Seg: {
-    //         uint8_t thresh = onBattery ? TOUCH_5_Seg_THRESHOLD_BAT : TOUCH_5_Seg_THRESHOLD;
-    //         return (TouchConfig){ TOUCH_5_Seg_PIN, thresh };
-    //     }
-    //     default:
-    // }
-    return (TouchConfig){GPIO_NUM_NC, 0};
-}
-
-void setTouch(touchStates touch)
-{
-
+    currentTouch = touch;
 }
 
 void loopTouchTask(void *parameter)
 {
     touchActivated = true;
-    interruptedTouch = No_Seg;
+
+    const int LONG_PRESS_MS = 600;
+
+    static bool wasPressed = false;
+    static uint32_t touchStartTime = 0;
+
+    static bool lastTouched = false;
+    static bool lastHeld = false;
+    static bool lastLongPress = false;
+    static int lastSlider = -1;
 
     while (true)
     {
-        Serial.println("Touch task awake");
+        touchState s = {};
+        s.sliderState = -1;
 
-        touchStates interruptedTouchCopy;
+        AT42QT2120::Status status = touch_sensor.getStatus();
+        bool pressed = status.any_key_touched;
+        int slider = status.slider_or_wheel_position;
+        uint32_t now = millis();
 
-        touchMut.lock();
-        interruptedTouchCopy = interruptedTouch;
-        touchMut.unlock();
-
-        if (interruptedTouchCopy != No_Seg)
+        if (pressed)
         {
-            setTouch(interruptedTouchCopy);
-        }
+            if (!wasPressed)
+            {
+                touchStartTime = now;
+                tone(BUZZER_PIN, NOTE_C7, 1000 / 16);
+            }
+            else
+            {
+                s.held = true;
+            }
 
-        touchMut.lock();
-        if (interruptedTouchCopy == interruptedTouch)
-        {
-            interruptedTouch = No_Seg;
-            touchMut.unlock();
-            Serial.println("Touch task going to sleep!");
-            vTaskSuspend(NULL);
+            s.touched = true;
+            s.sliderState = slider;
+
+            if (now - touchStartTime >= LONG_PRESS_MS)
+                s.longPress = true;
+
+            wasPressed = true;
         }
         else
         {
-            touchMut.unlock();
-            Serial.println("Another touch segment activated...");
+            wasPressed = false;
+            touchStartTime = 0;
         }
+
+        bool heldChanged = (s.held != lastHeld);
+
+        bool fullChange =
+            s.touched != lastTouched ||
+            s.sliderState != lastSlider ||
+            s.longPress != lastLongPress;
+
+        if (fullChange)
+        {
+            if (s.touched)
+            {
+                setTouch(s, false);
+            }
+
+            lastTouched = s.touched;
+            lastLongPress = s.longPress;
+            lastSlider = s.sliderState;
+        }
+
+        if (heldChanged)
+        {
+            setTouch(s, true);
+            lastHeld = s.held;
+        }
+
+        touchInterrupt = false;
+
+        if (!pressed && digitalRead(TOUCH_INTERRUPT) == HIGH)
+        {
+            Serial.println("Touch task Going sleep");
+            vTaskSuspend(NULL);
+        }
+
+        vTaskDelay(5 / portTICK_PERIOD_MS);
     }
 }
 
@@ -114,7 +126,7 @@ void initTouchTask()
     xTaskCreate(
         loopTouchTask,
         "touchTask",
-        4700, // Too much but handling fs logging takes a bit more
+        4096, // Too much but handling fs logging takes a bit more
         NULL,
         12,
         &touchTask);

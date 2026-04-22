@@ -39,121 +39,36 @@ bool previousInputState = false;
 long lastDebounceTime = 0;
 bool debouncedTouchState = false;
 
-bool lastFirstSeg = false;
-bool lastSecondSeg = false;
-bool lastThirdSeg = false;
-bool lastFourthSeg = false;
-bool lastFifthSeg = false;
-
-void checkTouchButtons()
-{
-    if (lastFirstSeg || lastSecondSeg)
-    {
-        Serial.println("changing page down");
-        cyclePagesDown();
-    }
-    else if (lastThirdSeg)
-    {
-        PageNumberToShow = 1;
-        Serial.println("setting first page");
-    }
-    else if (lastFourthSeg || lastFifthSeg)
-    {
-        Serial.println("changing page up");
-        cyclePagesUp();
-    }
-}
-
-static unsigned long lastHeldCheck = 0;
-const unsigned long debounceDelay = 50; // minimal debounce
-const unsigned long heldCheckInterval = 10;
 unsigned long lastCycle = 0;
 const unsigned long cycleInterneval = 1000;
 
 void showMainPage()
 {
-    static unsigned long lastDebounceTime = 0;
-    touchStates tState = useTouch();
+    touchState t = useTouch();
 
-    bool firstSeg = tState == First_Seg;
-    bool secondSeg = tState == Second_Seg;
-    bool thirdSeg = tState == Third_Seg;
-    bool fourthSeg = tState == Fourt_Seg;
-    bool fifthSeg = tState == Fifth_Seg;
+    bool pressed = t.touched && !t.held;
+    bool released = !t.touched;
 
-    bool anySeg = firstSeg || secondSeg || thirdSeg || fourthSeg || fifthSeg;
-
-    if (anySeg && !isBeingHeld)
+    if (pressed)
     {
-        if (millis() - lastDebounceTime > debounceDelay)
-        {
-            lastDebounceTime = millis();
-            lastFirstSeg = firstSeg;
-            lastSecondSeg = secondSeg;
-            lastThirdSeg = thirdSeg;
-            lastFourthSeg = fourthSeg;
-            lastFifthSeg = fifthSeg;
+        debouncedTouchState = true;
 
-            debouncedTouchState = true;
-            isBeingHeld = true;
+        turnOffScreensaver();
+        cyclePagesUp();
+        lastCycle = millis();
 
-            turnOffScreensaver();
-            cyclePagesUp();
-            tone(BUZZER_PIN, NOTE_C7, 1000 / 16);
-            lastCycle = millis();
-
-            Serial.println("Held");
-        }
+        Serial.println("Pressed");
     }
 
-    if (isBeingHeld)
+    if (t.held)
     {
-        if (millis() - lastHeldCheck >= heldCheckInterval)
-        {
-            lastHeldCheck = millis();
-
-            bool stillHeld = false;
-
-            // if (lastFirstSeg)
-            //     stillHeld |= touchRead(TOUCH_1_Seg_PIN) < (powerConnected ? TOUCH_1_Seg_THRESHOLD : TOUCH_1_Seg_THRESHOLD_BAT);
-            // if (lastSecondSeg)
-            //     stillHeld |= touchRead(TOUCH_2_Seg_PIN) < (powerConnected ? TOUCH_2_Seg_THRESHOLD : TOUCH_2_Seg_THRESHOLD_BAT);
-            // if (lastThirdSeg)
-            //     stillHeld |= touchRead(TOUCH_3_Seg_PIN) < (powerConnected ? TOUCH_3_Seg_THRESHOLD : TOUCH_3_Seg_THRESHOLD_BAT);
-            // if (lastFourthSeg)
-            //     stillHeld |= touchRead(TOUCH_4_Seg_PIN) < (powerConnected ? TOUCH_4_Seg_THRESHOLD : TOUCH_4_Seg_THRESHOLD_BAT);
-            // if (lastFifthSeg)
-            //     stillHeld |= touchRead(TOUCH_5_Seg_PIN) < (powerConnected ? TOUCH_5_Seg_THRESHOLD : TOUCH_5_Seg_THRESHOLD_BAT);
-
-            if (!stillHeld)
-            {
-                if (millis() - lastDebounceTime > debounceDelay)
-                {
-                    debouncedTouchState = false;
-                    isBeingHeld = false;
-                    Serial.println("Released");
-                }
-            }
-        }
         if (millis() - lastCycle >= cycleInterneval)
         {
-            tone(BUZZER_PIN, NOTE_C7, 1000 / 16);
             lastCycle = millis();
             turnOffScreensaver();
-            checkTouchButtons();
+            cyclePagesUp();
         }
     }
-
-    if (debouncedTouchState && !previousInputState)
-    {
-        turnOffScreensaver();
-        checkTouchButtons();
-    }
-
-    if (debouncedTouchState != previousInputState)
-        lastDebounceTime = millis();
-
-    previousInputState = debouncedTouchState;
 
     unsigned long currentTime = millis();
     if (PageNumberToShow == 1 || PageNumberToShow == 2 || PageNumberToShow == 3 || PageNumberToShow == 4 || PageNumberToShow == 5)
@@ -165,14 +80,14 @@ void showMainPage()
             previousMillisFirstMenu = millis() - intervalFirstMenu;
             displayedWeather = false;
             Serial.println("resetting menus");
-            //oledMana.sendOledAction(OLED_STOP_SCROLL);
+            // oledMana.sendOledAction(OLED_STOP_SCROLL);
             setupScreensaver();
         }
         else
         {
             if (PageNumberToShow == 1)
             {
-                //oledMana.sendOledAction(OLED_STOP_SCROLL);
+                // oledMana.sendOledAction(OLED_STOP_SCROLL);
                 LastPageShown = 1;
                 if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
                 {
@@ -184,7 +99,7 @@ void showMainPage()
             {
                 displayedWeather = true;
                 LastPageShown = 2;
-oled.clearDisplay();
+                oled.clearDisplay();
                 oledMana.display();
                 currentWeather();
             }
@@ -237,7 +152,7 @@ void turnOffScreensaver()
     displayedWeather = false;
     if (LastPageShown != 1)
     {
-        //oledMana.sendOledAction(OLED_STOP_SCROLL);
+        // oledMana.sendOledAction(OLED_STOP_SCROLL);
     }
 
     previousMillisFirstMenu = millis() - intervalFirstMenu;
@@ -245,16 +160,16 @@ void turnOffScreensaver()
 
 void showFirstPage()
 {
-oled.clearDisplay();
-oled.setTextSize(1);
-oled.setFont(&DejaVu_Sans_Bold_16);
+    oled.clearDisplay();
+    oled.setTextSize(1);
+    oled.setFont(&DejaVu_Sans_Bold_16);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), SCREEN_HEIGHT / 2 - 10);
-oled.setTextSize(1);
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.setTextSize(1);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(getCurrentWeekdayName(), SCREEN_HEIGHT / 2);
     centerText(getCurrentMonthName(), SCREEN_HEIGHT / 2 + 10);
     centerText("Light: " + String(getLightLevel()) + " lux", SCREEN_HEIGHT / 2 + 23);
-oled.drawLine(26 - 8, 45, 102 + 8, 45, SSD1327_WHITE);
+    oled.drawLine(26 - 8, 45, 102 + 8, 45, SSD1327_WHITE);
     oledMana.display();
 }
 
@@ -270,29 +185,29 @@ void showForecastPage()
 {
     int y = 20;
     int x = 5;
-oled.clearDisplay();
+    oled.clearDisplay();
     delay(10);
 
-oled.setCursor(x + 3, y);
-oled.print(getShortNextDay(0));
-oled.setCursor(x + 44 + 3, y);
-oled.print(getShortNextDay(1));
-oled.setCursor(x + 88 + 3, y);
-oled.print(getShortNextDay(2));
+    oled.setCursor(x + 3, y);
+    oled.print(getShortNextDay(0));
+    oled.setCursor(x + 44 + 3, y);
+    oled.print(getShortNextDay(1));
+    oled.setCursor(x + 88 + 3, y);
+    oled.print(getShortNextDay(2));
     displaySmallWidget(weatherDailyForecastData[0].weatherConditionId, x + 0, y);
     displaySmallWidget(weatherDailyForecastData[1].weatherConditionId, x + 44, y);
     displaySmallWidget(weatherDailyForecastData[2].weatherConditionId, x + 88, y);
-oled.setFont(&DejaVu_LGC_Sans_Bold_9);
-oled.setCursor(x - 3, y + 3 + 40);
-oled.print(formatTemperature(weatherDailyForecastData[0].minTemp, weatherDailyForecastData[0].maxTemp));
+    oled.setFont(&DejaVu_LGC_Sans_Bold_9);
+    oled.setCursor(x - 3, y + 3 + 40);
+    oled.print(formatTemperature(weatherDailyForecastData[0].minTemp, weatherDailyForecastData[0].maxTemp));
 
-oled.setCursor(x + 44 - 3, y + 3 + 40);
-oled.print(formatTemperature(weatherDailyForecastData[1].minTemp, weatherDailyForecastData[1].maxTemp));
+    oled.setCursor(x + 44 - 3, y + 3 + 40);
+    oled.print(formatTemperature(weatherDailyForecastData[1].minTemp, weatherDailyForecastData[1].maxTemp));
 
-oled.setCursor(x + 88 - 3, y + 3 + 40);
-oled.print(formatTemperature(weatherDailyForecastData[2].minTemp, weatherDailyForecastData[2].maxTemp));
+    oled.setCursor(x + 88 - 3, y + 3 + 40);
+    oled.print(formatTemperature(weatherDailyForecastData[2].minTemp, weatherDailyForecastData[2].maxTemp));
 
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
     delay(10);
     oledMana.display();
@@ -330,73 +245,73 @@ void displayWiFiSignal(int x, int y)
     }
 
     // Display the selected icon
-oled.drawBitmap(x, y, wifiIcon, 48, 48, SSD1327_BLACK, SSD1327_WHITE);
+    oled.drawBitmap(x, y, wifiIcon, 48, 48, SSD1327_BLACK, SSD1327_WHITE);
 }
 
 void showInfoPage()
 {
-oled.clearDisplay();
+    oled.clearDisplay();
     delay(10);
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     displayWiFiSignal(0, 24);
     if (charging == true)
     {
-oled.drawBitmap(32 - 24, 8, battery_charging_full_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+        oled.drawBitmap(32 - 24, 8, battery_charging_full_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
     }
     else
     {
-oled.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
-oled.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 14), 6, SSD1327_WHITE);
+        oled.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+        oled.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 14), 6, SSD1327_WHITE);
     }
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
-oled.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, SSD1327_WHITE);
-oled.setCursor(48, 37);
-oled.println("WiFi SSID:");
-oled.setCursor(48, 45);
-oled.setFont(&DejaVu_LGC_Sans_Bold_8);
-oled.println(String(WiFi.SSID()));
-oled.setCursor(48, 55);
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.fillRect(5 + 32, 26, SCREEN_WIDTH, 1, SSD1327_WHITE);
+    oled.setCursor(48, 37);
+    oled.println("WiFi SSID:");
+    oled.setCursor(48, 45);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_8);
+    oled.println(String(WiFi.SSID()));
+    oled.setCursor(48, 55);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     String signalQuality = getSignalQuality(WiFi.RSSI());
-oled.print("Sig:" + signalQuality);
-oled.setCursor(48, 64);
-oled.print("Channel: " + String(WiFi.channel()));
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
-oled.setCursor(5 + 32, 25);
-oled.println(String(getBatteryPercentage()) + "%");
-oled.setCursor(5 + 35 + 50, 25);
-oled.print(String(getBatteryVoltage()) + "V");
+    oled.print("Sig:" + signalQuality);
+    oled.setCursor(48, 64);
+    oled.print("Channel: " + String(WiFi.channel()));
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.setCursor(5 + 32, 25);
+    oled.println(String(getBatteryPercentage()) + "%");
+    oled.setCursor(5 + 35 + 50, 25);
+    oled.print(String(getBatteryVoltage()) + "V");
     delay(10);
     oledMana.display();
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+    oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
 void showSensorPage()
 {
-oled.clearDisplay();
+    oled.clearDisplay();
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
-oled.drawBitmap(SCREEN_WIDTH - 24 - 10, 18, house_thermometer_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
-oled.setCursor(2, 35);
+    oled.drawBitmap(SCREEN_WIDTH - 24 - 10, 18, house_thermometer_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+    oled.setCursor(2, 35);
     String tempText = "Temp: " + String(readTemperature()) + "C";
-oled.print(tempText);
+    oled.print(tempText);
     int16_t x, y;
     uint16_t w, h;
-oled.getTextBounds(tempText, 0, 0, &x, &y, &w, &h);
-oled.drawLine(2, 26, 2 + w, 26, SSD1327_WHITE);
+    oled.getTextBounds(tempText, 0, 0, &x, &y, &w, &h);
+    oled.drawLine(2, 26, 2 + w, 26, SSD1327_WHITE);
     uint16_t tempLenght = w;
-oled.getTextBounds("SHT40 Sens", 0, 0, &x, &y, &w, &h);
-oled.setCursor(tempLenght / 2 - w / 2, 24);
-oled.print("SHT40 Sens");
-oled.setCursor(2, 35 + 24);
-oled.print("Hum: " + String(readHumidity()) + "%");
-oled.drawBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, house_raindrops_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+    oled.getTextBounds("SHT40 Sens", 0, 0, &x, &y, &w, &h);
+    oled.setCursor(tempLenght / 2 - w / 2, 24);
+    oled.print("SHT40 Sens");
+    oled.setCursor(2, 35 + 24);
+    oled.print("Hum: " + String(readHumidity()) + "%");
+    oled.drawBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, house_raindrops_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
 
     oledMana.display();
 }
 
 void cyclePages()
 {
-    //oledMana.sendOledAction(OLED_STOP_SCROLL);
+    // oledMana.sendOledAction(OLED_STOP_SCROLL);
     if (LastPageShown == 1)
     {
         PageNumberToShow = 2;
@@ -421,7 +336,7 @@ void cyclePages()
 
 void cyclePagesDown()
 {
-    //oledMana.sendOledAction(OLED_STOP_SCROLL);
+    // oledMana.sendOledAction(OLED_STOP_SCROLL);
     if (LastPageShown == 1)
     {
         PageNumberToShow = 2;
@@ -446,7 +361,7 @@ void cyclePagesDown()
 
 void cyclePagesUp()
 {
-    //oledMana.sendOledAction(OLED_STOP_SCROLL);
+    // oledMana.sendOledAction(OLED_STOP_SCROLL);
     if (LastPageShown == 1)
     {
         PageNumberToShow = 5;
@@ -483,7 +398,7 @@ static int compare(const void *a, const void *b)
 
 void setupScreensaver()
 {
-oled.clearDisplay();
+    oled.clearDisplay();
     for (uint8_t i = 0; i < N_FLYERS; i++)
     {
         flyer[i].x = (-32 + random(160)) * 16;
@@ -500,7 +415,7 @@ void showScreensaver()
     int16_t x, y;
     boolean resort = false;
 
-oled.clearDisplay();
+    oled.clearDisplay();
 
     for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
     {
@@ -514,8 +429,8 @@ oled.clearDisplay();
         f = (flyer[i].frame == 255) ? 4 : (flyer[i].frame++ & 3);
         x = flyer[i].x / 16;
         y = flyer[i].y / 16;
-oled.drawBitmap(x, y, mask[f], 32, 32, SSD1327_BLACK);
-oled.drawBitmap(x, y, img[f], 32, 32, SSD1327_WHITE);
+        oled.drawBitmap(x, y, mask[f], 32, 32, SSD1327_BLACK);
+        oled.drawBitmap(x, y, img[f], 32, 32, SSD1327_WHITE);
 
         flyer[i].x -= flyer[i].depth * 2;
         flyer[i].y += flyer[i].depth;

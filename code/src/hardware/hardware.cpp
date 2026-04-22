@@ -163,48 +163,59 @@ void initTouch()
 
   touch_sensor.begin();
   touch_sensor.reset();
-  delay(2000);
+  delay(500);
 
   AT42QT2120::KeyControl kc;
-
-  kc.enable_key_output = 0;
-  kc.key_output = 1;
+  kc.enable_key_output = 1;
+  kc.key_output = 0;
   kc.adjacent_key_suppression_group = 1;
   kc.guard = 0;
 
-  touch_sensor.setKeyControl(0, kc);
-  touch_sensor.setKeyControl(1, kc);
-  touch_sensor.setKeyControl(2, kc);
+  for (uint8_t i = 0; i < 12; i++)
+  {
+    touch_sensor.setKeyControl(i, kc);
+  }
 
-  touch_sensor.setKeyDetectThreshold(0, 20);
-  touch_sensor.setKeyDetectThreshold(1, 20);
-  touch_sensor.setKeyDetectThreshold(2, 20);
+  kc.key_output = 1;
+  kc.enable_key_output = 0;
+  for (uint8_t i = 0; i <= 6; i++)
+  {
+    touch_sensor.setKeyControl(i, kc);
+  }
 
-  // Guard key
-  kc.guard = 1;
-  kc.key_output = 0;
-  kc.adjacent_key_suppression_group = 1;
-  touch_sensor.setKeyControl(3, kc);
-  touch_sensor.setKeyDetectThreshold(3, 18);
+  touch_sensor.setKeyDetectThreshold(0, 12);
+  touch_sensor.setKeyDetectThreshold(1, 12);
+  touch_sensor.setKeyDetectThreshold(2, 12);
+  touch_sensor.setKeyDetectThreshold(3, 12);
+  touch_sensor.setKeyDetectThreshold(4, 12);
+  touch_sensor.setKeyDetectThreshold(5, 12);
+  touch_sensor.setKeyDetectThreshold(6, 12);
 
-  touch_sensor.setDetectionIntegrator(15);
+  AT42QT2120::KeyPulseScale PulseScale;
+  PulseScale.pulse = 1;
+  PulseScale.scale = 2;
 
-  touch_sensor.setChargeDuration(100);
+  for (uint8_t i = 0; i <= 6; i++)
+  {
+    touch_sensor.setKeyPulseScale(i, PulseScale);
+  }
 
-  touch_sensor.setMeasurementIntervalCount(2);
+  touch_sensor.setDetectionIntegrator(1);
 
-  touch_sensor.setTowardsDriftCompensationDuration(20);
-  touch_sensor.setAwayDriftCompensationDuration(2);
+  touch_sensor.setChargeDuration(6);
+  touch_sensor.setMeasurementIntervalCount(1);
+
+  touch_sensor.setAwayDriftCompensationDuration(50);
   touch_sensor.setDriftCompensationHoldDuration(120);
-
-  touch_sensor.setRecalibrationDelay(255);
+  touch_sensor.setRecalibrationDelay(80);
 
   touch_sensor.enableSlider();
 
   touch_sensor.triggerCalibration();
   while (touch_sensor.calibrating())
     delay(20);
-    turnOnTouch();
+
+  turnOnTouch();
 }
 
 void initButtons()
@@ -240,51 +251,10 @@ void initTempSensor()
   {
     Serial.println("Couldn't find SHT4x");
   }
-  Serial.println("Found SHT4x sensor");
-  Serial.print("Serial number 0x");
-  Serial.println(sht4.readSerial(), HEX);
-
-  // You can have 3 different precisions, higher precision takes longer
+  else
+  {
+    Serial.println("Found SHT4x sensor");
+  }
   sht4.setPrecision(SHT4X_HIGH_PRECISION);
-  switch (sht4.getPrecision())
-  {
-  case SHT4X_HIGH_PRECISION:
-    Serial.println("High precision");
-    break;
-  case SHT4X_MED_PRECISION:
-    Serial.println("Med precision");
-    break;
-  case SHT4X_LOW_PRECISION:
-    Serial.println("Low precision");
-    break;
-  }
-
-  // You can have 6 different heater settings
-  // higher heat and longer times uses more power
-  // and reads will take longer too!
   sht4.setHeater(SHT4X_NO_HEATER);
-  switch (sht4.getHeater())
-  {
-  case SHT4X_NO_HEATER:
-    Serial.println("No heater");
-    break;
-  case SHT4X_HIGH_HEATER_1S:
-    Serial.println("High heat for 1 second");
-    break;
-  case SHT4X_HIGH_HEATER_100MS:
-    Serial.println("High heat for 0.1 second");
-    break;
-  case SHT4X_MED_HEATER_1S:
-    Serial.println("Medium heat for 1 second");
-    break;
-  case SHT4X_MED_HEATER_100MS:
-    Serial.println("Medium heat for 0.1 second");
-    break;
-  case SHT4X_LOW_HEATER_1S:
-    Serial.println("Low heat for 1 second");
-    break;
-  case SHT4X_LOW_HEATER_100MS:
-    Serial.println("Low heat for 0.1 second");
-    break;
-  }
 }
