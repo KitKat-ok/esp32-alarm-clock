@@ -61,5 +61,4 @@ jlcpcb
 # Kicad lock files
 *.lck
 
-Yatchy-backups
-module-backups
+*backups
