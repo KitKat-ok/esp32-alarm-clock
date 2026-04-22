@@ -1,5 +1,4 @@
-#ifndef FUNCTIONS_H
-#define FUNCTIONS_H
+#pragma once
 
 #include "defines.h"
 
@@ -30,6 +29,3 @@ String microsecondsToTimeString(uint64_t microseconds);
 
 String wifiStatusToString(int status);
 String getSignalQuality(int32_t rssi);
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef NTP_H
-#define NTP_H
+#pragma once
 
 #include "../defines.h"
 
@@ -11,5 +10,3 @@ void syncTimeLibWithRTC();
 void syncESP32RTC();
 
 extern TaskHandle_t NTPTask;
-
-#endif

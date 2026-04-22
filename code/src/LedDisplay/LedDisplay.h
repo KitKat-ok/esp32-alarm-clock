@@ -1,5 +1,4 @@
-#ifndef LEDDISPLAY_H
-#define LEDDISPLAY_H
+#pragma once
 
 #include "../defines.h"
 
@@ -11,5 +10,3 @@ extern std::mutex LedMut;
 
 void showCurrentTime();
 void createLedDisplayTask();
-
-#endif

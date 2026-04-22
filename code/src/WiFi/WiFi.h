@@ -1,5 +1,4 @@
-#ifndef WIFI_H
-#define WIFI_H
+#pragma once
 
 #include "../defines.h"
 
@@ -19,5 +18,3 @@ typedef struct {
     const char* ssid;
     const char* password;
 } WiFiCred;
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef Flash_H
-#define Flash_H
+#pragma once
 
 #include "../defines.h"
 
@@ -9,5 +8,3 @@ void saveAlarms();
 
 bool readOtaValue();
 void saveOtaValue(bool Value);
-
-#endif

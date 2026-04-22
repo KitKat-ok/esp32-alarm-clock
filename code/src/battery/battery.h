@@ -1,5 +1,4 @@
-#ifndef BATTERY_H
-#define BATTERY_H
+#pragma once
 
 #include "../defines.h"
 
@@ -17,5 +16,3 @@ extern bool charging;
 extern bool wentToSleep;
 extern bool goToSleep;
 extern float batteryVoltage;
-
-#endif

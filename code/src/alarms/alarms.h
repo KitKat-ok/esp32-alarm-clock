@@ -1,5 +1,4 @@
-#ifndef ALARMS_H
-#define ALARMS_H
+#pragma once
 
 #include "../defines.h"
 
@@ -28,5 +27,3 @@ extern bool ringing;
 extern TaskHandle_t alarmTaskHandle;
 
 extern Alarm alarms[MAX_ALARMS];
-
-#endif

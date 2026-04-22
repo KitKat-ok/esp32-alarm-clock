@@ -2,19 +2,13 @@
 #include "rtcMem/rtcMem.h"
 
 AS1115 LedDisplay = AS1115(0x00);
-#define AL_ADDR 0x10
-SparkFun_Ambient_Light lightMeter(AL_ADDR);
-
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
 AT42QT2120 touch_sensor(Wire, TOUCH_INTERRUPT);
 
 void initOledDisplay();
 void initLedDisplay();
-void initLightSensor();
 void initBuzzer();
 void initButtons();
-void initTempSensor();
 void initTouch();
 void mountLittlefs();
 
@@ -66,6 +60,7 @@ void initHardware()
   initOledDisplay();
   initLedDisplay();
   initLightSensor();
+  initPressureSensor();
   initTempSensor();
   syncTimeLibWithRTC();
   mountLittlefs();
@@ -123,38 +118,6 @@ void initLedDisplay()
   // LedDisplay.writeRegister(DIG45_INTENSITY, 0x0F);
   // LedDisplay.writeRegister(DIG67_INTENSITY, 0x00);
   Serial.println("Led display initialized");
-}
-
-void initLightSensor()
-{
-  // Possible values: .125, .25, 1, 2
-  // Both .125 and .25 should be used in most cases except darker rooms.
-  // A gain of 2 should only be used if the sensor will be covered by a dark
-  // glass.
-  float gain = 1;
-
-  // Possible integration times in milliseconds: 800, 400, 200, 100, 50, 25
-  // Higher times give higher resolutions and should be used in darker light.
-  int time = 400;
-
-  if (lightMeter.begin(Wire))
-    Serial.println("Ready to sense some light!");
-  else
-    Serial.println("Could not communicate with the sensor!");
-
-  // Again the gain and integration times determine the resolution of the lux
-  // value, and give different ranges of possible light readings. Check out
-  // hoookup guide for more info.
-  lightMeter.setGain(gain);
-  lightMeter.setIntegTime(time);
-
-  Serial.println("Reading settings...");
-  Serial.print("Gain: ");
-  float gainVal = lightMeter.readGain();
-  Serial.print(gainVal, 3);
-  Serial.print(" Integration Time: ");
-  int timeVal = lightMeter.readIntegTime();
-  Serial.println(timeVal);
 }
 
 void initTouch()
@@ -243,18 +206,4 @@ void initBuzzer()
     noTone(BUZZER_PIN);
   }
 #endif
-}
-
-void initTempSensor()
-{
-  if (!sht4.begin())
-  {
-    Serial.println("Couldn't find SHT4x");
-  }
-  else
-  {
-    Serial.println("Found SHT4x sensor");
-  }
-  sht4.setPrecision(SHT4X_HIGH_PRECISION);
-  sht4.setHeater(SHT4X_NO_HEATER);
 }

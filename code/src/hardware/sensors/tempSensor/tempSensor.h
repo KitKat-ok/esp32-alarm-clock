@@ -1,5 +1,4 @@
-#ifndef TEMPSENSOR_H
-#define TEMPSENSOR_H
+#pragma once
 
 #include "defines.h"
 
@@ -8,4 +7,7 @@ void createTempTask();
 float readHumidity();
 float readTemperature();
 
-#endif
+void initTempSensor();
+
+extern Adafruit_SHT4x sht4;
+

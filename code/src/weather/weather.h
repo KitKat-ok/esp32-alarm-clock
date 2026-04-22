@@ -1,5 +1,4 @@
-#ifndef WEATHER_H
-#define WEATHER_H
+#pragma once
 
 #include "defines.h"
 #include "OpenMeteo.h"
@@ -49,5 +48,3 @@ void createWeatherTask();
 String weatherConditionIdToStr(int weatherCode = 0);
 void displaywidget(int weatherCode);
 void displaySmallWidget(int weatherCode, int x, int y);
-
-#endif

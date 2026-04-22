@@ -1,5 +1,4 @@
-#ifndef MENUS_H
-#define MENUS_H
+#pragma once
 
 #include "../../defines.h"
 
@@ -17,4 +16,3 @@ void CPUDebugMenu();
 void generalDebugMenu();
 void touchDebugMenu();
 void fpsCalc();
-#endif

@@ -1,5 +1,4 @@
-#ifndef CHARTS_H
-#define CHARTS_H
+#pragma once
 
 #include "../../defines.h"
 
@@ -15,5 +14,3 @@ void initLightGraph();
 extern float temperatureArray[CHART_READINGS];
 extern float humidityArray[CHART_READINGS];
 extern float lightArray[CHART_READINGS];
-
-#endif

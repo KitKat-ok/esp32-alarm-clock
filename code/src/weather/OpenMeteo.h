@@ -1,5 +1,4 @@
-#ifndef OPENMETEO_H
-#define OPENMETEO_H
+#pragma once
 
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
@@ -124,6 +123,3 @@ bool getAirQualityForecast(OM_AirQualityForecast *structure, float latitude, flo
 #define AIR_CURRENT_API_LINK "&current=european_aqi&timeformat=unixtime&timezone=auto"
 
 bool getCurrentAirQuality(OM_CurrentAirQuality *structure, float latitude, float longitude, String apiLink);
-
-
-#endif

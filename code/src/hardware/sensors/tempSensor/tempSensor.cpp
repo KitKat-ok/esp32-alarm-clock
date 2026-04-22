@@ -1,4 +1,7 @@
 #include "tempSensor.h"
+
+Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+
 float readTemperature()
 {
     sensors_event_t humidity, temp;
@@ -24,14 +27,12 @@ void tempTask(void *pvParameters)
         unsigned long currentMillis = millis(); // Get the current time
         if (currentMillis - previousMillisChart >= INTERVAL_CHARTS)
         {
-            // Shift temperature readings
             for (int i = 0; i < CHART_READINGS - 1; i++)
             {
                 temperatureArray[i] = temperatureArray[i + 1];
                 humidityArray[i] = humidityArray[i + 1];
             }
 
-            // Add new readings to the end of the arrays
             temperatureArray[CHART_READINGS - 1] = readTemperature();
             humidityArray[CHART_READINGS - 1] = readHumidity();
             previousMillisChart = currentMillis;
@@ -43,12 +44,6 @@ void tempTask(void *pvParameters)
 void createTempTask()
 {
     Serial.println("Creating tempTask");
-    // Initialize arrays with the first readings
-    for (int i = 0; i < CHART_READINGS; i++)
-    {
-        temperatureArray[i] = readTemperature();
-        humidityArray[i] = readHumidity();
-    }
 
     xTaskCreate(
         tempTask, /* Task function */
@@ -58,4 +53,18 @@ void createTempTask()
         1,              /* Priority of the task */
         NULL           /* Task handle */
     );
+}
+
+void initTempSensor()
+{
+  if (!sht4.begin())
+  {
+    Serial.println("Couldn't find SHT4x");
+  }
+  else
+  {
+    Serial.println("Found SHT4x sensor");
+  }
+  sht4.setPrecision(SHT4X_HIGH_PRECISION);
+  sht4.setHeater(SHT4X_NO_HEATER);
 }

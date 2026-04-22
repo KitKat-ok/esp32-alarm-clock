@@ -380,7 +380,7 @@ void loopMenu()
 
     if (menuRunning == true)
     {
-        // useTouch();
+        useTouch();
         switch (useButton())
         {
         case Up:

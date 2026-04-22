@@ -25,7 +25,7 @@ void OLED_MANAGER::initDisplay()
     oled.oled_command(0x91); // clock divider (slower clock = more stable gray levels)
 
     oled.oled_command(0xBC);
-    oled.oled_command(0x10); // precharge voltage lower = more visible grayscale gradation
+    oled.oled_command(0x11); // precharge voltage lower = more visible grayscale gradation
 
     oled.oled_command(0xBE);
     oled.oled_command(0x0F); // VCOMH voltage — slightly lower contrast baseline, prevents washout

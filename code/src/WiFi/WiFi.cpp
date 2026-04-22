@@ -120,6 +120,9 @@ void connectToWiFi(void *parameter)
       Serial.print("Got IP: ");
       Serial.println(WiFi.localIP());
       Serial.println("Mac Address: " + String(WiFi.macAddress()));
+      IPAddress subnet = WiFi.subnetMask();
+      Serial.print("NETMASK: ");
+      Serial.println(subnet);
       break; // Exit the loop after successful connection
     }
     else

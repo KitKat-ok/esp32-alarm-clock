@@ -1,5 +1,8 @@
 #include "defines.h"
 
+#define AL_ADDR 0x10
+SparkFun_Ambient_Light lightMeter(AL_ADDR);
+
 void dimmingTask(void *pvParameters);
 void oledWakeupTask(void *pvParameters);
 void dimOledDisplay();
@@ -50,10 +53,6 @@ void createLightTask()
 
 void createDimmingTask()
 {
-    for (int i = 0; i < CHART_READINGS; i++)
-    {
-        lightArray[i] = getLightLevel();
-    }
     Serial.print("creating dimmingTask");
     xTaskCreate(
         dimmingTask,       /* Task function. */
@@ -320,13 +319,6 @@ void dimLedDisplay()
     }
 }
 
-float getLightLevel()
-{
-    float currentLightLevel = lightMeter.readLight(); // Read the current light level from BH1750 sensor
-    Serial.println("sensor raw: " + String(lightMeter.readLight()));
-    return currentLightLevel;
-}
-
 bool checkForNight()
 {
     if (isWeatherAvailable == false)
@@ -408,4 +400,42 @@ int getMmwaveState()
 
     Serial.println("Not Detected mmWave");
     return 0;
+}
+
+float getLightLevel()
+{
+    float currentLightLevel = lightMeter.readLight(); // Read the current light level from BH1750 sensor
+    return currentLightLevel;
+}
+
+void initLightSensor()
+{
+  // Possible values: .125, .25, 1, 2
+  // Both .125 and .25 should be used in most cases except darker rooms.
+  // A gain of 2 should only be used if the sensor will be covered by a dark
+  // glass.
+  float gain = 1;
+
+  // Possible integration times in milliseconds: 800, 400, 200, 100, 50, 25
+  // Higher times give higher resolutions and should be used in darker light.
+  int time = 400;
+
+  if (lightMeter.begin(Wire))
+    Serial.println("Ready to sense some light!");
+  else
+    Serial.println("Could not communicate with the sensor!");
+
+  // Again the gain and integration times determine the resolution of the lux
+  // value, and give different ranges of possible light readings. Check out
+  // hoookup guide for more info.
+  lightMeter.setGain(gain);
+  lightMeter.setIntegTime(time);
+
+  Serial.println("Reading settings...");
+  Serial.print("Gain: ");
+  float gainVal = lightMeter.readGain();
+  Serial.print(gainVal, 3);
+  Serial.print(" Integration Time: ");
+  int timeVal = lightMeter.readIntegTime();
+  Serial.println(timeVal);
 }

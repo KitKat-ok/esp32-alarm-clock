@@ -1,5 +1,4 @@
-#ifndef INTERFACE_H
-#define INTERFACE_H
+#pragma once
 
 #include "../defines.h"
 
@@ -56,5 +55,3 @@ Submenu *createSubmenu(const String &name, int maxMenus, void (*function)() = nu
 void editCurrentMenuEntry(String newText, void (*newFunction)() = nullptr, void (*newLoopFunction)() = nullptr);
 void addMenuEntry(entryMenu entry);
 void removeMenuEntry(int index);
-
-#endif

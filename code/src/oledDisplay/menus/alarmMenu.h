@@ -1,5 +1,4 @@
-#ifndef ALARMMENU_H
-#define ALARMMENU_H
+#pragma once
 
 #include "../../defines.h"
 
@@ -19,4 +18,3 @@ void enableAlarmsIn();
 void readAlarmsIn();
 void refreshAlarmsSubmenu();
 
-#endif

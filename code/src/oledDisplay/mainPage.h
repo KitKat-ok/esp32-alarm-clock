@@ -1,5 +1,4 @@
-#ifndef MAINPAGE_H
-#define MAINPAGE_H
+#pragma once
 
 #include "defines.h"
 
@@ -17,4 +16,3 @@ void showFirstPage();
 void showForecastPage();
 void showInfoPage();
 void showSensorPage();
-#endif

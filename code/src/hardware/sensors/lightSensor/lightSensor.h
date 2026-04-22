@@ -1,7 +1,6 @@
-#ifndef LIGHTSENSOR_H
-#define LIGHTSENSOR_H
+#pragma once
 
-#include "../defines.h"
+#include "defines.h"
 
 void createDimmingTask();
 void createLightTask();
@@ -9,6 +8,8 @@ void createLightTask();
 void dimLedDisplay();
 
 float getLightLevel();
+void initLightSensor();
+extern SparkFun_Ambient_Light lightMeter;
 int smoothTouchRead(int pin);
 
 bool checkForNight();
@@ -25,4 +26,3 @@ extern bool inputDetected;
 extern float lightLevel;
 
 
-#endif

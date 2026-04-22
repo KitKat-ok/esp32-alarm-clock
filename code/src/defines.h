@@ -15,6 +15,7 @@
 #include <NTPClient.h>
 #include <Preferences.h>
 #include <Adafruit_SHT4x.h>
+#include <Adafruit_BMP280.h>
 // #include <buttonoledMana.h>
 #include <Grafici.h>
 #include <Timezone.h>
@@ -179,7 +180,7 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define INTERVAL_CHARTS 1570909 // How often to read data for charts 
 #define BOOL_STR(b) ((b) ? String("True") : String("False")) // dont touch
 
-#include "hardware/pitches.h"
+#include "hardware/buzzer/pitches.h"
 
 #include "confidential.h"
 
@@ -198,6 +199,9 @@ typedef enum
 } inkButtonStates;
 
 #include "hardware/i2c/i2c.h"
+#include "hardware/sensors/tempSensor/tempSensor.h"
+#include "hardware/sensors/lightSensor/lightSensor.h"
+#include "hardware/sensors/pressureSensor/pressureSensor.h"
 #include "hardware/hardware.h"
 #include "hardware/display/display.h"
 #include "hardware/input/buttons/buttons.h"
@@ -210,7 +214,6 @@ typedef enum
 #include "NTP/NTP.h"
 #include "weather/weather.h"
 #include "LedDisplay/LedDisplay.h"
-#include "lightSensor/lightSensor.h"
 #include "oledDisplay/interface.h"
 #include "oledDisplay/mainPage.h"
 #include "oledDisplay/menus/alarmMenu.h"
@@ -219,4 +222,3 @@ typedef enum
 #include "Flash/Flash.h"
 #include "alarms/alarms.h"
 #include "battery/battery.h"
-#include "tempSensor/tempSensor.h"
