@@ -1,119 +1,99 @@
 #include "touch.h"
 
-#define TOUCH_DEBOUNCE 100 // Time how long touch has to be detected to be accepted recognized as a proper touch instead of noise
-#define DEBOUNCE_POLL_SPEED 50
+#define TOUCH_DEBOUNCE 50
+#define LONG_PRESS_MS 600
 
 bool touchActivated = false;
 TaskHandle_t touchTask = NULL;
-touchState currentTouch;
+
+touchState currentTouch = {};
 std::mutex touchMut;
+
+bool touchPending = false;
+
+void playTouchSound()
+{
+    tone(BUZZER_PIN, NOTE_A4, 1000 / 24);
+}
 
 touchState useTouch()
 {
-    touchState touchCopy = currentTouch;
+    std::lock_guard<std::mutex> lock(touchMut);
 
-    currentTouch.longPress = false;
+    touchState out = currentTouch;
+
     currentTouch.touched = false;
+    currentTouch.longPress = false;
+    currentTouch.sliderState = -1;
 
-    return touchCopy;
+    touchPending = false;
+
+    return out;
 }
 
 touchState useAllTouch()
 {
+    std::lock_guard<std::mutex> lock(touchMut);
     return currentTouch;
 }
 
-void setTouch(const touchState &touch, bool onlyHeld = false)
+void setTouch(const touchState &t)
 {
-    if (onlyHeld)
-    {
-        currentTouch.held = touch.held;
-        return;
-    }
-
-    currentTouch = touch;
+    std::lock_guard<std::mutex> lock(touchMut);
+    currentTouch = t;
+    touchPending = true;
 }
 
 void loopTouchTask(void *parameter)
 {
     touchActivated = true;
 
-    const int LONG_PRESS_MS = 600;
+    bool wasPressed = false;
+    bool soundPlayed = false;
 
-    static bool wasPressed = false;
-    static uint32_t touchStartTime = 0;
-
-    static bool lastTouched = false;
-    static bool lastHeld = false;
-    static bool lastLongPress = false;
-    static int lastSlider = -1;
+    uint32_t pressStart = 0;
+    uint32_t lastEvent = 0;
 
     while (true)
     {
-        touchState s = {};
-        s.sliderState = -1;
-
-        AT42QT2120::Status status = touch_sensor.getStatus();
+        auto status = touch_sensor.getStatus();
         bool pressed = status.any_key_touched;
         int slider = status.slider_or_wheel_position;
         uint32_t now = millis();
 
         if (pressed)
         {
-            if (!wasPressed)
+            if (!wasPressed && (now - lastEvent > TOUCH_DEBOUNCE))
             {
-                touchStartTime = now;
-                tone(BUZZER_PIN, NOTE_C7, 1000 / 16);
-            }
-            else
-            {
-                s.held = true;
+                pressStart = now;
+                lastEvent = now;
+                soundPlayed = false;
             }
 
-            s.touched = true;
-            s.sliderState = slider;
+            if (!soundPlayed)
+            {
+                playTouchSound();
+                soundPlayed = true;
+            }
 
-            if (now - touchStartTime >= LONG_PRESS_MS)
-                s.longPress = true;
+            touchState t = {};
+            t.touched = true;
+            inputDetected = true;
+            t.sliderState = slider;
+            t.longPress = (now - pressStart >= LONG_PRESS_MS);
+
+            setTouch(t);
 
             wasPressed = true;
         }
         else
         {
             wasPressed = false;
-            touchStartTime = 0;
+            soundPlayed = false;
         }
 
-        bool heldChanged = (s.held != lastHeld);
-
-        bool fullChange =
-            s.touched != lastTouched ||
-            s.sliderState != lastSlider ||
-            s.longPress != lastLongPress;
-
-        if (fullChange)
+        if (!pressed)
         {
-            if (s.touched)
-            {
-                setTouch(s, false);
-            }
-
-            lastTouched = s.touched;
-            lastLongPress = s.longPress;
-            lastSlider = s.sliderState;
-        }
-
-        if (heldChanged)
-        {
-            setTouch(s, true);
-            lastHeld = s.held;
-        }
-
-        touchInterrupt = false;
-
-        if (!pressed && digitalRead(TOUCH_INTERRUPT) == HIGH)
-        {
-            Serial.println("Touch task Going sleep");
             vTaskSuspend(NULL);
         }
 
@@ -126,7 +106,7 @@ void initTouchTask()
     xTaskCreate(
         loopTouchTask,
         "touchTask",
-        4096, // Too much but handling fs logging takes a bit more
+        4096,
         NULL,
         12,
         &touchTask);
@@ -134,7 +114,7 @@ void initTouchTask()
 
 void turnOnTouch()
 {
-    if (touchActivated == false)
+    if (!touchActivated)
     {
         initTouchTask();
         turnOnTouchInterrupts();

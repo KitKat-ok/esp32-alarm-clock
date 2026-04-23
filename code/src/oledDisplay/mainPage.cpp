@@ -33,25 +33,24 @@ bool displayedWeather = false;
 unsigned long previousMillisFirstMenu = 0;
 const long intervalFirstMenu = 1000;
 
-bool isBeingHeld = false;
-bool currentInputState = false;
-bool previousInputState = false;
-long lastDebounceTime = 0;
-bool debouncedTouchState = false;
-
 unsigned long lastCycle = 0;
 const unsigned long cycleInterneval = 1000;
+
+static bool lastTouched = false;
+static bool pressLocked = false;
 
 void showMainPage()
 {
     touchState t = useTouch();
 
-    bool pressed = t.touched && !t.held;
-    bool released = !t.touched;
+    bool isTouched = t.touched;
+
+    bool pressed = isTouched && !pressLocked;
+    bool released = !isTouched;
 
     if (pressed)
     {
-        debouncedTouchState = true;
+        pressLocked = true;
 
         turnOffScreensaver();
         cyclePagesUp();
@@ -60,7 +59,7 @@ void showMainPage()
         Serial.println("Pressed");
     }
 
-    if (t.held)
+    if (isTouched)
     {
         if (millis() - lastCycle >= cycleInterneval)
         {
@@ -69,6 +68,13 @@ void showMainPage()
             cyclePagesUp();
         }
     }
+
+    if (released)
+    {
+        pressLocked = false;
+    }
+
+    lastTouched = isTouched;
 
     unsigned long currentTime = millis();
     if (PageNumberToShow == 1 || PageNumberToShow == 2 || PageNumberToShow == 3 || PageNumberToShow == 4 || PageNumberToShow == 5)

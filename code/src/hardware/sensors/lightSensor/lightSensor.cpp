@@ -73,8 +73,6 @@ void createDimmingTask()
     );
 }
 
-bool dimmed = false;
-
 float lightLevel = 0.0;
 int mmwaveState = 0;
 
@@ -86,7 +84,7 @@ void oledWakeupTask(void *pvParameters)
         if (useAllButtons() != None || useAllTouch().touched == true || inputDetected == true)
         {
             vTaskSuspend(dimmingTaskHandle);
-            vTaskResume(LedTask);
+            vTaskResume(TimeTask);
             Serial.println("Button pressed");
             Serial.println("Setting max brightness");
 
@@ -101,11 +99,11 @@ void oledWakeupTask(void *pvParameters)
 
             if (currentWeatherData.isDay == false)
             {
-                LedDisplay.setIntensity(LED_BRIGHTNESS_MAX_NIGHT);
+                setLedIntensity(LED_BRIGHTNESS_MAX_NIGHT);
             }
             else
             {
-                LedDisplay.setIntensity(LED_BRIGHTNESS_MAX);
+                setLedIntensity(LED_BRIGHTNESS_MAX);
             }
             LedMut.unlock();
             Serial.print("unlock mutex");
@@ -306,13 +304,13 @@ void dimLedDisplay()
         {
             LedDisplayOn = true;
             uint8_t brightness = mapWithHysteresis(lightLevel);
-            LedDisplay.setIntensity(brightness);
+            setLedIntensity(brightness);
             Serial.println("Brightness of Led display " + String(brightness));
         }
         else
         {
             LedDisplayOn = true;
-            LedDisplay.setIntensity(0);
+            setLedIntensity(0);
             Serial.println("Brightness of Led display 0");
         }
         LedMut.unlock();

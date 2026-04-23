@@ -86,7 +86,7 @@ void manageBattery(void *parameter)
         // touchSetCycles(0x500, 0x500);
         // lightMeter.setActiveMode();
         vTaskResume(oledWakeupTaskHandle);
-        vTaskResume(LedTask);
+        vTaskResume(TimeTask);
         vTaskResume(alarmTaskHandle);
         vTaskResume(menuTaskHandle);
         // setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD);
@@ -123,7 +123,7 @@ void manageBattery(void *parameter)
         turnOffWifi();
         // touchSetCycles(0x5000, 0x5000);
         vTaskSuspend(oledWakeupTaskHandle);
-        vTaskSuspend(LedTask);
+        vTaskSuspend(TimeTask);
         vTaskSuspend(dimmingTaskHandle);
         vTaskSuspend(alarmTaskHandle);
         vTaskSuspend(menuTaskHandle);
@@ -156,7 +156,7 @@ void manageBattery(void *parameter)
           vTaskResume(menuTaskHandle);
           inputDetected = false;
           oledMana.enable();
-          LedDisplay.setIntensity(2);
+          setLedIntensity(2);
           showCurrentTime();
           // if (useAllTouch() != No_Seg)
           // {
@@ -201,7 +201,7 @@ void manageBattery(void *parameter)
               vTaskResume(menuTaskHandle);
               waitForInput = true;
               oledMana.enable();
-              LedDisplay.setIntensity(2);
+              setLedIntensity(2);
               showCurrentTime();
             }
             Serial.println("resetting sleep timer");
@@ -248,7 +248,7 @@ void manageBattery(void *parameter)
               vTaskResume(menuTaskHandle);
               waitForInput = true;
               oledMana.enable();
-              LedDisplay.setIntensity(2);
+              setLedIntensity(2);
               showCurrentTime();
             }
             Serial.println("resetting sleep timer");
@@ -315,7 +315,7 @@ void enableSleep()
   oledMana.disable();
   oledMana.disable(); // Just to make sure because manager can take a bit before reacting if many write operations are ordered
   delay(500);
-  LedDisplay.setIntensity(0);
+  setLedIntensity(0);
   delay(100);
   LedDisplay.clear();
   initSleep();

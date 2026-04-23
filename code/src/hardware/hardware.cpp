@@ -168,9 +168,9 @@ void initTouch()
   touch_sensor.setChargeDuration(6);
   touch_sensor.setMeasurementIntervalCount(1);
 
-  touch_sensor.setAwayDriftCompensationDuration(50);
+  touch_sensor.setAwayDriftCompensationDuration(0);
   touch_sensor.setDriftCompensationHoldDuration(120);
-  touch_sensor.setRecalibrationDelay(80);
+  touch_sensor.setRecalibrationDelay(255);
 
   touch_sensor.enableSlider();
 

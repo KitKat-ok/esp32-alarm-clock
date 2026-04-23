@@ -535,7 +535,7 @@ void menuTask(void *parameter)
     while (true)
     {
         loopMenu();
-        vTaskDelay(5);
+        vTaskDelay(10);
     }
 }
 
