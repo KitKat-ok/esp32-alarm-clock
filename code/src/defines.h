@@ -43,6 +43,11 @@
 
 #define MCP_CHARGER_CONTROL_PIN 5
 
+#define MCP_LED1_P1 8
+#define MCP_LED1_P2 9
+#define MCP_LED2_P1 10
+#define MCP_LED2_P2 11
+
 // Interrupts
 
 #define MCP_INTERRUPT_PIN 5
@@ -117,6 +122,7 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 // Touch stuff I guess beh
 #define RESET_DELAY_TOUCH 2000
 #define CALIBRATION_LOOP_DELAY_TOUCH 50
+#define KEYS_AMMOUNT 7
 
 #define TOUCH_1_Seg_PIN 0
 #define TOUCH_1_Seg_THRESHOLD 4

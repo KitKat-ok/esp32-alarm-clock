@@ -29,7 +29,7 @@ void createLedDisplayTask()
       "LedTask",      /* String with name of task. */
       2048,           /* Stack size in words. */
       NULL,           /* Parameter passed as input of the task */
-      1,              /* Priority of the task. */
+      0,              /* Priority of the task. */
       &LedTask        /* Task handle. */
   );
 }
@@ -57,15 +57,16 @@ void showCurrentTime()
 
 void updateIntensity()
 {
-    int step = (targetIntensity > currentIntensity) ? 1 : -1;
+  int step = (targetIntensity > currentIntensity) ? 1 : -1;
 
-    for (int i = currentIntensity; i != targetIntensity; i += step) {
-        LedDisplay.setIntensity(i);
-        delay(10);
-    }
+  for (int i = currentIntensity; i != targetIntensity; i += step)
+  {
+    LedDisplay.setIntensity(i);
+    delay(30);
+  }
 
-    currentIntensity = targetIntensity;
-    LedDisplay.setIntensity(currentIntensity);
+  currentIntensity = targetIntensity;
+  LedDisplay.setIntensity(currentIntensity);
 }
 
 void showTimeTask(void *pvParameters)
@@ -87,11 +88,23 @@ void showTimeTask(void *pvParameters)
   }
 }
 
+bool lastLedState = false;
+
 void LedDisplayTask(void *pvParameters)
 {
   while (true)
   {
-    updateIntensity();
+    if (LedDisplayOn == true && lastLedState == false)
+    {
+      showCurrentTime();
+      delay(10);
+    }
+    lastLedState = LedDisplayOn;
+
+    if (LedDisplayOn == true)
+    {
+      updateIntensity();
+    }
 
     vTaskDelay(pdMS_TO_TICKS(100));
   }

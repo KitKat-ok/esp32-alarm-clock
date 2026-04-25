@@ -10,7 +10,6 @@ void setup()
   initialzeAlarmArray();
   readAlarms();
   createAlarmTask();
-  setupScreensaver();
   initMenus();
   createBatteryTask();
   createTempTask();

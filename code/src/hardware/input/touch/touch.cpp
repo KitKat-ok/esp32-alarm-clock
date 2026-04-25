@@ -24,7 +24,6 @@ touchState useTouch()
 
     currentTouch.touched = false;
     currentTouch.longPress = false;
-    currentTouch.sliderState = -1;
 
     touchPending = false;
 
@@ -58,7 +57,6 @@ void loopTouchTask(void *parameter)
     {
         auto status = touch_sensor.getStatus();
         bool pressed = status.any_key_touched;
-        int slider = status.slider_or_wheel_position;
         uint32_t now = millis();
 
         if (pressed)
@@ -79,8 +77,24 @@ void loopTouchTask(void *parameter)
             touchState t = {};
             t.touched = true;
             inputDetected = true;
-            t.sliderState = slider;
             t.longPress = (now - pressStart >= LONG_PRESS_MS);
+
+            for (uint8_t key = 0; key < KEYS_AMMOUNT; ++key)
+            {
+                if (key != 0)
+                    Serial.print("  ");
+                if (touch_sensor.touched(status, key))
+                {
+                    t.butoonsPressed[key] = true;
+                    Serial.print("1");
+                }
+                else
+                {
+                    t.butoonsPressed[key] = false;
+                    Serial.print("0");
+                }
+            }
+            Serial.println(" ");
 
             setTouch(t);
 

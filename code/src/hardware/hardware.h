@@ -10,3 +10,5 @@ void initHardware();
 bool readHallSwitch();
 
 void waitForSerialInput();
+void turnOnLeds(bool maxPower = false);
+void toggleLeds(bool maxPower = false);

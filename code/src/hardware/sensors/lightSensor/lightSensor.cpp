@@ -286,12 +286,12 @@ void dimLedDisplay()
     {
         if (disableHysteresisState)
         {
-            if (lightLevel > LED_DISABLE_THRESHOLD + 3) // hysteresis upper limit
+            if (lightLevel > LED_DISABLE_THRESHOLD + 6)
                 disableHysteresisState = false;
         }
         else
         {
-            if (lightLevel <= LED_DISABLE_THRESHOLD - 3 && checkForNight())
+            if (lightLevel <= LED_DISABLE_THRESHOLD - 0.5 && checkForNight())
                 disableHysteresisState = true;
         }
         LedMut.lock();

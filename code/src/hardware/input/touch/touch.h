@@ -7,7 +7,7 @@ struct touchState
     bool touched;
     bool held;
     bool longPress;
-    int16_t sliderState;
+    bool butoonsPressed[7];
 };
 
 extern bool touchActivated;

@@ -1,5 +1,15 @@
 #include "mainPage.h"
 
+#define NUMBER_OF_PAGES 5
+
+void showFirstPage();
+void showForecastPage();
+void showInfoPage();
+void showSensorPage();
+void showScreensaver();
+void setupScreensaver();
+
+
 const uint8_t PROGMEM
     toastermask0[] = {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00,
@@ -28,16 +38,42 @@ const uint8_t *const img[] PROGMEM = {
 unsigned long lastExecutionTime = 0;
 int PageNumberToShow = 1;
 int LastPageShown = 1;
-bool displayedWeather = false;
+bool oneTimeMenuDisplayed = false;
 
-unsigned long previousMillisFirstMenu = 0;
-const long intervalFirstMenu = 1000;
+unsigned long previousMillisMenu = 0;
+const long intervalMenu = 1000;
 
 unsigned long lastCycle = 0;
 const unsigned long cycleInterneval = 1000;
 
 static bool lastTouched = false;
 static bool pressLocked = false;
+
+void manageKeys(bool butoonsPressed[])
+{
+    int keyPressed = -1;
+    for (uint8_t key = 0; key < KEYS_AMMOUNT; ++key)
+    {
+        if (butoonsPressed[key] == true)
+        {
+            keyPressed = key;
+            break;
+        }
+    }
+
+    if (keyPressed <= 2)
+    {
+        cyclePagesDown();
+    }
+    else if (keyPressed >= 4)
+    {
+        cyclePagesUp();
+    }
+    else
+    {
+        PageNumberToShow = 1;
+    }
+}
 
 void showMainPage()
 {
@@ -53,7 +89,7 @@ void showMainPage()
         pressLocked = true;
 
         turnOffScreensaver();
-        cyclePagesUp();
+        manageKeys(t.butoonsPressed);
         lastCycle = millis();
 
         Serial.println("Pressed");
@@ -65,7 +101,7 @@ void showMainPage()
         {
             lastCycle = millis();
             turnOffScreensaver();
-            cyclePagesUp();
+            manageKeys(t.butoonsPressed);
         }
     }
 
@@ -83,58 +119,65 @@ void showMainPage()
         {
             lastExecutionTime = currentTime;
             PageNumberToShow = 0;
-            previousMillisFirstMenu = millis() - intervalFirstMenu;
-            displayedWeather = false;
+            previousMillisMenu = millis() - intervalMenu;
+            oneTimeMenuDisplayed = false;
             Serial.println("resetting menus");
             // oledMana.sendOledAction(OLED_STOP_SCROLL);
             setupScreensaver();
         }
         else
         {
-            if (PageNumberToShow == 1)
+            switch (PageNumberToShow)
             {
-                // oledMana.sendOledAction(OLED_STOP_SCROLL);
+            case 1:
                 LastPageShown = 1;
-                if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
+                if (currentTime - previousMillisMenu >= intervalMenu)
                 {
-                    previousMillisFirstMenu = currentTime;
+                    previousMillisMenu = currentTime;
                     showFirstPage();
                 }
-            }
-            else if (PageNumberToShow == 2 && displayedWeather == false)
-            {
-                displayedWeather = true;
-                LastPageShown = 2;
-                oled.clearDisplay();
-                oledMana.display();
-                currentWeather();
-            }
-            else if (PageNumberToShow == 3)
-            {
-                LastPageShown = 3;
-                if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
+                break;
+
+            case 2:
+                if (!oneTimeMenuDisplayed)
                 {
-                    previousMillisFirstMenu = currentTime;
+                    oneTimeMenuDisplayed = true;
+                    LastPageShown = 2;
+                    oled.clearDisplay();
+                    oledMana.display();
+                    currentWeather();
+                }
+                break;
+
+            case 3:
+                LastPageShown = 3;
+                if (currentTime - previousMillisMenu >= intervalMenu)
+                {
+                    previousMillisMenu = currentTime;
                     showForecastPage();
                 }
-            }
-            else if (PageNumberToShow == 4)
-            {
+                break;
+
+            case 4:
                 LastPageShown = 4;
-                if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
+                if (currentTime - previousMillisMenu >= intervalMenu)
                 {
-                    previousMillisFirstMenu = currentTime;
+                    previousMillisMenu = currentTime;
                     showInfoPage();
                 }
-            }
-            else if (PageNumberToShow == 5)
-            {
+                break;
+
+            case 5:
                 LastPageShown = 5;
-                if (currentTime - previousMillisFirstMenu >= intervalFirstMenu)
+                if (currentTime - previousMillisMenu >= intervalMenu)
                 {
-                    previousMillisFirstMenu = currentTime;
+                    previousMillisMenu = currentTime;
                     showSensorPage();
                 }
+                break;
+
+            default:
+                break;
             }
         }
     }
@@ -144,7 +187,7 @@ void showMainPage()
         {
             lastExecutionTime = currentTime;
             Serial.println("turn off screenshaver and cycle pages");
-            cyclePages();
+            cyclePagesUp();
         }
         else
         {
@@ -155,13 +198,10 @@ void showMainPage()
 
 void turnOffScreensaver()
 {
-    displayedWeather = false;
-    if (LastPageShown != 1)
-    {
-        // oledMana.sendOledAction(OLED_STOP_SCROLL);
-    }
+    oneTimeMenuDisplayed = false;
+    // oledMana.sendOledAction(OLED_STOP_SCROLL);
 
-    previousMillisFirstMenu = millis() - intervalFirstMenu;
+    previousMillisMenu = millis() - intervalMenu;
 }
 
 void showFirstPage()
@@ -315,78 +355,27 @@ void showSensorPage()
     oledMana.display();
 }
 
-void cyclePages()
-{
-    // oledMana.sendOledAction(OLED_STOP_SCROLL);
-    if (LastPageShown == 1)
-    {
-        PageNumberToShow = 2;
-    }
-    else if (LastPageShown == 2)
-    {
-        PageNumberToShow = 3;
-    }
-    else if (LastPageShown == 3)
-    {
-        PageNumberToShow = 4;
-    }
-    else if (LastPageShown == 4)
-    {
-        PageNumberToShow = 5;
-    }
-    else if (LastPageShown == 5)
-    {
-        PageNumberToShow = 1;
-    }
-}
-
 void cyclePagesDown()
 {
-    // oledMana.sendOledAction(OLED_STOP_SCROLL);
-    if (LastPageShown == 1)
-    {
-        PageNumberToShow = 2;
-    }
-    else if (LastPageShown == 2)
-    {
-        PageNumberToShow = 3;
-    }
-    else if (LastPageShown == 3)
-    {
-        PageNumberToShow = 4;
-    }
-    else if (LastPageShown == 4)
-    {
-        PageNumberToShow = 5;
-    }
-    else if (LastPageShown == 5)
+    if (LastPageShown == NUMBER_OF_PAGES)
     {
         PageNumberToShow = 1;
+    }
+    else
+    {
+        PageNumberToShow = LastPageShown + 1;
     }
 }
 
 void cyclePagesUp()
 {
-    // oledMana.sendOledAction(OLED_STOP_SCROLL);
     if (LastPageShown == 1)
     {
-        PageNumberToShow = 5;
+        PageNumberToShow = NUMBER_OF_PAGES;
     }
-    else if (LastPageShown == 2)
+    else
     {
-        PageNumberToShow = 1;
-    }
-    else if (LastPageShown == 3)
-    {
-        PageNumberToShow = 2;
-    }
-    else if (LastPageShown == 4)
-    {
-        PageNumberToShow = 3;
-    }
-    else if (LastPageShown == 5)
-    {
-        PageNumberToShow = 4;
+        PageNumberToShow = LastPageShown - 1;
     }
 }
 
@@ -423,7 +412,7 @@ void showScreensaver()
 
     oled.clearDisplay();
 
-    for (i = 0; i < N_FLYERS; i++ && PageNumberToShow == false)
+    for (i = 0; i < N_FLYERS; i++)
     {
         delay(3);
         if (inputDetected == true)

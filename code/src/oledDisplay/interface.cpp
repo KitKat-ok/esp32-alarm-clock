@@ -225,12 +225,12 @@ void exitSubmenu()
         Serial.println("No submenu to exit.");
         idleEnabled = true;
         timerActive = true;
-        displayedWeather = false;
         lastInputTime = millis();
         lastInputTime = lastInputTime - 10001111;
         currentState = IDLE;
         menuRunning = false;
         previousMenuState = false;
+        turnOffScreensaver();
         startIdleAnimation();
     }
 }
@@ -539,6 +539,11 @@ void menuTask(void *parameter)
     }
 }
 
+void toggleLedsWrapper()
+{
+    toggleLeds(true); // or false / toggle logic
+}
+
 void initMenus()
 {
     entryMenu *WeatherItems = new entryMenu[4]{
@@ -595,14 +600,17 @@ void initMenus()
     Submenu *alarmsMain = new Submenu{"Alarms", alarmsItems, 2, 2};
     entryMenu alarmsButton = {"Alarms", nullptr, nullptr, alarmsMain, &DejaVu_LGC_Sans_Bold_10};
 
+    entryMenu toggleLedsEntry = {"Toggle Leds", toggleLedsWrapper, nullptr, nullptr, nullptr};
+
     // Initialize the main menu
-    initMenu(new entryMenu[4]{
+    initMenu(new entryMenu[5]{
                  alarmsButton,
                  weatherButton,
                  chartButton,
                  debugButton,
+                 toggleLedsEntry,
              },
-             4, "Main Menu", 1, 1);
+             5, "Main Menu", 1, 1);
     initAlarmMenus();
     xTaskCreate(
         menuTask,       // Task function

@@ -181,6 +181,39 @@ void initTouch()
   turnOnTouch();
 }
 
+bool ledsOn = false;
+
+void turnOnLeds(bool maxPower)
+{
+  ledsOn = true;
+  rM.gpioExpander.setPinState(MCP_LED1_P1, false);
+  rM.gpioExpander.setPinState(MCP_LED2_P1, false);
+
+  if (maxPower == true)
+  {
+    rM.gpioExpander.setPinState(MCP_LED2_P2, false);
+    rM.gpioExpander.setPinState(MCP_LED1_P2, false);
+  }
+}
+
+void turnOffLeds()
+{
+  ledsOn = false;
+  rM.gpioExpander.setPinState(MCP_LED1_P1, true);
+  rM.gpioExpander.setPinState(MCP_LED1_P2, true);
+  rM.gpioExpander.setPinState(MCP_LED2_P1, true);
+  rM.gpioExpander.setPinState(MCP_LED2_P2, true);
+}
+
+void toggleLeds(bool maxPower) {
+  if (ledsOn == true)
+  {
+    turnOffLeds();
+  } else {
+    turnOnLeds(maxPower);
+  }
+}
+
 void initButtons()
 {
   turnOnButtons();

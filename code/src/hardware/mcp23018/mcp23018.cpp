@@ -289,6 +289,12 @@ void mcp23018::setDefaultPinStates()
   setPinState(MCP_CHARGER_CONTROL_PIN, false);
   setPinMode(MCP_CHARGER_CONTROL_PIN, MCP_OUTPUT);
 
+  setPinMode(MCP_LED1_P1,MCP_OUTPUT);
+  setPinMode(MCP_LED1_P2,MCP_OUTPUT);
+  setPinMode(MCP_LED2_P1,MCP_OUTPUT);
+  setPinMode(MCP_LED2_P2,MCP_OUTPUT);
+
+
   setDefaultInterrupts();
 
   dumpAllRegisters();
