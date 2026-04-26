@@ -129,18 +129,19 @@ void initTouch()
   delay(500);
 
   AT42QT2120::KeyControl kc;
-  kc.enable_key_output = 1;
-  kc.key_output = 0;
-  kc.adjacent_key_suppression_group = 1;
-  kc.guard = 0;
+
+  kc.setTouchEnabled(false); // replaces enable_key_output = 1 (best guess mapping)
+  kc.setOutputHigh(false);  // key_output = 0
+  kc.setAdjacentKeySuppressionGroup(1);
+  kc.setGuardEnabled(false); // guard = 0
 
   for (uint8_t i = 0; i < 12; i++)
   {
     touch_sensor.setKeyControl(i, kc);
   }
 
-  kc.key_output = 1;
-  kc.enable_key_output = 0;
+  kc.setTouchEnabled(true); // replaces enable_key_output = 0
+
   for (uint8_t i = 0; i <= 6; i++)
   {
     touch_sensor.setKeyControl(i, kc);
@@ -205,11 +206,14 @@ void turnOffLeds()
   rM.gpioExpander.setPinState(MCP_LED2_P2, true);
 }
 
-void toggleLeds(bool maxPower) {
+void toggleLeds(bool maxPower)
+{
   if (ledsOn == true)
   {
     turnOffLeds();
-  } else {
+  }
+  else
+  {
     turnOnLeds(maxPower);
   }
 }

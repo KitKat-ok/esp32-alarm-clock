@@ -124,30 +124,6 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define CALIBRATION_LOOP_DELAY_TOUCH 50
 #define KEYS_AMMOUNT 7
 
-#define TOUCH_1_Seg_PIN 0
-#define TOUCH_1_Seg_THRESHOLD 4
-#define TOUCH_2_Seg_PIN 0
-#define TOUCH_2_Seg_THRESHOLD 4
-#define TOUCH_3_Seg_PIN 0
-#define TOUCH_3_Seg_THRESHOLD 5
-#define TOUCH_4_Seg_PIN 0
-#define TOUCH_4_Seg_THRESHOLD 5
-#define TOUCH_5_Seg_PIN 0
-#define TOUCH_5_Seg_THRESHOLD 5
-
-// On battery
-#define TOUCH_1_Seg_THRESHOLD_BAT 73
-#define TOUCH_2_Seg_THRESHOLD_BAT 77
-#define TOUCH_3_Seg_THRESHOLD_BAT 80
-#define TOUCH_4_Seg_THRESHOLD_BAT 85
-#define TOUCH_5_Seg_THRESHOLD_BAT 95
-
-// While Sleeping
-#define TOUCH_1_Seg_THRESHOLD_SLEEP 72
-#define TOUCH_2_Seg_THRESHOLD_SLEEP 32
-#define TOUCH_3_Seg_THRESHOLD_SLEEP 33
-#define TOUCH_4_Seg_THRESHOLD_SLEEP 33
-#define TOUCH_5_Seg_THRESHOLD_SLEEP 40
 
 // Menus
 #define LOOP_FUNCTION_TIMEOUT_MS 120000 // how fast to exit from the loop function in menu this only works if the loop is calling shouldExitLoop()

@@ -1,95 +1,137 @@
 #!/usr/bin/env python3
-# Scalar vector icons to Adafruit GFX format helper for esp32-weather-epd.
-# Copyright (C) 2022-2024  Luke Marzen
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import getopt
-import os.path
+import os
 import sys
 from PIL import Image
 
-BITES_PER_LINE = 12
-BITS_PER_BITE = 8
-THRESHOLD = 127
+BITES_PER_LINE = 16
 
-try:
-    opts, args = getopt.getopt(sys.argv[1:],"hi:o:",["inputfile=","outputfile="])
-except getopt.GetoptError:
-    print('png_to_header.py -i <inputfile> -o <outputfile>')
-    sys.exit(2)
+grayscale_bits = 1
+invert = 0
+flip = 0
+
+opts, args = getopt.getopt(
+    sys.argv[1:], "hi:o:", ["inputfile=", "outputfile=", "grayscale=", "invert=", "flip="]
+)
+
+inputfile = None
+outputfile = None
+
+def safe_int(v, default=0):
+    try:
+        return int(v)
+    except:
+        return default
+
 for opt, arg in opts:
-    if opt == '-h':
-        print('png_to_header.py -i <inputfile> -o <outputfile>')
-        sys.exit()
-    elif opt in ("-i", "--inputfile"):
+    if opt in ("-i", "--inputfile"):
         inputfile = arg
     elif opt in ("-o", "--outputfile"):
         outputfile = arg
+    elif opt == "--grayscale":
+        grayscale_bits = safe_int(arg, 1)
+    elif opt == "--invert":
+        invert = safe_int(arg, 0)
+    elif opt == "--flip":
+        flip = safe_int(arg, 0)
 
-try: inputfile
-except NameError:
-    print("Error: inputfile is a required parameter. See usage -h.")
-    exit()
-try: outputfile
-except NameError:
-    print("Error: outputfile is a required parameter. See usage -h")
-    exit()
+if not inputfile or not outputfile:
+    print("missing input/output")
+    sys.exit(1)
 
-src_image = Image.open(inputfile)
-# Converts the image to grayscale
-src_g = src_image.convert('L')
-# Creates a list of the pixel values
-pixels = list(src_g.getdata())
+img = Image.open(inputfile).convert("L")
+
+if flip:
+    img = img.transpose(Image.FLIP_TOP_BOTTOM)
+
+pixels = list(img.getdata())
+width, height = img.size
+
+print(f"[INFO] {inputfile} {width}x{height} mode={grayscale_bits} invert={invert} flip={flip}")
 
 f = open(outputfile, "w")
-var = os.path.basename(outputfile)
-var = var.rsplit('.h',1)[0]
+name = os.path.basename(outputfile).rsplit(".h", 1)[0]
 
-width, height = src_image.size
-f.write("// " + str(width) + " x " + str(height) + "\n")
-f.write("const unsigned char " + var + "[] PROGMEM = {\n ")
+f.write(f"// {width}x{height}\n")
+f.write(f"const unsigned char {name}[] PROGMEM = {{\n ")
 
-bit_cnt = 1
-transcribed_width = 1
-tmp_bite = 0
-n = len(pixels)
-line_width = 0
+line_count = 0
 
-for i in range(n):
-    line_width += 1
-    if (pixels[i] > THRESHOLD):
-        tmp_bite |= 1
-    if (line_width == width):
-        tmp_bite <<= BITS_PER_BITE - bit_cnt
-        line_width = 0
-        bit_cnt = 8
-    # if there is still more room in the current byte, shift the bits to make room for the next new bit
-    if (bit_cnt < BITS_PER_BITE and i != n - 1):
-        tmp_bite <<= 1
-        bit_cnt += 1
-    # else byte must be complete, write the byte to file
-    elif (i != n - 1):
-        f.write(" " + "0x{:02x}".format(tmp_bite) + ",")
-        if (transcribed_width == BITES_PER_LINE):
-            f.write("\n ")
-            transcribed_width = 1
-        else:
-            transcribed_width += 1
-        tmp_bite = 0
-        bit_cnt = 1
+# =========================
+# 1-BIT MODE (PACKED)
+# =========================
+if grayscale_bits == 1:
 
-tmp_bite <<= BITS_PER_BITE - bit_cnt
-f.write(" " + "0x{:02x}".format(tmp_bite) + "\n};")
+    for y in range(height):
+
+        byte = 0
+        bit_index = 0
+
+        for x in range(width):
+
+            p = pixels[y * width + x]
+
+            if invert:
+                p = 255 - p
+
+            if p > 127:
+                byte |= (0x80 >> bit_index)
+
+            bit_index += 1
+
+            if bit_index == 8:
+                f.write(f" 0x{byte:02x},")
+                byte = 0
+                bit_index = 0
+
+                line_count += 1
+                if line_count == BITES_PER_LINE:
+                    f.write("\n ")
+                    line_count = 0
+
+        if bit_index != 0:
+            f.write(f" 0x{byte:02x},")
+            line_count += 1
+            if line_count == BITES_PER_LINE:
+                f.write("\n ")
+                line_count = 0
+
+# =========================
+# 4-BIT MODE (REAL NIBBLE PACKING)
+# =========================
+elif grayscale_bits == 4:
+
+    for y in range(height):
+
+        for x in range(0, width, 2):
+
+            p1 = pixels[y * width + x]
+            p2 = pixels[y * width + x + 1] if x + 1 < width else 0
+
+            if invert:
+                p1 = 255 - p1
+                p2 = 255 - p2
+
+            # convert to 4-bit (0–15)
+            p1 = p1 >> 4
+            p2 = p2 >> 4
+
+            byte = (p1 << 4) | p2
+
+            f.write(f" 0x{byte:02x},")
+
+            line_count += 1
+            if line_count == BITES_PER_LINE:
+                f.write("\n ")
+                line_count = 0
+
+    f.write("\n")
+
+else:
+    raise RuntimeError("grayscale must be 1 or 4")
+
+f.write("\n};\n")
 f.close()
+
+print(f"[DONE] wrote {outputfile}")

@@ -218,7 +218,6 @@ bool mcp23018::resetVerify(bool withDefault)
     expectInterruptState = RISING;
   }
   */
-  uint8_t bitToHigh = 2;
 #if DEBUG
   if (BatteryRead() < 3.0)
   {

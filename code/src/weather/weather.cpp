@@ -15,10 +15,10 @@ void createWeatherTask()
     xTaskCreate(
         weatherTask,       // Function to implement the task
         "Syncing Weather", // Name of the task
-        4096,             // Stack size (words)
+        4096,              // Stack size (words)
         NULL,              // Parameter to pass
         1,                 // Priority
-        &WeatherTask      // Task handle
+        &WeatherTask       // Task handle
     );
 }
 
@@ -52,7 +52,7 @@ void weatherTask(void *parameter)
                 if (syncDailyWeather())
                 {
                     lastDailyWeatherSync = currentTime;
-                    dailyWeatherFailCount = 0; 
+                    dailyWeatherFailCount = 0;
                     Serial.println("Daily weather synced.");
                 }
                 else
@@ -114,7 +114,6 @@ void weatherTask(void *parameter)
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
-
 
 bool syncDailyWeather()
 {
@@ -307,11 +306,11 @@ void displaywidget(int weatherCode)
             break;
         }
 
-oled.drawBitmap(0, 3, bitmap, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
+        oled.drawBitmap(0, 3, bitmap, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
     else
     {
-oled.drawBitmap(0, 3, wi_cloud_down_50x50, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
+        oled.drawBitmap(0, 3, wi_cloud_down_50x50, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
 }
 
@@ -381,10 +380,10 @@ void displaySmallWidget(int weatherCode, int x, int y)
             break;
         }
 
-oled.drawBitmap(x, y, bitmap, 40, 40, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
+        oled.drawBitmap(x, y, bitmap, 40, 40, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
     else
     {
-oled.drawBitmap(x, y, wi_cloud_down_40x40, 40, 40, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
+        oled.drawBitmap(x, y, wi_cloud_down_40x40, 40, 40, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
 }

@@ -1,8 +1,5 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
 	"name": "Ubuntu",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/base:noble",
 	"features": {
 		"ghcr.io/devcontainers/features/python:1": {
@@ -19,18 +16,9 @@
 			]
 		}
 	},
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "uname -a",
-	// Configure tool-specific properties.
-	// "customizations": {},
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
 	"mounts": [
 		"source=/dev/,target=/dev/,type=bind,consistency=consistent"
 	],
-	"privileged": true
+	"privileged": true,
+	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y librsvg2-bin imagemagick libmagickcore-6.q16-6-extra python3-pil python3-pip bc build-essential fonts-dejavu-core fontconfig libcairo2 libpango-1.0-0 libglib2.0-0 && python3 -m pip install pillow"
 }
