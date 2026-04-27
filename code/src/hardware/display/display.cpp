@@ -22,19 +22,19 @@ void OLED_MANAGER::initDisplay()
     oled.oled_command(MAX_CONTRAST); // contrast
 
     oled.oled_command(0xB1);
-    oled.oled_command(0xE2); // phase length
+    oled.oled_command(0x51); // phase length
 
     oled.oled_command(0xB3);
     oled.oled_command(0xA1); // clock divider
 
     oled.oled_command(0xBC);
-    oled.oled_command(0x01); // precharge 
+    oled.oled_command(0x08); // precharge 
 
     oled.oled_command(0xBE);
     oled.oled_command(0x10); // VCOMH voltage
 
     oled.oled_command(0xB6);
-    oled.oled_command(0x01); // second precharge period
+    oled.oled_command(0x04); // second precharge period
 
     oled.clearDisplay();
 

@@ -12,20 +12,22 @@ INPUT_DIR="$1"
 NAME="$2"
 SIZE="$3"
 GRAY_MODE="${4:-1}"
-
 INVERT="${5:-0}"
 FLIP="${6:-0}"
 
 INVERT=$((INVERT))
 FLIP=$((FLIP))
 
-mkdir -p icons png
+RESVG="./tools/resvg"
+
+JOBS=$(nproc)
+
+mkdir -p generated_icons png
 
 PNG_PATH="./png/${NAME}_${SIZE}x${SIZE}"
-HEADER_PATH="./icons/${NAME}_${SIZE}x${SIZE}"
-MAIN_HEADER="./icons/${NAME}_${SIZE}x${SIZE}.h"
+HEADER_PATH="./generated_icons/${NAME}_${SIZE}x${SIZE}"
+MAIN_HEADER="./generated_icons/${NAME}_${SIZE}x${SIZE}.h"
 
-echo "Cleaning..."
 rm -rf "$PNG_PATH" "$HEADER_PATH" "$MAIN_HEADER"
 mkdir -p "$PNG_PATH" "$HEADER_PATH"
 
@@ -33,81 +35,75 @@ sanitize() {
   echo "$1" | tr -cs '[:alnum:]' '_' | sed 's/^_//; s/_$//'
 }
 
-echo "Processing: $INPUT_DIR"
+export SIZE PNG_PATH RESVG
+export -f sanitize
 
-for f in "$INPUT_DIR"/*; do
-  [ -e "$f" ] || continue
+echo "Converting To PNGS: $INPUT_DIR"
 
-  base=$(basename "$f")
-  name=$(sanitize "${base%.*}")
-  out="$PNG_PATH/${name}.png"
+find "$INPUT_DIR" -maxdepth 1 -type f | xargs -P "$JOBS" -I {} bash -c '
+f="{}"
+base=$(basename "$f")
+name=$(sanitize "${base%.*}")
+out="$PNG_PATH/${name}.png"
 
-  if [[ "$f" == *.svg ]]; then
-    echo "SVG -> PNG: $f"
-    rsvg-convert -w "$SIZE" -h "$SIZE" --background-color=white "$f" -o "$out"
+if [[ "$f" == *.svg ]]; then
+  "$RESVG" "$f" "$out" \
+    --width "$SIZE" \
+    --height "$SIZE" \
+    --shape-rendering crispEdges \
+    --text-rendering optimizeSpeed
+elif [[ "$f" == *.png ]]; then
+  cp "$f" "$out"
+fi
+'
 
-  elif [[ "$f" == *.png ]]; then
-    echo "PNG -> PNG: $f"
-    convert "$f" -resize "${SIZE}x${SIZE}" "$out"
+export GRAY_MODE SIZE PNG_PATH
 
-  else
-    continue
-  fi
+echo "Cleaning the PNGS up..."
 
-  # 🔴 CRITICAL: remove alpha and force white background
-  convert "$out" -background white -alpha remove -alpha off "$out"
+find "$PNG_PATH" -name "*.png" | xargs -P "$JOBS" -I {} bash -c '
+f="{}"
 
-  # grayscale conversion WITHOUT noise
-  if [ "$GRAY_MODE" = "16" ]; then
-    convert "$out" -alpha remove -alpha off \
-  -colorspace Gray \
-  -posterize 16 \
-  -contrast-stretch 0 \
-  "$out"
-  else
-    convert "$out" -colorspace Gray -threshold 50% -dither None "$out"
-  fi
-done
+convert "$f" \
+  -background white \
+  -alpha remove \
+  -alpha off \
+  -filter point \
+  -resize "${SIZE}x${SIZE}!" \
+  "$f"
+
+if [ "$GRAY_MODE" = "16" ]; then
+  convert "$f" -colorspace Gray -posterize 16 "$f"
+else
+  convert "$f" -colorspace Gray -threshold 50% "$f"
+fi
+'
+
+export HEADER_PATH NAME SIZE GRAY_MODE INVERT FLIP
 
 echo "Generating headers..."
 
-for f in "$PNG_PATH"/*.png; do
-  [ -e "$f" ] || continue
+find "$PNG_PATH" -name "*.png" | xargs -P "$JOBS" -I {} bash -c '
+f="{}"
+base=$(basename "$f" .png)
+name=$(echo "$base" | tr -cs "[:alnum:]" "_")
 
-  base=$(basename "$f" .png)
-  name=$(sanitize "$base")
+out="${HEADER_PATH}/${name}.h"
 
-  if [[ "$name" != *"${SIZE}x${SIZE}"* ]]; then
-    name="${name}_${SIZE}x${SIZE}"
-  fi
+python3 png_to_header.py \
+  -i "$f" -o "$out" \
+  --grayscale $([[ "$GRAY_MODE" == "16" ]] && echo 4 || echo 1) \
+  --invert "$INVERT" \
+  --flip "$FLIP"
+'
 
-  out="${HEADER_PATH}/${name}.h"
-
-  if [ "$GRAY_MODE" = "16" ]; then
-    python3 png_to_header.py \
-      -i "$f" -o "$out" \
-      --grayscale 4 \
-      --invert "$INVERT" \
-      --flip "$FLIP"
-  else
-    python3 png_to_header.py \
-      -i "$f" -o "$out" \
-      --grayscale 1 \
-      --invert "$INVERT" \
-      --flip "$FLIP"
-  fi
-done
-
-echo "Generating main include header..."
+echo "Generating main header..."
 
 echo "#ifndef __${NAME^^}_${SIZE}x${SIZE}_H__" > "$MAIN_HEADER"
 echo "#define __${NAME^^}_${SIZE}x${SIZE}_H__" >> "$MAIN_HEADER"
 
 for f in "$HEADER_PATH"/*.h; do
-  [ -e "$f" ] || continue
   echo "#include \"${NAME}_${SIZE}x${SIZE}/$(basename "$f")\"" >> "$MAIN_HEADER"
 done
-
-echo "#endif" >> "$MAIN_HEADER"
 
 echo "Done."

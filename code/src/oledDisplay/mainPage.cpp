@@ -9,7 +9,6 @@ void showSensorPage();
 void showScreensaver();
 void setupScreensaver();
 
-
 const uint8_t PROGMEM
     toastermask0[] = {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00,

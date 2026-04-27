@@ -37,7 +37,7 @@ void weatherTask(void *parameter)
     if (!isWeatherAvailable)
     {
         syncDailyWeather();
-        vTaskDelay(pdMS_TO_TICKS(10000));
+        vTaskDelay(pdMS_TO_TICKS(1000));
         syncCurrentWeather();
     }
 
@@ -306,7 +306,7 @@ void displaywidget(int weatherCode)
             break;
         }
 
-        oled.drawBitmap(0, 3, bitmap, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
+        oled.drawGrayscaleBitmap(0, 3, bitmap, 50, 50,true); // Adjust color as needed
     }
     else
     {

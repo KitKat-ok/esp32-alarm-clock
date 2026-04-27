@@ -45,10 +45,8 @@ img = Image.open(inputfile).convert("L")
 if flip:
     img = img.transpose(Image.FLIP_TOP_BOTTOM)
 
-pixels = list(img.getdata())
+pixels = list(img.get_flattened_data())
 width, height = img.size
-
-print(f"[INFO] {inputfile} {width}x{height} mode={grayscale_bits} invert={invert} flip={flip}")
 
 f = open(outputfile, "w")
 name = os.path.basename(outputfile).rsplit(".h", 1)[0]
@@ -103,23 +101,17 @@ if grayscale_bits == 1:
 elif grayscale_bits == 4:
 
     for y in range(height):
+        for x in range(width):
 
-        for x in range(0, width, 2):
-
-            p1 = pixels[y * width + x]
-            p2 = pixels[y * width + x + 1] if x + 1 < width else 0
+            p = pixels[y * width + x]
 
             if invert:
-                p1 = 255 - p1
-                p2 = 255 - p2
+                p = 255 - p
 
-            # convert to 4-bit (0–15)
-            p1 = p1 >> 4
-            p2 = p2 >> 4
+            # 0–255 → 0–15 → back to 0–255 (clean 16 levels)
+            p = (p >> 4) * 17
 
-            byte = (p1 << 4) | p2
-
-            f.write(f" 0x{byte:02x},")
+            f.write(f" 0x{p:02x},")
 
             line_count += 1
             if line_count == BITES_PER_LINE:
@@ -133,5 +125,3 @@ else:
 
 f.write("\n};\n")
 f.close()
-
-print(f"[DONE] wrote {outputfile}")

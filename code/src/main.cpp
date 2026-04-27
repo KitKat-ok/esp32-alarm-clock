@@ -15,6 +15,7 @@ void setup()
   createTempTask();
   createLightTask();
   createTimeTask();
+  oled.invertDisplay(false);
 }
 
 void loop()
