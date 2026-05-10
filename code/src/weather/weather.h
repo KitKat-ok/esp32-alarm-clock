@@ -2,8 +2,8 @@
 
 #include "defines.h"
 #include "OpenMeteo.h"
-#include "../icons/icons/weather_50x50.h"
-#include "../icons/icons/weather_40x40.h"
+#include "../icons/generated_icons/weather_50x50.h"
+#include "../icons/generated_icons/weather_40x40.h"
 
 struct CurrentWeatherData {
     uint32_t dt; // time, unix

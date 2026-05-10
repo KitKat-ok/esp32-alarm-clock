@@ -13,6 +13,7 @@ void setup()
   initMenus();
   createBatteryTask();
   createTempTask();
+  createPressureTask();
   createLightTask();
   createTimeTask();
   oled.invertDisplay(false);

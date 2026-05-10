@@ -41,5 +41,5 @@ echo "Downloading phosphor icons..."
 cd svg_icons
 curl -L "$PHOSPHOR_URL" -o phosphor.zip
 echo "Extracting phosphor icons..."
-unzip -d ./phosphor_icons phosphor.zip
+unzip -o phosphor.zip -d ./phosphor_icons
 rm phosphor.zip

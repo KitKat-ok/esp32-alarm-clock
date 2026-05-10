@@ -231,7 +231,6 @@ void showForecastPage()
     int y = 20;
     int x = 5;
     oled.clearDisplay();
-    delay(10);
 
     oled.setCursor(x + 3, y);
     oled.print(getShortNextDay(0));
@@ -266,46 +265,45 @@ void displayWiFiSignal(int x, int y)
 
     if (WiFi.status() != WL_CONNECTED)
     {
-        wifiIcon = wifi_off_svgrepo_com_48x48;
+        wifiIcon = wifi_slash_duotone_48x48;
     }
     else if (rssi >= -50)
     {
-        wifiIcon = wifi_4_svgrepo_com_48x48;
+        wifiIcon = wifi_high_duotone_48x48;
     }
     else if (rssi >= -60)
     {
-        wifiIcon = wifi_3_svgrepo_com_48x48;
+        wifiIcon = wifi_medium_duotone_48x48;
     }
     else if (rssi >= -70)
     {
-        wifiIcon = wifi_2_svgrepo_com_48x48;
+        wifiIcon = wifi_low_duotone_48x48;
     }
     else if (rssi >= -80)
     {
-        wifiIcon = wifi_1_svgrepo_com_48x48;
+        wifiIcon = wifi_none_duotone_48x48;
     }
     else
     {
-        wifiIcon = wifi_no_signal_svgrepo_com_48x48;
+        wifiIcon = wifi_x_duotone_48x48;
     }
 
     // Display the selected icon
-    oled.drawBitmap(x, y, wifiIcon, 48, 48, SSD1327_BLACK, SSD1327_WHITE);
+    oled.drawGrayscaleBitmap(x, y, wifiIcon, 48, 48);
 }
 
 void showInfoPage()
 {
     oled.clearDisplay();
-    delay(10);
     oled.setFont(&DejaVu_LGC_Sans_Bold_10);
     displayWiFiSignal(0, 24);
     if (charging == true)
     {
-        oled.drawBitmap(32 - 24, 8, battery_charging_full_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+        oled.drawGrayscaleBitmap(32 - 24, 8, battery_charging_duotone_24x24, 24, 24);
     }
     else
     {
-        oled.drawBitmap(32 - 24, 8, battery_0_bar_90deg_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+        oled.drawGrayscaleBitmap(32 - 24, 8, battery_empty_duotone_24x24, 24, 24);
         oled.fillRect((32 - 24) + 4, 8 + 9, map(getBatteryPercentage(), 0, 100, 0, 14), 6, SSD1327_WHITE);
     }
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
@@ -335,7 +333,7 @@ void showSensorPage()
 {
     oled.clearDisplay();
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
-    oled.drawBitmap(SCREEN_WIDTH - 24 - 10, 18, house_thermometer_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+    oled.drawGrayscaleBitmap(SCREEN_WIDTH - 24 - 10, 18, thermometer_cold_duotone_24x24, 24, 24);
     oled.setCursor(2, 35);
     String tempText = "Temp: " + String(readTemperature()) + "C";
     oled.print(tempText);
@@ -349,7 +347,13 @@ void showSensorPage()
     oled.print("SHT40 Sens");
     oled.setCursor(2, 35 + 24);
     oled.print("Hum: " + String(readHumidity()) + "%");
-    oled.drawBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, house_raindrops_24x24, 24, 24, SSD1327_BLACK, SSD1327_WHITE);
+    oled.setCursor(2, 35 + 24 + 24);
+    oled.print("Press: " + String(readPressure()) + "Pa");
+    oled.setCursor(2, 35 + 24 + 24 + 10);
+    oled.print("Alt: " + String(readAltitude()) + "M");
+    oled.setCursor(2, 35 + 24 + 24 + 24 +10);
+    oled.print("tempbmp: " + String(readTemperatureBMP()) + "C");
+    oled.drawGrayscaleBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, drop_simple_duotone_24x24, 24, 24);
 
     oledMana.display();
 }

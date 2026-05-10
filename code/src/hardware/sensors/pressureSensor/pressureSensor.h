@@ -6,5 +6,6 @@ void createPressureTask();
 
 float readPressure();
 float readTemperatureBMP();
+float readAltitude();
 void initPressureSensor();
 

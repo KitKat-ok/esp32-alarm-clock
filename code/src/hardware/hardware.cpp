@@ -5,7 +5,6 @@ AS1115 LedDisplay = AS1115(0x00);
 
 AT42QT2120 touch_sensor(Wire, TOUCH_INTERRUPT);
 
-void initOledDisplay();
 void initLedDisplay();
 void initBuzzer();
 void initButtons();
@@ -57,7 +56,6 @@ void initHardware()
   initButtons();
   initTouch();
   initBuzzer();
-  initOledDisplay();
   initLedDisplay();
   initLightSensor();
   initPressureSensor();
@@ -91,22 +89,6 @@ bool readHallSwitch()
 {
   int pinState = digitalRead(HALL_SWITCH); // Read the pin state
   return (pinState == LOW);                // Return true if LOW, false if HIGH
-}
-
-void initOledDisplay()
-{
-  oledMana.initDisplay();
-  oled.clearDisplay();
-  oled.setTextSize(1);
-  oled.setCursor(0, 0);
-  oledMana.display();
-
-  centerText("Oled Initialized", SCREEN_HEIGHT / 2);
-  centerText((resetReasonToString(esp_reset_reason())), 10);
-
-  oledMana.display();
-  oledMana.enable();
-  Serial.println("OLed display initialized");
 }
 
 void initLedDisplay()

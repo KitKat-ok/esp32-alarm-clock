@@ -5,7 +5,7 @@
 void createDimmingTask();
 void createLightTask();
 
-void dimLedDisplay();
+void dimLedDisplay(bool checkForOff = true);
 
 float getLightLevel();
 void initLightSensor();

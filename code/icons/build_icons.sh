@@ -19,7 +19,6 @@ INVERT=$((INVERT))
 FLIP=$((FLIP))
 
 RESVG="./tools/resvg"
-
 JOBS=$(nproc)
 
 mkdir -p generated_icons png
@@ -86,9 +85,9 @@ echo "Generating headers..."
 find "$PNG_PATH" -name "*.png" | xargs -P "$JOBS" -I {} bash -c '
 f="{}"
 base=$(basename "$f" .png)
-name=$(echo "$base" | tr -cs "[:alnum:]" "_")
-
-out="${HEADER_PATH}/${name}.h"
+name=$(echo "$base" | tr -cs "[:alnum:]" "_" | sed -E "s/_+/_/g; s/^_+|_+$//g")
+full_name="${name}_${SIZE}x${SIZE}"
+out="${HEADER_PATH}/${full_name}.h"
 
 python3 png_to_header.py \
   -i "$f" -o "$out" \
@@ -99,8 +98,7 @@ python3 png_to_header.py \
 
 echo "Generating main header..."
 
-echo "#ifndef __${NAME^^}_${SIZE}x${SIZE}_H__" > "$MAIN_HEADER"
-echo "#define __${NAME^^}_${SIZE}x${SIZE}_H__" >> "$MAIN_HEADER"
+echo "#pragma once" > "$MAIN_HEADER"
 
 for f in "$HEADER_PATH"/*.h; do
   echo "#include \"${NAME}_${SIZE}x${SIZE}/$(basename "$f")\"" >> "$MAIN_HEADER"

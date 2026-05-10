@@ -14,3 +14,4 @@ void initLightGraph();
 extern float temperatureArray[CHART_READINGS];
 extern float humidityArray[CHART_READINGS];
 extern float lightArray[CHART_READINGS];
+extern float pressureArray[CHART_READINGS];

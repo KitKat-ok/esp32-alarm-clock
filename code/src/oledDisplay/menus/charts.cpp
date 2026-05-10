@@ -5,6 +5,7 @@ Grafici plot{oled}; // Initialize the plot with the display
 // Arrays to hold temperature, humidity, and light data
 float temperatureArray[CHART_READINGS];
 float humidityArray[CHART_READINGS];
+float pressureArray[CHART_READINGS];
 float lightArray[CHART_READINGS];
 
 #define X_MINIMUM_VALUE_OFFSET -0.5

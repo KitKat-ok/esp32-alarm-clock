@@ -62,7 +62,8 @@ void addNewAlarm()
     {
         if (!alarms[i].exists)
         {
-            alarms[i] = {               // lets not have random data there
+            alarms[i] = {
+                // lets not have random data there
                 true,                                       // exists
                 false,                                      // enabled
                 {true, true, true, true, true, true, true}, // days
@@ -91,15 +92,15 @@ void addNewAlarm()
     int rectX = (SCREEN_WIDTH - rectWidth) / 2;
     int rectY = (SCREEN_HEIGHT - rectHeight) / 2;
 
-oled.fillRect(rectX, rectY, rectWidth, rectHeight, SSD1327_BLACK);
-oled.drawRect(rectX - 1, rectY - 1, rectWidth + 2, rectHeight + 2, SSD1327_WHITE);
+    oled.fillRect(rectX, rectY, rectWidth, rectHeight, SSD1327_BLACK);
+    oled.drawRect(rectX - 1, rectY - 1, rectWidth + 2, rectHeight + 2, SSD1327_WHITE);
 
-oled.setTextColor(SSD1327_WHITE);
-oled.setCursor(rectX + 10, rectY + 10);
-oled.print("Max alarm");
-oled.setCursor(rectX + 10, rectY + 20);
-oled.print("number reached");
-oled.display();
+    oled.setTextColor(SSD1327_WHITE);
+    oled.setCursor(rectX + 10, rectY + 10);
+    oled.print("Max alarm");
+    oled.setCursor(rectX + 10, rectY + 20);
+    oled.print("number reached");
+    oled.display();
     delay(5000);
 }
 
@@ -147,7 +148,6 @@ void refreshAlarmsSubmenu()
     }
 }
 
-
 void initManageAlarm()
 {
     alarmCurrentState = 0;
@@ -170,31 +170,32 @@ void manageAlarms()
     {
         int16_t x1, y1;
         uint16_t w, h;
-oled.getTextBounds(label, x, y, &x1, &y1, &w, &h);
+        oled.getTextBounds(label, x, y, &x1, &y1, &w, &h);
 
         if (editing)
-oled.drawRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
+            oled.drawRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
         else if (selected)
         {
-oled.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
-oled.setTextColor(SSD1327_BLACK, SSD1327_WHITE);
+            oled.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
+            oled.setTextColor(SSD1327_BLACK, SSD1327_WHITE);
         }
         else
-oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
+            oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
 
-oled.setCursor(x, y);
-oled.print(label);
+        oled.setCursor(x, y);
+        oled.print(label);
     };
 
     auto drawBitmapOption = [&](int16_t x, int16_t y, bool selected, bool editing)
     {
         if (editing || selected)
         {
-oled.drawRect(x - 2, y - 2, 22, 22, SSD1327_WHITE);
-oled.drawBitmap(x, y, remove_18x18, 18, 18, SSD1327_WHITE);
+            oled.drawRect(x - 2, y - 2, 22, 22, SSD1327_WHITE);
+            //oled.drawBitmap(x, y, remove_18x18, 18, 18, SSD1327_WHITE);
         }
         else
-oled.drawBitmap(x, y, remove_18x18, 18, 18, SSD1327_BLACK, SSD1327_WHITE);
+            //oled.drawBitmap(x, y, remove_18x18, 18, 18, SSD1327_BLACK, SSD1327_WHITE);
+            oled.drawRect(x - 2, y - 2, 22, 22, SSD1327_BLACK);
     };
 
     auto drawDaySelection = [&](int16_t x, int16_t y, bool selected, int dayIndex, bool groupSelected, bool buttonSelected)
@@ -202,22 +203,22 @@ oled.drawBitmap(x, y, remove_18x18, 18, 18, SSD1327_BLACK, SSD1327_WHITE);
         String dayLabel = getShorterWeekdayName(dayIndex + 1);
         int16_t x1, y1;
         uint16_t w, h;
-oled.getTextBounds(dayLabel, 0, 0, &x1, &y1, &w, &h);
+        oled.getTextBounds(dayLabel, 0, 0, &x1, &y1, &w, &h);
         labelWidth = w;
 
-oled.setTextColor(buttonSelected ? SSD1327_BLACK : SSD1327_WHITE, buttonSelected ? SSD1327_WHITE : SSD1327_BLACK);
-oled.setCursor(x, y);
-oled.print(dayLabel);
+        oled.setTextColor(buttonSelected ? SSD1327_BLACK : SSD1327_WHITE, buttonSelected ? SSD1327_WHITE : SSD1327_BLACK);
+        oled.setCursor(x, y);
+        oled.print(dayLabel);
 
         if (selected && !buttonSelected)
-oled.drawRect(x - 1, y - 10, w + 4, 12, SSD1327_WHITE);
+            oled.drawRect(x - 1, y - 10, w + 4, 12, SSD1327_WHITE);
         if (buttonSelected)
         {
-oled.fillRect(x - 1, y - 10, w + 4, 12, SSD1327_WHITE);
+            oled.fillRect(x - 1, y - 10, w + 4, 12, SSD1327_WHITE);
             if (selected)
-oled.drawRect(x - 3, y - 12, w + 8, 16, SSD1327_WHITE);
-oled.setCursor(x, y);
-oled.print(dayLabel);
+                oled.drawRect(x - 3, y - 12, w + 8, 16, SSD1327_WHITE);
+            oled.setCursor(x, y);
+            oled.print(dayLabel);
         }
     };
 
@@ -234,20 +235,20 @@ oled.print(dayLabel);
 
     auto redrawDisplay = [&]()
     {
-oled.clearDisplay();
-oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
-oled.setCursor(1, 8);
-oled.println("Alarm " + String(alarmIndex));
-oled.setFont(&font4pt7b);
-oled.setCursor(70, 7);
-oled.print("Today:" + getShortCurrentWeekdayName());
+        oled.clearDisplay();
+        oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
+        oled.setCursor(1, 8);
+        oled.println("Alarm " + String(alarmIndex));
+        oled.setFont(&font4pt7b);
+        oled.setCursor(70, 7);
+        oled.print("Today:" + getShortCurrentWeekdayName());
 
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+        oled.setFont(&DejaVu_LGC_Sans_Bold_10);
         centerText(":", 19, 34);
         drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 17, 19, !inDaySelectionMode && alarmCurrentState == 0, isEditingAlarm && alarmCurrentState == 0);
         drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 39, 19, !inDaySelectionMode && alarmCurrentState == 1, isEditingAlarm && alarmCurrentState == 1);
 
-oled.setFont(&DejaVu_LGC_Sans_Bold_9);
+        oled.setFont(&DejaVu_LGC_Sans_Bold_9);
         if (inDaySelectionMode)
             drawDaySelectionGroup(2, 46);
         else
@@ -260,17 +261,17 @@ oled.setFont(&DejaVu_LGC_Sans_Bold_9);
                 startX += labelWidth + 5;
             }
             if (alarmCurrentState == 3)
-oled.drawRect(0, 34, SCREEN_WIDTH - 1, 16, SSD1327_WHITE);
+                oled.drawRect(0, 34, SCREEN_WIDTH - 1, 16, SSD1327_WHITE);
         }
 
-oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
-oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+        oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
+        oled.setFont(&DejaVu_LGC_Sans_Bold_10);
         drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 32, !inDaySelectionMode && alarmCurrentState == 2, isEditingAlarm && alarmCurrentState == 2);
         drawMenuOption("Sound:" + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 59, !inDaySelectionMode && alarmCurrentState == 4, isEditingAlarm && alarmCurrentState == 4);
         drawMenuOption("Light:" + String(alarms[alarmIndex].lightOn ? "On" : "Off"), 84 - 15, 59, !inDaySelectionMode && alarmCurrentState == 5, isEditingAlarm && alarmCurrentState == 5);
         drawBitmapOption(SCREEN_WIDTH - 30, 14, !inDaySelectionMode && alarmCurrentState == 6, !inDaySelectionMode && isEditingAlarm && alarmCurrentState == 6);
 
-oled.display();
+        oled.display();
     };
 
     auto updateAlarmValueUp = [&]()

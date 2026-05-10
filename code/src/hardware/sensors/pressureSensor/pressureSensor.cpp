@@ -4,6 +4,7 @@ Adafruit_BMP280 bmp;
 
 float readAltitude()
 {
+    bmp.takeForcedMeasurement();
     float altitude;
     if (isWeatherAvailable)
     {
@@ -11,7 +12,7 @@ float readAltitude()
     }
     else
     {
-        altitude = 0;
+        altitude = -1;
     }
 
     return altitude;
@@ -25,6 +26,8 @@ float readTemperatureBMP()
 
 float readPressure()
 {
+    bmp.takeForcedMeasurement();
+
     float pressure = bmp.readPressure();
     return pressure;
 }
@@ -39,12 +42,10 @@ void pressureTask(void *pvParameters)
         {
             for (int i = 0; i < CHART_READINGS - 1; i++)
             {
-                temperatureArray[i] = temperatureArray[i + 1];
-                humidityArray[i] = humidityArray[i + 1];
+                pressureArray[i] = pressureArray[i + 1];
             }
 
-            temperatureArray[CHART_READINGS - 1] = readTemperatureBMP();
-            humidityArray[CHART_READINGS - 1] = readPressure();
+            pressureArray[CHART_READINGS - 1] = readPressure();
             previousMillisChart = currentMillis;
         }
         vTaskDelay(pdMS_TO_TICKS(600000));

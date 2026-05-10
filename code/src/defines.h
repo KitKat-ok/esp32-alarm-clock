@@ -24,10 +24,10 @@
 #include "esp_pm.h"
 #include "esp_wifi.h"
 
-#include "../icons/icons/icons_18x18.h"
-#include "../icons/icons/icons_24x24.h"
-#include "../icons/icons/icons_32x32.h"
-#include "../icons/icons/icons_48x48.h"
+#include "../icons/generated_icons/icons_18x18.h"
+#include "../icons/generated_icons/icons_24x24.h"
+#include "../icons/generated_icons/icons_32x32.h"
+#include "../icons/generated_icons/icons_48x48.h"
 
 // MCP
 #define MCP23018_ADDRESS 0x27 // https://www.chiark.greenend.org.uk/~peterb/electronics/mcp23018/addr
@@ -95,8 +95,10 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 
 // Light Sensor
 #define OLED_DISABLE_THRESHOLD 20 // lux at which oled will turn off
-#define LED_DIM_THRESHOLD 30 // lux below what screen will have lowest brightness
+#define LED_DIM_THRESHOLD 15 // lux below what screen will have lowest brightness
 #define LED_DISABLE_THRESHOLD 1 // lux at which led screen will turn off
+
+#define DISPLAY_HOLD_DELAY 30000
 
 #define DIMMING_INTERVAL 1000 // how often to update screen brightness
 
@@ -106,7 +108,7 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define LED_MAP_MAX_LIGHT 100 // range in which the brightness gets mapped
 #define LED_BRIGHTNESS_MIN 0
 #define LED_BRIGHTNESS_MAX 15
-#define LED_BRIGHTNESS_MAX_NIGHT 4
+#define LED_BRIGHTNESS_MAX_NIGHT 7
 
 // Button stuff
 #define SMALL_BUTTON_DELAY_MS 15

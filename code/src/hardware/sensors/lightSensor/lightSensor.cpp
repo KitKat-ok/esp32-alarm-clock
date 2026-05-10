@@ -8,6 +8,8 @@ void oledWakeupTask(void *pvParameters);
 void dimOledDisplay();
 void dimLedDisplay();
 
+unsigned long displayHoldUntil = 0;
+
 bool maxBrightness = false;
 
 bool dimmingTaskRunning = false;
@@ -27,7 +29,7 @@ void lightTask(void *pvParameters)
         unsigned long currentMillis = millis(); // Get the current time
         if (currentMillis - previousMillisChart >= INTERVAL_CHARTS)
         {
-            lightLevel = getLightLevel();
+            getLightLevel();
             for (int i = 0; i < CHART_READINGS - 1; i++)
             {
                 lightArray[i] = lightArray[i + 1];
@@ -84,7 +86,6 @@ void oledWakeupTask(void *pvParameters)
         if (useAllButtons() != None || useAllTouch().touched == true || inputDetected == true)
         {
             vTaskSuspend(dimmingTaskHandle);
-            vTaskResume(TimeTask);
             Serial.println("Button pressed");
             Serial.println("Setting max brightness");
 
@@ -132,21 +133,18 @@ void oledWakeupTask(void *pvParameters)
                     }
 
                     vTaskDelay(pdMS_TO_TICKS(5));
-
-                    if (useAllButtons() != None || useAllTouch().touched == true || inputDetected == true)
-                    {
-                        inputDetected = false;
-                        lastActionTime = millis();
-                    }
                 }
             }
             if (WiFi.isConnected() && WiFi.SSID() == SSID1)
             {
                 mmwaveState = getMmwaveState();
             }
-            lightLevel = getLightLevel();
+            displayHoldUntil = millis() + DISPLAY_HOLD_DELAY;
+
+            getLightLevel();
             dimOledDisplay();
-            dimLedDisplay();
+            oledMana.fadeOut();
+            dimLedDisplay(false);
         }
         else
         {
@@ -177,7 +175,7 @@ void dimmingTask(void *pvParameters)
 
         if (currentMillis - previousMillisLight >= intervalDimming)
         {
-            lightLevel = getLightLevel();
+            getLightLevel();
             previousMillisLight = currentMillis;
         }
 
@@ -190,7 +188,7 @@ void dimmingTask(void *pvParameters)
 
         if (currentMillis - previousMillisDimming >= intervalDimming)
         {
-            dimLedDisplay();
+            dimLedDisplay(true);
             dimOledDisplay();
             maxBrightness = false;
 
@@ -202,19 +200,24 @@ void dimmingTask(void *pvParameters)
     }
 }
 
-bool shouldTurnOffDisplay(int lux)
+bool shouldTurnOffOled(int lux)
 {
-    static const int offThreshold = OLED_DISABLE_THRESHOLD;     // Lux threshold to turn off
-    static const int onThreshold = OLED_DISABLE_THRESHOLD + 10; // Lux threshold to turn back on
+    if (millis() < displayHoldUntil)
+    {
+        return false;
+    }
+
+    static const int offThreshold = OLED_DISABLE_THRESHOLD;
+    static const int onThreshold = OLED_DISABLE_THRESHOLD + 10;
     static bool isDisplayOff = false;
 
     if (isDisplayOff && lux >= onThreshold)
     {
-        isDisplayOff = false; // Turn on when lux exceeds onThreshold
+        isDisplayOff = false;
     }
     else if (!isDisplayOff && lux < offThreshold)
     {
-        isDisplayOff = true; // Turn off when lux drops below offThreshold
+        isDisplayOff = true;
     }
 
     return isDisplayOff;
@@ -224,7 +227,7 @@ float previousLightLevel = 0.0;
 
 void dimOledDisplay()
 {
-    if (shouldTurnOffDisplay(lightLevel) == true || (mmwaveState == 0 && WiFi.SSID() == SSID1 && mmwaveState != 3 && WiFi.isConnected() == true))
+    if (shouldTurnOffOled(lightLevel) == true || (mmwaveState == 0 && WiFi.SSID() == SSID1 && mmwaveState != 3 && WiFi.isConnected() == true))
     {
         oledMana.disable();
 
@@ -248,29 +251,35 @@ void dimOledDisplay()
 
 static int ledLastBrightness = LED_BRIGHTNESS_MIN;
 
-int mapWithHysteresis(uint8_t lightLevel)
+int mapLedWithHysteresis(uint16_t lightLevel)
 {
-    uint8_t maxBright = LED_BRIGHTNESS_MAX_NIGHT;
-    if (currentWeatherData.isDay == false)
-    {
-        maxBright = LED_BRIGHTNESS_MAX_NIGHT;
-    }
-    else
-    {
-        maxBright = LED_BRIGHTNESS_MAX;
-    }
+    uint8_t maxBright = currentWeatherData.isDay
+                            ? LED_BRIGHTNESS_MAX
+                            : LED_BRIGHTNESS_MAX_NIGHT;
 
-    uint8_t newBrightness = (lightLevel - LED_DIM_THRESHOLD) * (maxBright - LED_BRIGHTNESS_MIN) /
-                                (LED_MAP_MAX_LIGHT - LED_DIM_THRESHOLD) +
-                            LED_BRIGHTNESS_MIN;
+    lightLevel = constrain(
+        lightLevel,
+        LED_DIM_THRESHOLD,
+        LED_MAP_MAX_LIGHT);
 
-    newBrightness = constrain(newBrightness, LED_BRIGHTNESS_MIN, maxBright);
+    float normalized =
+        (float)(lightLevel - LED_DIM_THRESHOLD) /
+        (float)(LED_MAP_MAX_LIGHT - LED_DIM_THRESHOLD);
 
-    if (newBrightness > ledLastBrightness + LED_HYSTERESIS)
-    {
-        ledLastBrightness = newBrightness;
-    }
-    else if (newBrightness < ledLastBrightness - LED_HYSTERESIS)
+    // human-eye logarithmic response
+    normalized =
+        log10f(1.0f + normalized * 9.0f);
+
+    uint8_t newBrightness =
+        LED_BRIGHTNESS_MIN +
+        normalized * (maxBright - LED_BRIGHTNESS_MIN);
+
+    newBrightness = constrain(
+        newBrightness,
+        LED_BRIGHTNESS_MIN,
+        maxBright);
+
+    if (abs(newBrightness - ledLastBrightness) >= LED_HYSTERESIS)
     {
         ledLastBrightness = newBrightness;
     }
@@ -280,7 +289,7 @@ int mapWithHysteresis(uint8_t lightLevel)
 
 bool disableHysteresisState = false;
 
-void dimLedDisplay()
+void dimLedDisplay(bool checkForOff)
 {
     if (lightLevel < 5000)
     {
@@ -295,15 +304,20 @@ void dimLedDisplay()
                 disableHysteresisState = true;
         }
         LedMut.lock();
-        if (disableHysteresisState)
+        if (disableHysteresisState && checkForOff == true)
         {
+            if (millis() < displayHoldUntil)
+            {
+                LedMut.unlock();
+                return;
+            }
             LedDisplay.clear();
             LedDisplayOn = false;
         }
         else if (lightLevel > LED_DIM_THRESHOLD)
         {
             LedDisplayOn = true;
-            uint8_t brightness = mapWithHysteresis(lightLevel);
+            uint8_t brightness = mapLedWithHysteresis(lightLevel);
             setLedIntensity(brightness);
             Serial.println("Brightness of Led display " + String(brightness));
         }
@@ -363,7 +377,7 @@ int getMmwaveState()
 
         if (jsonString.length() > 0)
         {
-            break; 
+            break;
         }
         else
         {
@@ -402,38 +416,51 @@ int getMmwaveState()
 
 float getLightLevel()
 {
-    float currentLightLevel = lightMeter.readLight(); // Read the current light level from BH1750 sensor
-    return currentLightLevel;
+    static uint32_t lastRead = 0;
+
+    if (millis() - lastRead >= 400)
+    {
+        lastRead = millis();
+
+        float currentLightLevel = lightMeter.readLight();
+
+        if (!isnan(currentLightLevel))
+        {
+            lightLevel = currentLightLevel;
+        }
+    }
+
+    return lightLevel;
 }
 
 void initLightSensor()
 {
-  // Possible values: .125, .25, 1, 2
-  // Both .125 and .25 should be used in most cases except darker rooms.
-  // A gain of 2 should only be used if the sensor will be covered by a dark
-  // glass.
-  float gain = 1;
+    // Possible values: .125, .25, 1, 2
+    // Both .125 and .25 should be used in most cases except darker rooms.
+    // A gain of 2 should only be used if the sensor will be covered by a dark
+    // glass.
+    float gain = 1;
 
-  // Possible integration times in milliseconds: 800, 400, 200, 100, 50, 25
-  // Higher times give higher resolutions and should be used in darker light.
-  int time = 400;
+    // Possible integration times in milliseconds: 800, 400, 200, 100, 50, 25
+    // Higher times give higher resolutions and should be used in darker light.
+    int time = 400;
 
-  if (lightMeter.begin(Wire))
-    Serial.println("Ready to sense some light!");
-  else
-    Serial.println("Could not communicate with the sensor!");
+    if (lightMeter.begin(Wire))
+        Serial.println("Ready to sense some light!");
+    else
+        Serial.println("Could not communicate with the sensor!");
 
-  // Again the gain and integration times determine the resolution of the lux
-  // value, and give different ranges of possible light readings. Check out
-  // hoookup guide for more info.
-  lightMeter.setGain(gain);
-  lightMeter.setIntegTime(time);
+    // Again the gain and integration times determine the resolution of the lux
+    // value, and give different ranges of possible light readings. Check out
+    // hoookup guide for more info.
+    lightMeter.setGain(gain);
+    lightMeter.setIntegTime(time);
 
-  Serial.println("Reading settings...");
-  Serial.print("Gain: ");
-  float gainVal = lightMeter.readGain();
-  Serial.print(gainVal, 3);
-  Serial.print(" Integration Time: ");
-  int timeVal = lightMeter.readIntegTime();
-  Serial.println(timeVal);
+    Serial.println("Reading settings...");
+    Serial.print("Gain: ");
+    float gainVal = lightMeter.readGain();
+    Serial.print(gainVal, 3);
+    Serial.print(" Integration Time: ");
+    int timeVal = lightMeter.readIntegTime();
+    Serial.println(timeVal);
 }
