@@ -41,7 +41,7 @@ void initHardware()
 {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-  waitForSerialInput();
+  //waitForSerialInput();
   Serial.println("Initializing Hardware");
   setCpuFrequencyMhz(80); // stable 160,80,240 needs to be 80 for wifi
   esp_pm_config_t pm_config = {

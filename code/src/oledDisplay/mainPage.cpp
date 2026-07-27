@@ -333,27 +333,96 @@ void showSensorPage()
 {
     oled.clearDisplay();
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
-    oled.drawGrayscaleBitmap(SCREEN_WIDTH - 24 - 10, 18, thermometer_cold_duotone_24x24, 24, 24);
-    oled.setCursor(2, 35);
-    String tempText = "Temp: " + String(readTemperature()) + "C";
-    oled.print(tempText);
+
+    // Existing top icons
+    oled.drawGrayscaleBitmap(SCREEN_WIDTH - 16 - 10, 20, thermometer_cold_duotone_24x24, 16, 16);
+    oled.drawGrayscaleBitmap(SCREEN_WIDTH - 16 - 10, 20 + 16, drop_simple_duotone_24x24, 16, 16);
+
     int16_t x, y;
     uint16_t w, h;
-    oled.getTextBounds(tempText, 0, 0, &x, &y, &w, &h);
-    oled.drawLine(2, 26, 2 + w, 26, SSD1327_WHITE);
-    uint16_t tempLenght = w;
+
+
+    // SHT40 title
+    oled.setCursor(2, 35);
+    float temp = readTemperature();
+    String tempValue = "Temp: " + String(temp, 1);
+
+    oled.print(tempValue);
+
+    oled.setTextColor(6);
+    oled.print(" C");
+    oled.setTextColor(SSD1327_WHITE);
+
+
+    oled.getTextBounds(tempValue, 0, 0, &x, &y, &w, &h);
+    oled.drawLine(2, 26, 2 + w + 10, 26, 8);
+
+
     oled.getTextBounds("SHT40 Sens", 0, 0, &x, &y, &w, &h);
-    oled.setCursor(tempLenght / 2 - w / 2, 24);
+    oled.setCursor(2 + (w / 2) - (w / 2), 24);
     oled.print("SHT40 Sens");
-    oled.setCursor(2, 35 + 24);
-    oled.print("Hum: " + String(readHumidity()) + "%");
-    oled.setCursor(2, 35 + 24 + 24);
-    oled.print("Press: " + String(readPressure()) + "Pa");
-    oled.setCursor(2, 35 + 24 + 24 + 10);
-    oled.print("Alt: " + String(readAltitude()) + "M");
-    oled.setCursor(2, 35 + 24 + 24 + 24 +10);
-    oled.print("tempbmp: " + String(readTemperatureBMP()) + "C");
-    oled.drawGrayscaleBitmap(SCREEN_WIDTH - 24 - 10, 18 + 24, drop_simple_duotone_24x24, 24, 24);
+
+
+    oled.setCursor(2, 35 + 16);
+    String humValue = "Hum: " + String(readHumidity(), 1);
+
+    oled.print(humValue);
+
+    oled.setTextColor(6);
+    oled.print(" %");
+    oled.setTextColor(SSD1327_WHITE);
+
+
+
+    // BMP280 title
+    String pressValue = "P: " + String(readPressure(), 1);
+
+    oled.getTextBounds(pressValue, 0, 0, &x, &y, &w, &h);
+    oled.drawLine(2, 35 + 16 + 16 + 2, 2 + w + 25, 35 + 16 + 16 + 2, 8);
+
+
+    oled.getTextBounds("BMP280 Sens", 0, 0, &x, &y, &w, &h);
+    oled.setCursor(2 + (w / 2) - (w / 2), 35 + 16 + 16 - 2);
+    oled.print("BMP280 Sens");
+
+
+    // Pressure icon
+    oled.drawGrayscaleBitmap(100, 67, drop_simple_duotone_24x24, 16, 16);
+
+    oled.setCursor(2, 35 + 16 + 16 + 11);
+    oled.print(pressValue);
+
+    oled.setTextColor(6);
+    oled.print(" hPa");
+    oled.setTextColor(SSD1327_WHITE);
+
+    // Altitude icon
+    oled.drawGrayscaleBitmap(100, 83, drop_simple_duotone_24x24, 16, 16);
+
+    oled.setCursor(2, 35 + 16 + 16 + 16 + 11);
+    String altValue = "Alt: " + String((int)readAltitude());
+
+    oled.print(altValue);
+
+    oled.setTextColor(6);
+    oled.print(" M");
+    oled.setTextColor(SSD1327_WHITE);
+
+
+
+    // BMP temperature icon
+    oled.drawGrayscaleBitmap(100, 99, thermometer_hot_duotone_24x24, 16, 16);
+
+    oled.setCursor(2, 35 + 16 + 16 + 16 + 16 + 11);
+
+    String bmpTempValue = "Temp: " + String(readTemperatureBMP(), 1);
+
+    oled.print(bmpTempValue);
+
+    oled.setTextColor(6);
+    oled.print(" C");
+    oled.setTextColor(SSD1327_WHITE);
+
 
     oledMana.display();
 }

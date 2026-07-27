@@ -97,6 +97,15 @@ inkButtonStates mcp23018::manageInterrupts()
     }
     return None;
   }
+  bool APDSInt = checkBit(gpio_cause, APDS9960_INT);
+  if (APDSInt == true)
+  {
+    if (APDSInt == true)
+    {
+      resumeGestureTask();
+    }
+    return None;
+  }
 
   if (checkBit(gpio_cause, BACK_PIN) == true)
   {
@@ -288,11 +297,10 @@ void mcp23018::setDefaultPinStates()
   setPinState(MCP_CHARGER_CONTROL_PIN, false);
   setPinMode(MCP_CHARGER_CONTROL_PIN, MCP_OUTPUT);
 
-  setPinMode(MCP_LED1_P1,MCP_OUTPUT);
-  setPinMode(MCP_LED1_P2,MCP_OUTPUT);
-  setPinMode(MCP_LED2_P1,MCP_OUTPUT);
-  setPinMode(MCP_LED2_P2,MCP_OUTPUT);
-
+  setPinMode(MCP_LED1_P1, MCP_OUTPUT);
+  setPinMode(MCP_LED1_P2, MCP_OUTPUT);
+  setPinMode(MCP_LED2_P1, MCP_OUTPUT);
+  setPinMode(MCP_LED2_P2, MCP_OUTPUT);
 
   setDefaultInterrupts();
 
@@ -339,6 +347,7 @@ void mcp23018::setDefaultInterrupts()
   setInterrupt(UP_PIN, true);
 
   setInterrupt(MCP_5V, true);
+  setInterrupt(APDS9960_INT, true);
 
   Serial.println("Setting Mcp interrupts");
 }

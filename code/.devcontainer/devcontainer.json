@@ -16,9 +16,13 @@
 			]
 		}
 	},
+	"runArgs": [
+		"--privileged",
+		"--group-add=985"
+	],
 	"mounts": [
 		"source=/dev/,target=/dev/,type=bind,consistency=consistent"
 	],
-	"privileged": true,
-	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y librsvg2-bin imagemagick libmagickcore-6.q16-6-extra python3-pil python3-pip bc build-essential fonts-dejavu-core fontconfig libcairo2 libpango-1.0-0 libglib2.0-0 libfuse2 fuse3 xkb-data x11-xkb-utils && python3 -m pip install pillow"
+	"postCreateCommand": "sudo groupadd -g 985 uucp 2>/dev/null || true && sudo usermod -aG uucp,dialout vscode && sudo apt-get update && sudo apt-get install -y librsvg2-bin imagemagick libmagickcore-6.q16-6-extra python3-pil python3-pip bc build-essential fonts-dejavu-core fontconfig libcairo2 libpango-1.0-0 libglib2.0-0 libfuse2 fuse3 xkb-data x11-xkb-utils && python3 -m pip install pillow",
+	"privileged": true
 }

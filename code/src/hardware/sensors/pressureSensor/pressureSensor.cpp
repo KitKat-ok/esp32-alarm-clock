@@ -28,7 +28,7 @@ float readPressure()
 {
     bmp.takeForcedMeasurement();
 
-    float pressure = bmp.readPressure();
+    float pressure = bmp.readPressure() * 0.01;
     return pressure;
 }
 

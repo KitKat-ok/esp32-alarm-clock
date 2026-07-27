@@ -92,11 +92,11 @@ void OLED_MANAGER::initDisplay()
 
     oled.display();
 
-    delay(5000);
+    delay(1000);
 
     OLED_MANAGER::fadeOut();
 
-    delay(5000);
+    delay(1000);
 }
 
 void OLED_MANAGER::display()

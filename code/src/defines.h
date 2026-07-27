@@ -20,6 +20,7 @@
 #include <Grafici.h>
 #include <Timezone.h>
 #include <AT42QT2120.h>
+#include <SparkFun_APDS9960.h>
 
 #include "esp_pm.h"
 #include "esp_wifi.h"
@@ -92,6 +93,10 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 // Weather
 #define DAILY_WEATHER_INTERVAL 5 * 60 * 60 * 1000
 #define CURRENT_WEATHER_INTERVAL 30 * 60 * 1000  // 30 minutes
+
+// APDS sensor
+#define APDS9960_INT 6  // Interrupt pin
+#define GESTURE_DEBOUNCE_MS 50
 
 // Light Sensor
 #define OLED_DISABLE_THRESHOLD 20 // lux at which oled will turn off
@@ -192,6 +197,7 @@ typedef enum
 #include "hardware/mcp23018/mcp23018.h"
 #include "hardware/input/buttons/combinations.h"
 #include "hardware/input/touch/touch.h"
+#include "hardware/input/gestures/gestures.h"
 #include "functions.h"
 #include "WiFi/WiFi.h"
 #include "WiFi/ota.h"

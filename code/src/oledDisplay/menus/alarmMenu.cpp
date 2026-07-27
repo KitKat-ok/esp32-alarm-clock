@@ -157,119 +157,176 @@ void initManageAlarm()
     useButton();
 }
 
+static unsigned long lastRepeatTime = 0;
+
+void drawSelectableText(const String &label, int16_t x, int16_t y, bool selected, bool editing)
+{
+    int16_t x1, y1;
+    uint16_t w, h;
+
+    oled.getTextBounds(label, x, y, &x1, &y1, &w, &h);
+
+    if (editing)
+        oled.drawRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
+    else if (selected)
+    {
+        oled.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
+        oled.setTextColor(SSD1327_BLACK, SSD1327_WHITE);
+    }
+    else
+        oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
+
+    oled.setCursor(x, y);
+    oled.print(label);
+}
+
+void drawSelectableBox(int16_t x, int16_t y, int w, int h, bool selected, bool editing)
+{
+    oled.drawRect(
+        x,
+        y,
+        w,
+        h,
+        (selected || editing) ? SSD1327_WHITE : SSD1327_BLACK);
+}
+
+int drawToggleLabel(
+    const String &label,
+    int16_t x,
+    int16_t y,
+    bool enabled,
+    bool selected = false)
+{
+    int16_t x1, y1;
+    uint16_t w, h;
+
+    oled.getTextBounds(label, 0, 0, &x1, &y1, &w, &h);
+
+    oled.setTextColor(
+        enabled ? SSD1327_WHITE : 0x5,
+        enabled ? SSD1327_BLACK : SSD1327_BLACK);
+
+    oled.setCursor(x, y);
+    oled.print(label);
+
+    if (selected)
+        oled.drawRect(x - 3, y - 11, w + 7, 15, 0x8);
+
+    return w;
+}
+
+template<typename T>
+void handleValueRepeat(
+    uint8_t pin,
+    T callback,
+    unsigned long &lastRepeatTime,
+    uint16_t repeatDelay = 200)
+{
+    delay(100);
+
+    while (buttonRead(pin) == BUT_CLICK_STATE)
+    {
+        if (millis() - lastRepeatTime > repeatDelay)
+        {
+            callback();
+            lastRepeatTime = millis();
+        }
+
+        delay(50);
+    }
+}
+
 void manageAlarms()
 {
     uint8_t alarmIndex = alarmsSubmenu->entries[data.currentButton].text.toInt();
     bool exitAlarm = false;
 
-    static unsigned long lastRepeatTime = 0;
     inkButtonStates btn = useButton();
-    int labelWidth = 0;
-
-    auto drawMenuOption = [&](const String &label, int16_t x, int16_t y, bool selected, bool editing)
-    {
-        int16_t x1, y1;
-        uint16_t w, h;
-        oled.getTextBounds(label, x, y, &x1, &y1, &w, &h);
-
-        if (editing)
-            oled.drawRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
-        else if (selected)
-        {
-            oled.fillRect(x1 - 2, y1 - 2, w + 4, h + 4, SSD1327_WHITE);
-            oled.setTextColor(SSD1327_BLACK, SSD1327_WHITE);
-        }
-        else
-            oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
-
-        oled.setCursor(x, y);
-        oled.print(label);
-    };
-
-    auto drawBitmapOption = [&](int16_t x, int16_t y, bool selected, bool editing)
-    {
-        if (editing || selected)
-        {
-            oled.drawRect(x - 2, y - 2, 22, 22, SSD1327_WHITE);
-            //oled.drawBitmap(x, y, remove_18x18, 18, 18, SSD1327_WHITE);
-        }
-        else
-            //oled.drawBitmap(x, y, remove_18x18, 18, 18, SSD1327_BLACK, SSD1327_WHITE);
-            oled.drawRect(x - 2, y - 2, 22, 22, SSD1327_BLACK);
-    };
-
-    auto drawDaySelection = [&](int16_t x, int16_t y, bool selected, int dayIndex, bool groupSelected, bool buttonSelected)
-    {
-        String dayLabel = getShorterWeekdayName(dayIndex + 1);
-        int16_t x1, y1;
-        uint16_t w, h;
-        oled.getTextBounds(dayLabel, 0, 0, &x1, &y1, &w, &h);
-        labelWidth = w;
-
-        oled.setTextColor(buttonSelected ? SSD1327_BLACK : SSD1327_WHITE, buttonSelected ? SSD1327_WHITE : SSD1327_BLACK);
-        oled.setCursor(x, y);
-        oled.print(dayLabel);
-
-        if (selected && !buttonSelected)
-            oled.drawRect(x - 1, y - 10, w + 4, 12, SSD1327_WHITE);
-        if (buttonSelected)
-        {
-            oled.fillRect(x - 1, y - 10, w + 4, 12, SSD1327_WHITE);
-            if (selected)
-                oled.drawRect(x - 3, y - 12, w + 8, 16, SSD1327_WHITE);
-            oled.setCursor(x, y);
-            oled.print(dayLabel);
-        }
-    };
-
-    auto drawDaySelectionGroup = [&](int16_t x, int16_t y)
-    {
-        int startX = x;
-        labelWidth = 0;
-        for (int i = 0; i < 7; i++)
-        {
-            drawDaySelection(startX, y, alarms[alarmIndex].days[i], i, true, i == alarmCurrentState);
-            startX += labelWidth + 5;
-        }
-    };
 
     auto redrawDisplay = [&]()
     {
         oled.clearDisplay();
+
         oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
+
         oled.setCursor(1, 8);
         oled.println("Alarm " + String(alarmIndex));
+
         oled.setFont(&font4pt7b);
         oled.setCursor(70, 7);
         oled.print("Today:" + getShortCurrentWeekdayName());
 
         oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+        oled.setTextSize(2);
+
         centerText(":", 19, 34);
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].hours), 17, 19, !inDaySelectionMode && alarmCurrentState == 0, isEditingAlarm && alarmCurrentState == 0);
-        drawMenuOption(formatWithLeadingZero(alarms[alarmIndex].minutes), 39, 19, !inDaySelectionMode && alarmCurrentState == 1, isEditingAlarm && alarmCurrentState == 1);
+
+        drawSelectableText(
+            formatWithLeadingZero(alarms[alarmIndex].hours),
+            17,
+            19,
+            !inDaySelectionMode && alarmCurrentState == 0,
+            isEditingAlarm && alarmCurrentState == 0);
+
+        drawSelectableText(
+            formatWithLeadingZero(alarms[alarmIndex].minutes),
+            39,
+            19,
+            !inDaySelectionMode && alarmCurrentState == 1,
+            isEditingAlarm && alarmCurrentState == 1);
+
+        oled.setTextSize(1);
 
         oled.setFont(&DejaVu_LGC_Sans_Bold_9);
-        if (inDaySelectionMode)
-            drawDaySelectionGroup(2, 46);
-        else
+
+        int startX = 3;
+
+        for (int i = 0; i < 7; i++)
         {
-            int startX = 2;
-            labelWidth = 0;
-            for (int i = 0; i < 7; i++)
-            {
-                drawDaySelection(startX, 46, alarms[alarmIndex].days[i], i, false, false);
-                startX += labelWidth + 5;
-            }
-            if (alarmCurrentState == 3)
-                oled.drawRect(0, 34, SCREEN_WIDTH - 1, 16, SSD1327_WHITE);
+            bool selected = inDaySelectionMode && i == alarmCurrentState;
+
+            startX += drawToggleLabel(
+                          getShorterWeekdayName(i + 1),
+                          startX,
+                          46,
+                          alarms[alarmIndex].days[i],
+                          selected) +
+                      5;
         }
 
-        oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
+        if (!inDaySelectionMode && alarmCurrentState == 3)
+            oled.drawRect(0, 34, SCREEN_WIDTH - 1, 16, SSD1327_WHITE);
+
         oled.setFont(&DejaVu_LGC_Sans_Bold_10);
-        drawMenuOption("Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"), 1, 32, !inDaySelectionMode && alarmCurrentState == 2, isEditingAlarm && alarmCurrentState == 2);
-        drawMenuOption("Sound:" + String(alarms[alarmIndex].soundOn ? "On" : "Off"), 1, 59, !inDaySelectionMode && alarmCurrentState == 4, isEditingAlarm && alarmCurrentState == 4);
-        drawMenuOption("Light:" + String(alarms[alarmIndex].lightOn ? "On" : "Off"), 84 - 15, 59, !inDaySelectionMode && alarmCurrentState == 5, isEditingAlarm && alarmCurrentState == 5);
-        drawBitmapOption(SCREEN_WIDTH - 30, 14, !inDaySelectionMode && alarmCurrentState == 6, !inDaySelectionMode && isEditingAlarm && alarmCurrentState == 6);
+
+        drawSelectableText(
+            "Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"),
+            1,
+            32,
+            !inDaySelectionMode && alarmCurrentState == 2,
+            isEditingAlarm && alarmCurrentState == 2);
+
+        drawSelectableText(
+            "Sound:" + String(alarms[alarmIndex].soundOn ? "On" : "Off"),
+            1,
+            59,
+            !inDaySelectionMode && alarmCurrentState == 4,
+            isEditingAlarm && alarmCurrentState == 4);
+
+        drawSelectableText(
+            "Light:" + String(alarms[alarmIndex].lightOn ? "On" : "Off"),
+            69,
+            59,
+            !inDaySelectionMode && alarmCurrentState == 5,
+            isEditingAlarm && alarmCurrentState == 5);
+
+        drawSelectableBox(
+            SCREEN_WIDTH - 32,
+            12,
+            22,
+            22,
+            !inDaySelectionMode && alarmCurrentState == 6,
+            isEditingAlarm && alarmCurrentState == 6);
 
         oled.display();
     };
@@ -280,6 +337,7 @@ void manageAlarms()
             alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 1) % 24;
         else if (alarmCurrentState == 1)
             alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 1) % 60;
+
         AlarmMenuUpdate = true;
     };
 
@@ -289,10 +347,9 @@ void manageAlarms()
             alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 23) % 24;
         else if (alarmCurrentState == 1)
             alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 59) % 60;
+
         AlarmMenuUpdate = true;
     };
-
-    unsigned long now = millis();
 
     switch (btn)
     {
@@ -303,8 +360,9 @@ void manageAlarms()
             alarmCurrentState = (alarmCurrentState + 6) % 7;
         else
             updateAlarmValueUp();
+
         AlarmMenuUpdate = true;
-        lastRepeatTime = now;
+        lastRepeatTime = millis();
         break;
 
     case Down:
@@ -314,52 +372,53 @@ void manageAlarms()
             alarmCurrentState = (alarmCurrentState + 1) % 7;
         else
             updateAlarmValueDown();
+
         AlarmMenuUpdate = true;
-        lastRepeatTime = now;
+        lastRepeatTime = millis();
         break;
-    case LongDown:
-        if (isEditingAlarm)
-        {
-            delay(100);
-            while (buttonRead(DOWN_PIN) == BUT_CLICK_STATE)
-            {
-                if ((millis() - lastRepeatTime > 200))
-                {
-                    updateAlarmValueDown();
-                    if (AlarmMenuUpdate)
-                    {
-                        AlarmMenuUpdate = false;
-                        redrawDisplay();
-                    }
-                    lastRepeatTime = millis();
-                }
-                delay(50);
-            }
-        }
-        break;
+
     case LongUp:
         if (isEditingAlarm)
         {
-            delay(100);
-            while (buttonRead(UP_PIN) == BUT_CLICK_STATE)
-            {
-                if ((millis() - lastRepeatTime > 200))
+            handleValueRepeat(
+                UP_PIN,
+                [&]()
                 {
-                    updateAlarmValueUp();
-                    if (AlarmMenuUpdate)
-                    {
-                        AlarmMenuUpdate = false;
-                        redrawDisplay();
-                    }
-                    lastRepeatTime = millis();
-                }
-                delay(50);
-            }
+                    if (alarmCurrentState == 0)
+                        alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 1) % 24;
+                    else if (alarmCurrentState == 1)
+                        alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 1) % 60;
+
+                    AlarmMenuUpdate = true;
+                },
+                lastRepeatTime);
         }
         break;
+
+    case LongDown:
+        if (isEditingAlarm)
+        {
+            handleValueRepeat(
+                DOWN_PIN,
+                [&]()
+                {
+                    if (alarmCurrentState == 0)
+                        alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 23) % 24;
+                    else if (alarmCurrentState == 1)
+                        alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 59) % 60;
+
+                    AlarmMenuUpdate = true;
+                },
+                lastRepeatTime);
+        }
+        break;
+
     case Menu:
         if (inDaySelectionMode)
-            alarms[alarmIndex].days[alarmCurrentState] = !alarms[alarmIndex].days[alarmCurrentState];
+        {
+            alarms[alarmIndex].days[alarmCurrentState] =
+                !alarms[alarmIndex].days[alarmCurrentState];
+        }
         else if (!isEditingAlarm)
         {
             switch (alarmCurrentState)
@@ -367,26 +426,34 @@ void manageAlarms()
             case 2:
                 alarms[alarmIndex].enabled = !alarms[alarmIndex].enabled;
                 break;
+
             case 3:
                 inDaySelectionMode = true;
                 alarmCurrentState = 0;
                 break;
+
             case 4:
                 alarms[alarmIndex].soundOn = !alarms[alarmIndex].soundOn;
                 break;
+
             case 5:
                 alarms[alarmIndex].lightOn = !alarms[alarmIndex].lightOn;
                 break;
+
             case 6:
                 deleteAlarmStatic(alarmIndex);
                 break;
+
             default:
                 isEditingAlarm = true;
                 break;
             }
         }
         else
+        {
             isEditingAlarm = false;
+        }
+
         AlarmMenuUpdate = true;
         break;
 
@@ -419,15 +486,12 @@ void manageAlarms()
     }
 
     if (useAllButtons() != None)
-    {
         lastInputTime = millis();
-    }
-    if (millis() - lastInputTime > LOOP_FUNCTION_TIMEOUT_MS)
-    {
-        exitAlarm = true;
-    }
 
-    if (exitAlarm == true && data.currentButton != 0)
+    if (millis() - lastInputTime > LOOP_FUNCTION_TIMEOUT_MS)
+        exitAlarm = true;
+
+    if (exitAlarm && data.currentButton != 0)
     {
         AlarmMenuUpdate = false;
         exitLoopFunction = true;
