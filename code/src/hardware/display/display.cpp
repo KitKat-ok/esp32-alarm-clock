@@ -81,22 +81,22 @@ void OLED_MANAGER::initDisplay()
 
     oled.clearDisplay();
 
-    int barWidth = oled.width() / 16;
+    // int barWidth = oled.width() / 16;
 
-    for (int i = 0; i < 16; i++)
-    {
-        uint16_t x = i * barWidth;
-        oled.fillRect(x, 0, barWidth, oled.height(), i);
-    }
-    OLED_MANAGER::fadeIn();
+    // for (int i = 0; i < 16; i++)
+    // {
+    //     uint16_t x = i * barWidth;
+    //     oled.fillRect(x, 0, barWidth, oled.height(), i);
+    // }
+    // OLED_MANAGER::fadeIn();
 
-    oled.display();
+    // oled.display();
 
-    delay(1000);
+    // delay(1000);
 
-    OLED_MANAGER::fadeOut();
+    // OLED_MANAGER::fadeOut();
 
-    delay(1000);
+    // delay(1000);
 }
 
 void OLED_MANAGER::display()

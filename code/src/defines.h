@@ -20,7 +20,7 @@
 #include <Grafici.h>
 #include <Timezone.h>
 #include <AT42QT2120.h>
-#include <SparkFun_APDS9960.h>
+#include "Adafruit_APDS9960.h"
 
 #include "esp_pm.h"
 #include "esp_wifi.h"
@@ -96,7 +96,8 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 
 // APDS sensor
 #define APDS9960_INT 6  // Interrupt pin
-#define GESTURE_DEBOUNCE_MS 50
+#define GESTURES_ENABLED false
+#define PROXIMITY_THRESHOLD 50
 
 // Light Sensor
 #define OLED_DISABLE_THRESHOLD 20 // lux at which oled will turn off
@@ -191,6 +192,7 @@ typedef enum
 #include "hardware/sensors/tempSensor/tempSensor.h"
 #include "hardware/sensors/lightSensor/lightSensor.h"
 #include "hardware/sensors/pressureSensor/pressureSensor.h"
+#include "hardware/sensors/colorDistSensor/colorDistSensor.h"
 #include "hardware/hardware.h"
 #include "hardware/display/display.h"
 #include "hardware/input/buttons/buttons.h"

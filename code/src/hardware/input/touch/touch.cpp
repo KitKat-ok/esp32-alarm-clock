@@ -81,20 +81,15 @@ void loopTouchTask(void *parameter)
 
             for (uint8_t key = 0; key < KEYS_AMMOUNT; ++key)
             {
-                if (key != 0)
-                    Serial.print("  ");
                 if (touch_sensor.touched(status, key))
                 {
                     t.butoonsPressed[key] = true;
-                    Serial.print("1");
                 }
                 else
                 {
                     t.butoonsPressed[key] = false;
-                    Serial.print("0");
                 }
             }
-            Serial.println(" ");
 
             setTouch(t);
 

@@ -41,7 +41,7 @@ void initHardware()
 {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-  //waitForSerialInput();
+  // waitForSerialInput();
   Serial.println("Initializing Hardware");
   setCpuFrequencyMhz(80); // stable 160,80,240 needs to be 80 for wifi
   esp_pm_config_t pm_config = {
@@ -52,6 +52,9 @@ void initHardware()
   esp_pm_configure(&pm_config);
   initI2C();
   oledMana.initDisplay();
+  initColorSensor();
+  delay(100);
+  turnOnGesture();
   rM.gpioExpander.simplerInit(true);
   initButtons();
   initTouch();
@@ -113,7 +116,7 @@ void initTouch()
   AT42QT2120::KeyControl kc;
 
   kc.setTouchEnabled(false); // replaces enable_key_output = 1 (best guess mapping)
-  kc.setOutputHigh(false);  // key_output = 0
+  kc.setOutputHigh(false);   // key_output = 0
   kc.setAdjacentKeySuppressionGroup(1);
   kc.setGuardEnabled(false); // guard = 0
 
