@@ -57,7 +57,7 @@ static bool pressLocked = false;
 
 void cyclePagesDown()
 {
-        Serial.println("main page cycling down");
+    Serial.println("main page cycling down");
     if (LastPageShown >= NUMBER_OF_PAGES)
     {
         PageNumberToShow = 1;
@@ -131,6 +131,21 @@ void showMainPage()
             Serial.println("Cycling Down");
         }
     }
+
+#else
+    ProximityState p = useProximity();
+    bool isProximity = p.detected;
+
+    if (isProximity == true)
+    {
+        if (PageNumberToShow == 0)
+        {
+            cyclePagesUp();
+        }
+
+        turnOffScreensaver();
+    }
+
 #endif
 
     touchState t = useTouch();

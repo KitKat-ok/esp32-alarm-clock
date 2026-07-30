@@ -1,7 +1,7 @@
 #include "display.h"
 
 SPIClass spi(FSPI);
-Adafruit_SSD1327 oled(128, 128, &spi, OLED_DC, OLED_RESET, OLED_CS, 10000000UL);
+Adafruit_SSD1327 oled(128, 128, &spi, OLED_DC, OLED_RESET, OLED_CS, 5000000UL);
 
 OLED_MANAGER oledMana;
 

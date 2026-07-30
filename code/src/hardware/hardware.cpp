@@ -52,9 +52,6 @@ void initHardware()
   esp_pm_configure(&pm_config);
   initI2C();
   oledMana.initDisplay();
-  initColorSensor();
-  delay(100);
-  turnOnGesture();
   rM.gpioExpander.simplerInit(true);
   initButtons();
   initTouch();
@@ -63,6 +60,8 @@ void initHardware()
   initLightSensor();
   initPressureSensor();
   initTempSensor();
+    initColorSensor();
+  turnOnGesture();
   syncTimeLibWithRTC();
   mountLittlefs();
   Serial.println("Hardware initialized");

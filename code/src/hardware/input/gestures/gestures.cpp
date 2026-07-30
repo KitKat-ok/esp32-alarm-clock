@@ -17,6 +17,7 @@ void resumeGestureTask()
     }
 }
 
+
 #if GESTURES_ENABLED == true
 
 void playGestureSound()
@@ -110,20 +111,71 @@ void loopGestureTask(void *parameter)
 
 #else
 
+static bool proximityPending = false;
+static ProximityCallback onProximityDetected = nullptr;
+static ProximityState currentProximity = {};
+
+void registerProximityCallback(ProximityCallback cb)
+{
+    onProximityDetected = cb;
+}
+
+ProximityState useProximity()
+{
+    std::lock_guard<std::mutex> lock(gestureMut);
+
+    ProximityState out = currentProximity;
+    currentProximity.detected = false;
+    currentProximity.proxValue = 0;
+    proximityPending = false;
+
+    return out;
+}
+
+ProximityState useAllProximity()
+{
+    std::lock_guard<std::mutex> lock(gestureMut);
+    return currentProximity;
+}
+
+void setProximity(const ProximityState &p)
+{
+    std::lock_guard<std::mutex> lock(gestureMut);
+    currentProximity = p;
+    proximityPending = true;
+}
+
 void loopGestureTask(void *parameter)
 {
     gestureActivated = true;
 
     while (true)
     {
-        apds.disableProximityInterrupt();
+        uint32_t now = millis();
 
         uint8_t prox = apds.readProximity();
 
         Serial.println("Proximity trigger fired once! Value: " + String(prox));
         inputDetected = true;
+
+        // 1. Create and post ProximityState event
+        ProximityState p = {};
+        p.detected = true;
+        p.proxValue = prox;
+        p.timestamp = now;
+
+        setProximity(p);
         tone(BUZZER_PIN, NOTE_B4, 30);
 
+        // 2. Trigger optional callback
+        if (onProximityDetected != nullptr)
+        {
+            onProximityDetected(prox);
+        }
+
+        apds.disableProximityInterrupt();
+
+        // 3. Block until target moves away
         while (apds.readProximity() >= PROXIMITY_THRESHOLD)
         {
             vTaskDelay(50 / portTICK_PERIOD_MS);

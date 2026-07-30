@@ -57,25 +57,12 @@ void initColorSensor()
     setGestureInterrupt(true);
 
 #else
-    // --- FULL PROXIMITY INTERRUPT CONFIGURATION ---
-        Serial.println("help");
 
-    // 1. Enable proximity hardware engine
-
-    // 2. Set Receiver Gain (Options: APDS9960_PGAIN_1X, 2X, 4X, 8X)
     apds.setProxGain(APDS9960_PGAIN_4X);
 
-    // 3. Set LED Pulse Length & Count (16us pulse width, 8 pulses)
     apds.setProxPulse(APDS9960_PPULSELEN_16US, 8);
 
-    // 4. Set Hardware Interrupt Thresholds
-    // Format: setProximityInterruptThreshold(low_threshold, high_threshold, persistence)
-    // Low = 0 (triggers when object moves away)
-    // High = 50 (triggers when object gets close enough; scale 0-255)
-    // Persistence = 4 (requires 4 consecutive readings before firing interrupt to filter noise)
-    apds.setProximityInterruptThreshold(PROXIMITY_THRESHOLD + 30, PROXIMITY_THRESHOLD, 4);
-
-    // 5. Enable Proximity Interrupt on the hardware INT pin
+    apds.setProximityInterruptThreshold(0, PROXIMITY_THRESHOLD, 4);
     apds.enableProximityInterrupt();
 
 #endif
@@ -90,7 +77,6 @@ bool readColorData(ColorData &data)
         return false;
     }
 
-    // Adafruit's getColorData takes pointers to uint16_t for r, g, b, c
     apds.getColorData(&data.red, &data.green, &data.blue, &data.ambient);
     return true;
 }
@@ -106,4 +92,25 @@ uint16_t readAmbientLight()
 
     apds.getColorData(&r, &g, &b, &c);
     return c;
+}
+
+uint16_t readColorTemperature(const ColorData &data)
+{
+    return apds.calculateColorTemperature(data.red, data.green, data.blue);
+}
+
+uint16_t calculateLuxWithIRCompensation(const ColorData &data)
+{
+    // 1. Estimate IR component
+    float ir = (float)(data.red + data.green + data.blue - data.ambient) / 2.0f;
+    if (ir < 0.0f) ir = 0.0f;
+
+    // 2. Subtract IR from Clear to get true visible photopic intensity
+    float visibleClear = (float)data.ambient - ir;
+    if (visibleClear < 0.0f) visibleClear = 0.0f;
+
+    // 3. Convert visible light count to Lux
+    float lux = visibleClear * 0.46f;
+
+    return (uint16_t)lux;
 }
