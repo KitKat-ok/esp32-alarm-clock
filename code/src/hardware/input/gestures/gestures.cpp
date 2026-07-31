@@ -1,6 +1,5 @@
 #include "gestures.h"
 
-static bool gestureActivated = false;
 static TaskHandle_t gestureTaskHandle = NULL;
 
 static std::mutex gestureMut;
@@ -16,7 +15,6 @@ void resumeGestureTask()
         }
     }
 }
-
 
 #if GESTURES_ENABLED == true
 
@@ -61,19 +59,41 @@ void setGesture(const GestureState &g)
 
 void loopGestureTask(void *parameter)
 {
-    gestureActivated = true;
 
     while (true)
     {
         uint32_t now = millis();
 
-        if (apds.gestureValid())
+        bool isGestureValid = false;
+        if (lockI2C())
+        {
+            isGestureValid = apds.gestureValid();
+            unlockI2C();
+        }
+
+        if (isGestureValid)
         {
             bool firstGestureCaptured = false;
 
-            while (apds.gestureValid())
+            while (true)
             {
-                uint8_t gesture = apds.readGesture();
+                uint8_t gesture = 0;
+                bool valid = false;
+
+                if (lockI2C())
+                {
+                    valid = apds.gestureValid();
+                    if (valid)
+                    {
+                        gesture = apds.readGesture();
+                    }
+                    unlockI2C();
+                }
+
+                if (!valid)
+                {
+                    break;
+                }
 
                 if (gesture != 0 && !firstGestureCaptured)
                 {
@@ -97,11 +117,15 @@ void loopGestureTask(void *parameter)
                 }
             }
 
-            Wire.beginTransmission(APDS9960_ADDRESS);
-            Wire.write(0xE6);
-            Wire.endTransmission();
+            if (lockI2C())
+            {
+                Wire.beginTransmission(APDS9960_ADDRESS);
+                Wire.write(0xE6);
+                Wire.endTransmission();
 
-            apds.clearInterrupt();
+                apds.clearInterrupt();
+                unlockI2C();
+            }
         }
 
         vTaskSuspend(NULL);
@@ -147,13 +171,18 @@ void setProximity(const ProximityState &p)
 
 void loopGestureTask(void *parameter)
 {
-    gestureActivated = true;
 
     while (true)
     {
+
         uint32_t now = millis();
 
-        uint8_t prox = apds.readProximity();
+        uint8_t prox = 0;
+        if (lockI2C())
+        {
+            prox = apds.readProximity();
+            unlockI2C();
+        }
 
         Serial.println("Proximity trigger fired once! Value: " + String(prox));
         inputDetected = true;
@@ -173,18 +202,38 @@ void loopGestureTask(void *parameter)
             onProximityDetected(prox);
         }
 
-        apds.disableProximityInterrupt();
+        if (lockI2C())
+        {
+            apds.disableProximityInterrupt();
+            unlockI2C();
+        }
 
         // 3. Block until target moves away
-        while (apds.readProximity() >= PROXIMITY_THRESHOLD)
+        while (true)
         {
+            uint8_t currentProx = 0;
+            if (lockI2C())
+            {
+                currentProx = apds.readProximity();
+                unlockI2C();
+            }
+
+            if (currentProx < PROXIMITY_THRESHOLD)
+            {
+                break;
+            }
+
             vTaskDelay(50 / portTICK_PERIOD_MS);
         }
 
-        apds.clearInterrupt();
-        tone(BUZZER_PIN, NOTE_B3, 25);
-        apds.enableProximityInterrupt();
+        if (lockI2C())
+        {
+            apds.clearInterrupt();
+            apds.enableProximityInterrupt();
+            unlockI2C();
+        }
 
+        tone(BUZZER_PIN, NOTE_B3, 25);
         vTaskSuspend(NULL);
         vTaskDelay(5 / portTICK_PERIOD_MS);
     }
@@ -205,8 +254,6 @@ void initGestureTask()
 
 void turnOnGesture()
 {
-    if (!gestureActivated)
-    {
-        initGestureTask();
-    }
+
+    initGestureTask();
 }

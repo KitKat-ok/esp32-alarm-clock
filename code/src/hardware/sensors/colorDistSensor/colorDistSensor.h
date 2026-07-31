@@ -21,3 +21,5 @@ bool readColorData(ColorData &data);
 uint16_t readAmbientLight();
 
 void setGestureInterrupt(bool enable);
+
+extern bool colorSensorInitialized;

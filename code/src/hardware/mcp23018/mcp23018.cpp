@@ -436,66 +436,73 @@ bool mcp23018::checkBit(uint16_t val, uint8_t bit)
 
 void mcp23018::writeSingleRegister(uint8_t reg, uint8_t val)
 {
-  Wire.beginTransmission(MCP23018_ADDRESS);
-  Wire.write(reg);
-  Wire.write(val);
-  Wire.endTransmission();
+  if (lockI2C())
+  {
+    Wire.beginTransmission(MCP23018_ADDRESS);
+    Wire.write(reg);
+    Wire.write(val);
+    Wire.endTransmission();
+    unlockI2C();
+  }
 }
 
 void mcp23018::writeRegister(uint8_t reg, uint16_t val)
 {
-  // Serial.println("Writing value: " + uint16ToBinaryString(val));
   uint8_t byte0 = val & 0xFF;
   uint8_t byte1 = (val >> 8) & 0xFF;
-  // Serial.println("Bytes to write, bare: " + String(byte0) + " " + String(byte1));
-  /*
-  uint8_t buffer[2];
-  buffer[0] = byte0;
-  buffer[1] = byte1;
-  Wire.beginTransmission(MCP23018_ADDRESS);
-  Wire.write(reg);
-  Wire.write(buffer, 2);
-  Wire.endTransmission();
-  */
-  Wire.beginTransmission(MCP23018_ADDRESS);
-  Wire.write(reg);
-  Wire.write(byte0);
-  Wire.write(byte1);
-  Wire.endTransmission();
+
+  if (lockI2C())
+  {
+    Wire.beginTransmission(MCP23018_ADDRESS);
+    Wire.write(reg);
+    Wire.write(byte0);
+    Wire.write(byte1);
+    Wire.endTransmission();
+    unlockI2C();
+  }
 }
 
 uint16_t mcp23018::readRegister(uint8_t reg)
 {
-  Wire.beginTransmission(MCP23018_ADDRESS);
-  Wire.write(reg);
-  Wire.endTransmission();
-  Wire.requestFrom(MCP23018_ADDRESS, 2);
-  Wire.available();
-  byte data1 = Wire.read();
-  byte data2 = Wire.read();
-#if DEBUG
-  if (Wire.available())
+  uint16_t combined = 0;
+
+  if (lockI2C())
   {
-    Serial.println("There are more bytes available?");
-  }
+    Wire.beginTransmission(MCP23018_ADDRESS);
+    Wire.write(reg);
+    Wire.endTransmission();
+    Wire.requestFrom(MCP23018_ADDRESS, 2);
+    Wire.available();
+    byte data1 = Wire.read();
+    byte data2 = Wire.read();
+#if DEBUG
+    if (Wire.available())
+    {
+      Serial.println("There are more bytes available?");
+    }
 #endif
+    combined = (static_cast<uint16_t>(data1)) | data2 << 8;
+    unlockI2C();
+  }
 
-  // Serial.println("Received pure bytes: " + String(data1) + " " + String(data2));
-
-  uint16_t combined = (static_cast<uint16_t>(data1)) | data2 << 8;
-  // Serial.println("Received data: " + uint16ToBinaryString(combined) + " in register: " + String(reg));
   return combined;
 }
 
 uint8_t mcp23018::readSingleRegister(uint8_t reg)
 {
-  Wire.beginTransmission(MCP23018_ADDRESS);
-  Wire.write(reg);
-  Wire.endTransmission();
-  Wire.requestFrom(MCP23018_ADDRESS, 1);
-  Wire.available();
-  uint8_t readed = Wire.read();
-  // Serial.println("Readed single byte: " + uint8ToBinaryString(readed));
+  uint8_t readed = 0;
+
+  if (lockI2C())
+  {
+    Wire.beginTransmission(MCP23018_ADDRESS);
+    Wire.write(reg);
+    Wire.endTransmission();
+    Wire.requestFrom(MCP23018_ADDRESS, 1);
+    Wire.available();
+    readed = Wire.read();
+    unlockI2C();
+  }
+
   return readed;
 }
 

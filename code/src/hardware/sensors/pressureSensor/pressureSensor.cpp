@@ -1,18 +1,22 @@
 #include "pressureSensor.h"
 
 Adafruit_BMP280 bmp;
+static bool bmpInitialized = false;
 
 float readAltitude()
 {
-    bmp.takeForcedMeasurement();
-    float altitude;
-    if (isWeatherAvailable)
+    if (!bmpInitialized) return -1.0f;
+
+    float altitude = -1.0f;
+
+    if (lockI2C())
     {
-        altitude = bmp.readAltitude(currentWeatherData.pressure);
-    }
-    else
-    {
-        altitude = -1;
+        bmp.takeForcedMeasurement();
+        if (isWeatherAvailable)
+        {
+            altitude = bmp.readAltitude(currentWeatherData.pressure);
+        }
+        unlockI2C();
     }
 
     return altitude;
@@ -20,15 +24,32 @@ float readAltitude()
 
 float readTemperatureBMP()
 {
-    float temperature = bmp.readTemperature();
+    if (!bmpInitialized) return -999.0f;
+
+    float temperature = -999.0f; // Return sentinel value on failure/timeout
+
+    if (lockI2C())
+    {
+        temperature = bmp.readTemperature();
+        unlockI2C();
+    }
+
     return temperature;
 }
 
 float readPressure()
 {
-    bmp.takeForcedMeasurement();
+    if (!bmpInitialized) return 0.0f;
 
-    float pressure = bmp.readPressure() * 0.01;
+    float pressure = 0.0f;
+
+    if (lockI2C())
+    {
+        bmp.takeForcedMeasurement();
+        pressure = bmp.readPressure() * 0.01f;
+        unlockI2C();
+    }
+
     return pressure;
 }
 
@@ -68,18 +89,31 @@ void createPressureTask()
 
 void initPressureSensor()
 {
-    if (!bmp.begin(BMP280_ADDRESS_ALT))
+    bool initialized = false;
+
+    if (lockI2C())
     {
-        Serial.println(F("Could not find a valid BMP280 sensor, check wiring or "
-                         "try a different address!"));
-        while (1)
-            delay(10);
+        initialized = bmp.begin(BMP280_ADDRESS_ALT);
+
+        if (initialized)
+        {
+            /* Default settings from datasheet. */
+            bmp.setSampling(Adafruit_BMP280::MODE_FORCED,     /* Operating Mode. */
+                            Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */
+                            Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
+                            Adafruit_BMP280::FILTER_X16,      /* Filtering. */
+                            Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
+        }
+        unlockI2C();
     }
 
-    /* Default settings from datasheet. */
-    bmp.setSampling(Adafruit_BMP280::MODE_FORCED,     /* Operating Mode. */
-                    Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */
-                    Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
-                    Adafruit_BMP280::FILTER_X16,      /* Filtering. */
-                    Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
+    if (!initialized)
+    {
+        Serial.println(F("Could not find a valid BMP280 sensor! Ignoring and continuing..."));
+        bmpInitialized = false;
+        return;
+    }
+
+    bmpInitialized = true;
+    Serial.println(F("BMP280 initialized successfully."));
 }

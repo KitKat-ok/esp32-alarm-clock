@@ -55,50 +55,57 @@ void loopTouchTask(void *parameter)
 
     while (true)
     {
-        auto status = touch_sensor.getStatus();
-        bool pressed = status.any_key_touched;
-        uint32_t now = millis();
+        bool pressed = false;
 
-        if (pressed)
+        if (lockI2C())
         {
-            if (!wasPressed && (now - lastEvent > TOUCH_DEBOUNCE))
+            auto status = touch_sensor.getStatus();
+            unlockI2C();
+
+            pressed = status.any_key_touched;
+            uint32_t now = millis();
+
+            if (pressed)
             {
-                pressStart = now;
-                lastEvent = now;
+                if (!wasPressed && (now - lastEvent > TOUCH_DEBOUNCE))
+                {
+                    pressStart = now;
+                    lastEvent = now;
+                    soundPlayed = false;
+                }
+
+                if (!soundPlayed)
+                {
+                    playTouchSound();
+                    soundPlayed = true;
+                }
+
+                touchState t = {};
+                t.touched = true;
+                inputDetected = true;
+                t.longPress = (now - pressStart >= LONG_PRESS_MS);
+
+                for (uint8_t key = 0; key < KEYS_AMMOUNT; ++key)
+                {
+                    if (touch_sensor.touched(status, key))
+                    {
+                        t.butoonsPressed[key] = true;
+                    }
+                    else
+                    {
+                        t.butoonsPressed[key] = false;
+                    }
+                }
+
+                setTouch(t);
+
+                wasPressed = true;
+            }
+            else
+            {
+                wasPressed = false;
                 soundPlayed = false;
             }
-
-            if (!soundPlayed)
-            {
-                playTouchSound();
-                soundPlayed = true;
-            }
-
-            touchState t = {};
-            t.touched = true;
-            inputDetected = true;
-            t.longPress = (now - pressStart >= LONG_PRESS_MS);
-
-            for (uint8_t key = 0; key < KEYS_AMMOUNT; ++key)
-            {
-                if (touch_sensor.touched(status, key))
-                {
-                    t.butoonsPressed[key] = true;
-                }
-                else
-                {
-                    t.butoonsPressed[key] = false;
-                }
-            }
-
-            setTouch(t);
-
-            wasPressed = true;
-        }
-        else
-        {
-            wasPressed = false;
-            soundPlayed = false;
         }
 
         if (!pressed)

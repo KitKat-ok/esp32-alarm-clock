@@ -1,4 +1,4 @@
-#include "defines.h"
+#include "lightSensor.h"
 
 #define AL_ADDR 0x10
 SparkFun_Ambient_Light lightMeter(AL_ADDR);
@@ -6,7 +6,7 @@ SparkFun_Ambient_Light lightMeter(AL_ADDR);
 void dimmingTask(void *pvParameters);
 void oledWakeupTask(void *pvParameters);
 void dimOledDisplay();
-void dimLedDisplay();
+void dimLedDisplay(bool checkForOff);
 
 unsigned long displayHoldUntil = 0;
 
@@ -94,6 +94,7 @@ void oledWakeupTask(void *pvParameters)
             lastActionTime = millis();
 
             oledMana.enable();
+
             Serial.print("lock mutex");
             showCurrentTime();
             LedMut.lock();
@@ -435,14 +436,7 @@ float getLightLevel()
 
 void initLightSensor()
 {
-    // Possible values: .125, .25, 1, 2
-    // Both .125 and .25 should be used in most cases except darker rooms.
-    // A gain of 2 should only be used if the sensor will be covered by a dark
-    // glass.
     float gain = 1;
-
-    // Possible integration times in milliseconds: 800, 400, 200, 100, 50, 25
-    // Higher times give higher resolutions and should be used in darker light.
     int time = 400;
 
     if (lightMeter.begin(Wire))
@@ -450,9 +444,6 @@ void initLightSensor()
     else
         Serial.println("Could not communicate with the sensor!");
 
-    // Again the gain and integration times determine the resolution of the lux
-    // value, and give different ranges of possible light readings. Check out
-    // hoookup guide for more info.
     lightMeter.setGain(gain);
     lightMeter.setIntegTime(time);
 

@@ -209,7 +209,7 @@ void initButtons()
 }
 
 int melody[] = {
-    NOTE_C7, NOTE_G7, NOTE_C8};
+    NOTE_DS8, NOTE_G7, NOTE_C8};
 
 int noteDurations[] = {
     16, 11, 16};
