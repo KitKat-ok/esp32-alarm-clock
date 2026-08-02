@@ -49,6 +49,8 @@
 #define MCP_LED2_P1 10
 #define MCP_LED2_P2 11
 
+#define AUTO_OFF_DELAY_MS 180000
+
 // Interrupts
 
 #define MCP_INTERRUPT_PIN 5

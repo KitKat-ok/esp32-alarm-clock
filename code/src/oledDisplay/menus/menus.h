@@ -9,10 +9,11 @@ String convertWindDirection(uint16_t degrees);
 
 void checkExit();
 
+void updateWeatherMenuDates();
+
 void initWeatherMenu();
 void currentWeatherMenu();
 void wifiDebugMenu();
 void CPUDebugMenu();
 void generalDebugMenu();
-void touchDebugMenu();
 void fpsCalc();

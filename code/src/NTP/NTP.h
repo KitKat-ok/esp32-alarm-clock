@@ -3,7 +3,7 @@
 #include "../defines.h"
 
 void createTimeTask();
-void synchronizeAndSetTime();
+bool synchronizeAndSetTime();
 void deleteTimeTask();
 
 void syncTimeLibWithRTC();

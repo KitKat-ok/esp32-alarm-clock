@@ -8,7 +8,7 @@ void initWifi();
 
 extern TaskHandle_t wifiTask;
 
-extern bool WiFiTaskRunning;
+extern bool WifiTaskRunning;
 
 extern bool tasksLaunched;
 

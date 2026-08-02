@@ -78,7 +78,6 @@ void addNewAlarm()
 
             addEntryToSubmenu(alarmsSubmenu, getAlarmEntryName(i), initManageAlarm, manageAlarms, &font4pt7b);
 
-            // alarmsSubmenu->name = menuName;
             data.submenuCount++;
             data.currentButton = data.submenuCount - 1;
             delay(1);
@@ -116,7 +115,6 @@ void initAlarmMenus()
 
             addEntryToSubmenu(alarmsSubmenu, getAlarmEntryName(i), initManageAlarm, manageAlarms, &font4pt7b);
 
-            // alarmsSubmenu->name = menuName;
             delay(1);
             showMenu();
         }
@@ -210,15 +208,16 @@ int drawToggleLabel(
     oled.print(label);
 
     if (selected)
-        oled.drawRect(x - 3, y - 11, w + 7, 15, 0x8);
-
+        oled.drawRect(x - 1, y - 9, w + 2, 11, 0x8);
     return w;
 }
 
-template<typename T>
+// Updated handleValueRepeat to accept a redraw callback function
+template <typename T, typename R>
 void handleValueRepeat(
     uint8_t pin,
     T callback,
+    R redrawCallback,
     unsigned long &lastRepeatTime,
     uint16_t repeatDelay = 200)
 {
@@ -229,6 +228,7 @@ void handleValueRepeat(
         if (millis() - lastRepeatTime > repeatDelay)
         {
             callback();
+            redrawCallback(); // Trigger screen redraw on each increment/decrement
             lastRepeatTime = millis();
         }
 
@@ -247,86 +247,115 @@ void manageAlarms()
     {
         oled.clearDisplay();
 
+        // ==========================================
+        // 1. TOP HEADER: Alarm Name & [DEL] Button
+        // ==========================================
+        oled.setFont(&DejaVu_LGC_Sans_Bold_9);
         oled.setTextColor(SSD1327_WHITE, SSD1327_BLACK);
 
-        oled.setCursor(1, 8);
-        oled.println("Alarm " + String(alarmIndex));
+        // Alarm Title & Day
+        oled.setCursor(2, 12);
+        oled.print("Alarm #" + String(alarmIndex));
 
-        oled.setFont(&font4pt7b);
-        oled.setCursor(70, 7);
-        oled.print("Today:" + getShortCurrentWeekdayName());
+        oled.setTextColor(12);
+        oled.print(" (" + getShortCurrentWeekdayName() + ")");
 
-        oled.setFont(&DejaVu_LGC_Sans_Bold_10);
-        oled.setTextSize(2);
+        // Right-Aligned [DEL] Button in Header
+        drawSelectableText(
+            "[DEL]",
+            96,
+            12,
+            !inDaySelectionMode && alarmCurrentState == 6,
+            isEditingAlarm && alarmCurrentState == 6);
 
-        centerText(":", 19, 34);
+        oled.drawLine(0, 18, 127, 18, 6); // Header Divider
 
+        // ==========================================
+        // 2. TIME PICKER (Hours & Minutes)
+        // ==========================================
+        oled.setFont(&DejaVu_Sans_Bold_16);
+
+        // Hours
         drawSelectableText(
             formatWithLeadingZero(alarms[alarmIndex].hours),
-            17,
-            19,
+            26,
+            40,
             !inDaySelectionMode && alarmCurrentState == 0,
             isEditingAlarm && alarmCurrentState == 0);
 
+        // Colon
+        oled.setTextColor(SSD1327_WHITE);
+        oled.setCursor(58, 38);
+        oled.print(":");
+
+        // Minutes
         drawSelectableText(
             formatWithLeadingZero(alarms[alarmIndex].minutes),
-            39,
-            19,
+            68,
+            40,
             !inDaySelectionMode && alarmCurrentState == 1,
             isEditingAlarm && alarmCurrentState == 1);
 
-        oled.setTextSize(1);
+        // ==========================================
+        // 3. FULL-WIDTH DAY SELECTOR (Spans 0 to 127px)
+        // ==========================================
+        oled.drawLine(0, 48, 127, 48, 6);
 
+        // Outer Bounding Box when Day Row is Focused
+        if (!inDaySelectionMode && alarmCurrentState == 2)
+        {
+            oled.drawRect(0, 50, 128, 24, SSD1327_WHITE);
+        }
+
+        // Distribute 7 Days Evenly Across 128px (Width ~18px per slot)
         oled.setFont(&DejaVu_LGC_Sans_Bold_9);
-
-        int startX = 3;
+        const int daySlotWidth = 18;
 
         for (int i = 0; i < 7; i++)
         {
+            int slotX = i * daySlotWidth + 3;
             bool selected = inDaySelectionMode && i == alarmCurrentState;
 
-            startX += drawToggleLabel(
-                          getShorterWeekdayName(i + 1),
-                          startX,
-                          46,
-                          alarms[alarmIndex].days[i],
-                          selected) +
-                      5;
+            drawToggleLabel(
+                getShorterWeekdayName(i + 1),
+                slotX,
+                66,
+                alarms[alarmIndex].days[i],
+                selected);
         }
 
-        if (!inDaySelectionMode && alarmCurrentState == 3)
-            oled.drawRect(0, 34, SCREEN_WIDTH - 1, 16, SSD1327_WHITE);
+        oled.drawLine(0, 76, 127, 76, 6);
 
-        oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+        // ==========================================
+        // 4. FULL-WIDTH TOGGLES (Active, Sound, Light)
+        // ==========================================
+        oled.setFont(&DejaVu_LGC_Sans_Bold_9);
 
+        // Line 1: Active Status
         drawSelectableText(
-            "Enabled: " + String(alarms[alarmIndex].enabled ? "Yes" : "No"),
-            1,
-            32,
-            !inDaySelectionMode && alarmCurrentState == 2,
-            isEditingAlarm && alarmCurrentState == 2);
+            "Active: " + String(alarms[alarmIndex].enabled ? "ENABLED" : "DISABLED"),
+            2,
+            91,
+            !inDaySelectionMode && alarmCurrentState == 3,
+            isEditingAlarm && alarmCurrentState == 3);
 
+        // Line 2: Sound & Light Side-by-Side
         drawSelectableText(
-            "Sound:" + String(alarms[alarmIndex].soundOn ? "On" : "Off"),
-            1,
-            59,
+            "Sound: " + String(alarms[alarmIndex].soundOn ? "ON" : "OFF"),
+            2,
+            108,
             !inDaySelectionMode && alarmCurrentState == 4,
             isEditingAlarm && alarmCurrentState == 4);
 
         drawSelectableText(
-            "Light:" + String(alarms[alarmIndex].lightOn ? "On" : "Off"),
-            69,
-            59,
+            "Light: " + String(alarms[alarmIndex].lightOn ? "ON" : "OFF"),
+            68,
+            108,
             !inDaySelectionMode && alarmCurrentState == 5,
             isEditingAlarm && alarmCurrentState == 5);
 
-        drawSelectableBox(
-            SCREEN_WIDTH - 32,
-            12,
-            22,
-            22,
-            !inDaySelectionMode && alarmCurrentState == 6,
-            isEditingAlarm && alarmCurrentState == 6);
+        // Bottom Decorative Line
+        oled.drawLine(0, 116, 127, 116, 6);
 
         oled.display();
     };
@@ -355,7 +384,7 @@ void manageAlarms()
     {
     case Up:
         if (inDaySelectionMode)
-            alarmCurrentState = (alarmCurrentState + 1) % 7;
+            alarmCurrentState = (alarmCurrentState + 6) % 7;
         else if (!isEditingAlarm)
             alarmCurrentState = (alarmCurrentState + 6) % 7;
         else
@@ -367,7 +396,7 @@ void manageAlarms()
 
     case Down:
         if (inDaySelectionMode)
-            alarmCurrentState = (alarmCurrentState + 6) % 7;
+            alarmCurrentState = (alarmCurrentState + 1) % 7;
         else if (!isEditingAlarm)
             alarmCurrentState = (alarmCurrentState + 1) % 7;
         else
@@ -382,15 +411,8 @@ void manageAlarms()
         {
             handleValueRepeat(
                 UP_PIN,
-                [&]()
-                {
-                    if (alarmCurrentState == 0)
-                        alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 1) % 24;
-                    else if (alarmCurrentState == 1)
-                        alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 1) % 60;
-
-                    AlarmMenuUpdate = true;
-                },
+                [&]() { updateAlarmValueUp(); },
+                redrawDisplay, // Pass redraw function
                 lastRepeatTime);
         }
         break;
@@ -400,15 +422,8 @@ void manageAlarms()
         {
             handleValueRepeat(
                 DOWN_PIN,
-                [&]()
-                {
-                    if (alarmCurrentState == 0)
-                        alarms[alarmIndex].hours = (alarms[alarmIndex].hours + 23) % 24;
-                    else if (alarmCurrentState == 1)
-                        alarms[alarmIndex].minutes = (alarms[alarmIndex].minutes + 59) % 60;
-
-                    AlarmMenuUpdate = true;
-                },
+                [&]() { updateAlarmValueDown(); },
+                redrawDisplay, // Pass redraw function
                 lastRepeatTime);
         }
         break;
@@ -424,12 +439,12 @@ void manageAlarms()
             switch (alarmCurrentState)
             {
             case 2:
-                alarms[alarmIndex].enabled = !alarms[alarmIndex].enabled;
+                inDaySelectionMode = true;
+                alarmCurrentState = 0;
                 break;
 
             case 3:
-                inDaySelectionMode = true;
-                alarmCurrentState = 0;
+                alarms[alarmIndex].enabled = !alarms[alarmIndex].enabled;
                 break;
 
             case 4:
@@ -461,7 +476,7 @@ void manageAlarms()
         if (inDaySelectionMode)
         {
             inDaySelectionMode = false;
-            alarmCurrentState = 0;
+            alarmCurrentState = 2; // Return focus to Day Row
             AlarmMenuUpdate = true;
         }
         else if (isEditingAlarm)

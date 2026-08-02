@@ -19,6 +19,9 @@ extern Adafruit_APDS9960 apds;
 void initColorSensor();
 bool readColorData(ColorData &data);
 uint16_t readAmbientLight();
+uint16_t readColorTemperature(const ColorData &data);
+uint16_t calculateLuxWithIRCompensation(const ColorData &data);
+float readProximityDistance();
 
 void setGestureInterrupt(bool enable);
 

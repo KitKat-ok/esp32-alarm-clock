@@ -4,9 +4,9 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 TaskHandle_t NTPTask;
 
-// Timezonens
+// Timezones
 TimeChangeRule myDST = {"CEST", Last, Sun, Mar, 2, 120}; // UTC+2
-TimeChangeRule mySTD = {"CET", Last, Sun, Oct, 3, 60};  // UTC+1
+TimeChangeRule mySTD = {"CET", Last, Sun, Oct, 3, 60};   // UTC+1
 
 Timezone myTZ(myDST, mySTD);
 TimeChangeRule *tcr;
@@ -16,13 +16,12 @@ void syncTimeTask(void *parameter);
 void createTimeTask()
 {
   xTaskCreate(
-      syncTimeTask,   
-      "SyncTimeTask", 
-      2048,          
-      NULL,           
-      1,              
-      &NTPTask       
-  );
+      syncTimeTask,
+      "SyncTimeTask",
+      2048,
+      NULL,
+      1,
+      &NTPTask);
 }
 
 void deleteTimeTask()
@@ -30,7 +29,8 @@ void deleteTimeTask()
   vTaskDelete(NTPTask);
 }
 
-void syncTimeLibWithRTC() {
+void syncTimeLibWithRTC()
+{
   struct timeval tv;
   gettimeofday(&tv, NULL);
   setTime(tv.tv_sec);
@@ -49,31 +49,57 @@ void syncESP32RTC()
 
 void syncTimeTask(void *parameter)
 {
+  bool syncedSuccessfully = false;
+
   while (true)
   {
-    if (WiFi.status() == WL_CONNECTED)
+    syncedSuccessfully = synchronizeAndSetTime();
+
+    if (syncedSuccessfully)
     {
-      synchronizeAndSetTime();
+      // Normal interval: wait 10 minutes when synced
+      vTaskDelay(pdMS_TO_TICKS(10 * 60 * 1000));
     }
     else
     {
-      Serial.println("WiFi not connected. Cannot sync time.");
+      // Retry interval: wait 1 minute if failed or offline
+      Serial.println("Sync attempt unsuccessful. Retrying in 1 minute...");
+      vTaskDelay(pdMS_TO_TICKS(1 * 60 * 1000));
     }
-    vTaskDelay(pdMS_TO_TICKS(10 * 60 * 1000));
   }
 }
 
-void synchronizeAndSetTime()
+bool synchronizeAndSetTime()
 {
-  Serial.println("Synchronizing Time");
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.println("WiFi not connected. Cannot sync time.");
+    return false;
+  }
+
+  Serial.println("Synchronizing Time...");
   timeClient.begin();
-  timeClient.update();
-  
-  time_t utc = timeClient.getEpochTime();
-  time_t local = myTZ.toLocal(utc, &tcr);
-  
-  setTime(local);
+
+  // forceUpdate returns true if valid packet received from NTP server
+  bool success = timeClient.forceUpdate();
+
+  if (success)
+  {
+    time_t utc = timeClient.getEpochTime();
+
+    // Verify epoch time is valid (greater than Jan 1, 2024 timestamp)
+    if (utc > 1704067200)
+    {
+      time_t local = myTZ.toLocal(utc, &tcr);
+      setTime(local);
+      timeClient.end();
+      syncESP32RTC();
+      Serial.println("Current time: " + String(hour()) + ":" + String(minute()) + " " + tcr->abbrev);
+      return true;
+    }
+  }
+
   timeClient.end();
-  syncESP32RTC();
-  Serial.println("Current time: " + String(hour()) + ":" + String(minute()) + " " + tcr->abbrev);
+  Serial.println("NTP update failed or received invalid time.");
+  return false;
 }

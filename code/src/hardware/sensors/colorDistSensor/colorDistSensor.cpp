@@ -1,7 +1,78 @@
 #include "colorDistSensor.h"
+#include <Wire.h>
 
 Adafruit_APDS9960 apds = Adafruit_APDS9960();
 bool colorSensorInitialized = false;
+
+uint8_t proxBaseline = 0;
+constexpr uint8_t PROX_SATURATION_VALUE = 255; 
+
+void calibrateProximity()
+{
+    if (!colorSensorInitialized) return;
+
+    uint32_t sum = 0;
+    uint8_t validSamples = 0;
+
+    if (lockI2C())
+    {
+        // Flush the first few readings as they can be unstable right after boot
+        for(uint8_t i = 0; i < 5; i++) {
+            apds.readProximity();
+            delay(5);
+        }
+
+        // Take 50 clean samples
+        for (uint8_t i = 0; i < 50; i++)
+        {
+            sum += apds.readProximity();
+            delay(5); 
+            validSamples++;
+        }
+        unlockI2C();
+    }
+
+    if (validSamples > 0) {
+        proxBaseline = sum / validSamples;
+        Serial.print(F("[ColorSensor] Proximity baseline calibrated to: "));
+        Serial.println(proxBaseline);
+    }
+}
+
+float readProximityDistance()
+{
+    if (!colorSensorInitialized) return -1.0f;
+
+    uint8_t raw = 0;
+
+    if (lockI2C())
+    {
+        raw = apds.readProximity();
+        unlockI2C();
+    }
+
+    // Handle ADC saturation (object is physically touching or highly reflective)
+    if (raw == PROX_SATURATION_VALUE) return 1.0f; 
+
+    // Nothing detected or below baseline noise
+    // We add a small buffer (+2) to the baseline to prevent jittery false-positives
+    if (raw <= (proxBaseline + 2)) return -1.0f;
+
+    float corrected = (float)(raw - proxBaseline);
+
+    /*
+        Optical Distance Approximation
+        Note: This will heavily depend on the reflectivity of the object.
+        Adjust the '300.0f' constant for your specific physical enclosure.
+    */
+    float distance = 300.0f / corrected;
+
+    // Clamp values
+    if (distance < 1.0f) distance = 1.0f;
+    if (distance > 50.0f) distance = 50.0f;
+
+    return distance;
+}
 
 #if GESTURES_ENABLED == true
 void setGestureInterrupt(bool enable)
@@ -10,29 +81,7 @@ void setGestureInterrupt(bool enable)
 
     if (lockI2C())
     {
-        Wire.beginTransmission(APDS9960_ADDRESS);
-        Wire.write(0xAB); // GCONF4 Register
-        Wire.endTransmission(false);
-
-        Wire.requestFrom((uint8_t)APDS9960_ADDRESS, (uint8_t)1);
-        if (Wire.available())
-        {
-            uint8_t reg = Wire.read();
-
-            if (enable)
-            {
-                reg |= 0x02; // Set bit 1 (GIEN)
-            }
-            else
-            {
-                reg &= ~0x02; // Clear bit 1 (GIEN)
-            }
-
-            Wire.beginTransmission(APDS9960_ADDRESS);
-            Wire.write(0xAB);
-            Wire.write(reg);
-            Wire.endTransmission();
-        }
+        apds.setGestureIntEnable(enable);
         unlockI2C();
     }
 }
@@ -44,37 +93,45 @@ void initColorSensor()
 
     if (lockI2C())
     {
-        // Adafruit's begin() sets defaults for I2C and hardware registers
         if (apds.begin())
         {
             initialized = true;
 
-            // Enable color sensor
+            // Enable core engines
             apds.enableColor(true);
             apds.enableProximity(true);
 
-#if GESTURES_ENABLED == true
-            // --- GESTURE CONFIGURATION ---
-            apds.enableProximity(true);
-            apds.enableGesture(true);
+            /* --- FIX: COLOR & LUX ACCURACY ---
+               Boost the integration time and gain so the sensor can actually "see" 
+               enough light to do accurate math. 
+               ATIME: 219 equates to ~100ms integration time (default is usually ~2ms).
+               AGAIN: 16x gain boosts the signal for indoor lighting.
+            */
+            apds.setADCIntegrationTime(60); 
+            apds.setADCGain(APDS9960_AGAIN_4X);
 
+#if GESTURES_ENABLED == true
+            apds.enableGesture(true);
             apds.setGestureDimensions(APDS9960_DIMENSIONS_LEFT_RIGHT);
             apds.setGestureGain(APDS9960_GGAIN_2);
             apds.setGestureProximityThreshold(15);
             apds.setGestureFIFOThreshold(APDS9960_GFIFO_4);
 #else
-            apds.setProxGain(APDS9960_PGAIN_4X);
-            apds.setProxPulse(APDS9960_PPULSELEN_16US, 8);
             apds.setProximityInterruptThreshold(0, PROXIMITY_THRESHOLD, 4);
             apds.enableProximityInterrupt();
 #endif
+            
+            // --- FIX: PROXIMITY STRENGTH ---
+            // 4x gain and 8 pulses are the datasheet recommendations for standard use.
+            apds.setProxGain(APDS9960_PGAIN_4X);
+            apds.setProxPulse(APDS9960_PPULSELEN_16US, 8);
         }
         unlockI2C();
     }
 
     if (!initialized)
     {
-        Serial.println(F("[ColorSensor] Initialization failed! Ignoring and continuing..."));
+        Serial.println(F("[ColorSensor] Initialization failed! Check wiring."));
         colorSensorInitialized = false;
         return;
     }
@@ -86,6 +143,9 @@ void initColorSensor()
 #endif
 
     Serial.println(F("[ColorSensor] Initialized successfully."));
+    
+    // Calibrate empty air
+    calibrateProximity();
 }
 
 bool readColorData(ColorData &data)
@@ -98,6 +158,7 @@ bool readColorData(ColorData &data)
     {
         if (apds.colorDataReady())
         {
+            // Remember: These populate with 16-bit values (0 to 65535)
             apds.getColorData(&data.red, &data.green, &data.blue, &data.ambient);
             success = true;
         }
@@ -117,8 +178,8 @@ uint16_t readAmbientLight()
     {
         if (apds.colorDataReady())
         {
-            uint16_t r = 0, g = 0, b = 0;
-            apds.getColorData(&r, &g, &b, &c);
+            uint16_t dummy = 0;
+            apds.getColorData(&dummy, &dummy, &dummy, &c);
         }
         unlockI2C();
     }
@@ -128,23 +189,13 @@ uint16_t readAmbientLight()
 
 uint16_t readColorTemperature(const ColorData &data)
 {
-    // Math calculation only, no direct I2C calls needed
+    // Now that integration time and gain are boosted, this math will work correctly.
     return apds.calculateColorTemperature(data.red, data.green, data.blue);
 }
 
-uint16_t calculateLuxWithIRCompensation(const ColorData &data)
+uint16_t calculateLux(const ColorData &data)
 {
-    // Math calculation only, no direct I2C calls needed
-    // 1. Estimate IR component
-    float ir = (float)(data.red + data.green + data.blue - data.ambient) / 2.0f;
-    if (ir < 0.0f) ir = 0.0f;
-
-    // 2. Subtract IR from Clear to get true visible photopic intensity
-    float visibleClear = (float)data.ambient - ir;
-    if (visibleClear < 0.0f) visibleClear = 0.0f;
-
-    // 3. Convert visible light count to Lux
-    float lux = visibleClear * 0.46f;
-
-    return (uint16_t)lux;
+    // The library uses a physics-based matrix specifically tuned for the 
+    // APDS-9960's internal IR and UV filters. 
+    return apds.calculateLux(data.red, data.green, data.blue);
 }

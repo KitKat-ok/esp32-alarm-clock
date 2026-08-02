@@ -52,15 +52,17 @@ void loopTouchTask(void *parameter)
 
     uint32_t pressStart = 0;
     uint32_t lastEvent = 0;
+    delay(2000); // waits for the sensor to properly init
 
     while (true)
     {
         bool pressed = false;
-
+        Serial.println("Detecting touch task awakened");
         if (lockI2C())
         {
             auto status = touch_sensor.getStatus();
             unlockI2C();
+            Serial.println("got status touch");
 
             pressed = status.any_key_touched;
             uint32_t now = millis();
@@ -130,9 +132,10 @@ void initTouchTask()
 
 void turnOnTouch()
 {
+    Serial.println("turning on touch");
     if (!touchActivated)
     {
-        initTouchTask();
         turnOnTouchInterrupts();
+        initTouchTask();
     }
 }

@@ -3,7 +3,7 @@
 void setup()
 {
   initHardware();
-  initWifi();
+  createWifiTask();
   checkForRunOta();
   createLedDisplayTask();
   createDimmingTask();
@@ -15,7 +15,6 @@ void setup()
   createTempTask();
   createPressureTask();
   createLightTask();
-  createTimeTask();
   oled.invertDisplay(false);
 }
 

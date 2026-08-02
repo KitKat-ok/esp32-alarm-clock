@@ -43,6 +43,23 @@ void initHardware()
   Serial.setDebugOutput(true);
   // waitForSerialInput();
   Serial.println("Initializing Hardware");
+
+  initI2C();
+  oledMana.initDisplay();
+  rM.gpioExpander.simplerInit(true);
+  initButtons();
+  delay(500);
+  initTouch();
+  initBuzzer();
+  initLedDisplay();
+  initLightSensor();
+  initPressureSensor();
+  initTempSensor();
+  initColorSensor();
+  turnOnGesture();
+
+  syncTimeLibWithRTC();
+  mountLittlefs();
   setCpuFrequencyMhz(80); // stable 160,80,240 needs to be 80 for wifi
   esp_pm_config_t pm_config = {
       .max_freq_mhz = 80,
@@ -50,20 +67,6 @@ void initHardware()
       .light_sleep_enable = true,
   };
   esp_pm_configure(&pm_config);
-  initI2C();
-  oledMana.initDisplay();
-  rM.gpioExpander.simplerInit(true);
-  initButtons();
-  initTouch();
-  initBuzzer();
-  initLedDisplay();
-  initLightSensor();
-  initPressureSensor();
-  initTempSensor();
-    initColorSensor();
-  turnOnGesture();
-  syncTimeLibWithRTC();
-  mountLittlefs();
   Serial.println("Hardware initialized");
 }
 
@@ -89,8 +92,7 @@ void mountLittlefs()
 
 bool readHallSwitch()
 {
-  int pinState = digitalRead(HALL_SWITCH); // Read the pin state
-  return (pinState == LOW);                // Return true if LOW, false if HIGH
+return false;
 }
 
 void initLedDisplay()
@@ -106,11 +108,15 @@ void initLedDisplay()
 
 void initTouch()
 {
+  Serial.println("starting init of touch");
+
   pinMode(TOUCH_INTERRUPT, INPUT);
 
   touch_sensor.begin();
   touch_sensor.reset();
   delay(500);
+
+  Serial.println("touch ic initialized");
 
   AT42QT2120::KeyControl kc;
 
@@ -157,9 +163,8 @@ void initTouch()
   touch_sensor.setDriftCompensationHoldDuration(120);
   touch_sensor.setRecalibrationDelay(255);
 
-  touch_sensor.enableSlider();
-
   touch_sensor.triggerCalibration();
+  Serial.println("calibrating touch");
   while (touch_sensor.calibrating())
     delay(20);
 
@@ -190,16 +195,79 @@ void turnOffLeds()
   rM.gpioExpander.setPinState(MCP_LED2_P2, true);
 }
 
+#define CMD_CANCEL  1
+#define CMD_RESTART 2
+
+TaskHandle_t ledDelayTaskHandle = NULL;
+
+void ledAutoOffTask(void *pvParameters)
+{
+    while (true)
+    {
+        uint32_t notificationValue = 0;
+        
+        // Wait for configured delay OR until a command notification arrives
+        BaseType_t notified = xTaskNotifyWait(
+            0,
+            ULONG_MAX,
+            &notificationValue,
+            pdMS_TO_TICKS(AUTO_OFF_DELAY_MS)
+        );
+
+        if (notified == pdTRUE)
+        {
+            if (notificationValue == CMD_CANCEL)
+            {
+                break; // Exit task early
+            }
+            else if (notificationValue == CMD_RESTART)
+            {
+                continue; // Restart delay loop
+            }
+        }
+        else
+        {
+            // Delay expired after 3 minutes
+            turnOffLeds();
+            break;
+        }
+    }
+
+    // Clean exit from within task
+    ledDelayTaskHandle = NULL;
+    vTaskDelete(NULL);
+}
+
 void toggleLeds(bool maxPower)
 {
-  if (ledsOn == true)
-  {
-    turnOffLeds();
-  }
-  else
-  {
-    turnOnLeds(maxPower);
-  }
+    if (ledsOn == true)
+    {
+        if (ledDelayTaskHandle != NULL)
+        {
+            xTaskNotify(ledDelayTaskHandle, CMD_CANCEL, eSetValueWithOverwrite);
+        }
+        turnOffLeds();
+    }
+    else
+    {
+        turnOnLeds(maxPower);
+
+        if (ledDelayTaskHandle != NULL)
+        {
+            xTaskNotify(ledDelayTaskHandle, CMD_RESTART, eSetValueWithOverwrite);
+        }
+        else
+        {
+            xTaskCreate(
+                ledAutoOffTask,
+                "LED_Off_Task",
+                2048,
+                NULL,
+                1,
+                &ledDelayTaskHandle
+            );
+        }
+    }
 }
 
 void initButtons()

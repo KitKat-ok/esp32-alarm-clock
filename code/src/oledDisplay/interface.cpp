@@ -1,9 +1,9 @@
 #include "interface.h"
 
 #define BUTTONS_OFFSET 1
-#define BUTTON_HEIGHT 10
-#define MAX_ITEMS_ON_PAGE 8
-#define AVAILABLE_HEIGHT SCREEN_HEIGHT - 20
+#define BUTTON_HEIGHT 11
+#define MAX_ITEMS_ON_PAGE 7
+#define AVAILABLE_HEIGHT (SCREEN_HEIGHT - 20)
 #define MIN_ITEMS 1
 
 TaskHandle_t menuTaskHandle;
@@ -48,13 +48,9 @@ void showMenu()
 
         int lineHeight = (textWidth > SCREEN_WIDTH) ? (textHeight * 2) : textHeight;
 
-        if (textHeight < 10)
+        if (textHeight < BUTTON_HEIGHT)
         {
-            lineHeight = textHeight + 2;
-        }
-        else
-        {
-            lineHeight = textHeight;
+            lineHeight = BUTTON_HEIGHT;
         }
 
         if (usedHeight + lineHeight > AVAILABLE_HEIGHT)
@@ -73,14 +69,21 @@ void showMenu()
     currentPage = data.currentButton / data.itemsOnPage;
     pageNumber = ((data.isSubmenu ? data.submenuCount : data.totalMenus) + data.itemsOnPage - 1) / data.itemsOnPage;
 
+    // --- Header Section ---
     oled.setCursor(0, 0);
-    oled.setTextColor(SSD1327_WHITE);
-
     oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+
+    // Page Indicator
+    oled.setTextColor(8);
     oled.setCursor(0, 10);
     oled.print(String(currentPage + 1) + "/" + String(pageNumber));
 
+    // Title
+    oled.setTextColor(13);
     centerText(data.menuName, 10);
+
+    // Header Separator Line
+    oled.drawLine(0, 13, SCREEN_WIDTH, 13, 4);
 
     int y = 20;
     for (int i = startingButton; i < startingButton + data.itemsOnPage && i < (data.isSubmenu ? data.submenuCount : data.totalMenus); i++)
@@ -108,21 +111,27 @@ void showMenu()
         }
 
         int boxHeight = (lines * BUTTON_HEIGHT) + (lines * BUTTONS_OFFSET);
-        int boxY = y - 8;
+        int boxY = y - 5;
 
+        // --- Selection Styling ---
         if (data.currentButton == i)
         {
-            oled.fillRect(0, boxY, SCREEN_WIDTH, boxHeight, SSD1327_WHITE);
-            oled.setTextColor(SSD1327_BLACK);
+            // Active Selection: Fully white fill with crisp black text
+            oled.fillRect(0, boxY, SCREEN_WIDTH, boxHeight, 15);
+            oled.setTextColor(0); // Black text
         }
         else
         {
-            oled.setTextColor(SSD1327_WHITE);
+            // Inactive Selection: Subtle outline box with soft gray text
+            oled.drawRect(0, boxY, SCREEN_WIDTH, boxHeight, 3);
+            oled.setTextColor(10); // Soft gray text
         }
 
+        // Calculate baseline Y taking font bounding offsets (-y1) into account
         int verticalOffset = (boxHeight - textHeight) / 2;
+        int baselineY = boxY + verticalOffset - y1;
 
-        oled.setCursor(1, y + verticalOffset);
+        oled.setCursor(2, baselineY);
         oled.print(displayText);
 
         y += boxHeight + BUTTONS_OFFSET;
@@ -281,18 +290,11 @@ void runLoopFunction(void (*loopFunction)())
     }
     showMenu();
 }
-
 void handleConfirm()
 {
     if (data.isSubmenu && data.currentSubmenu != nullptr)
     {
         entryMenu selectedEntry = data.currentSubmenu[data.currentButton];
-
-        if (selectedEntry.function != nullptr)
-        {
-            selectedEntry.function();
-            delay(1);
-        }
 
         if (selectedEntry.submenu != nullptr)
         {
@@ -303,41 +305,46 @@ void handleConfirm()
             data.menuName = selectedEntry.submenu->name;
             data.isSubmenu = true;
             data.currentButton = 0;
-            showMenu();
         }
-        else if (selectedEntry.loopFunction != nullptr)
+        if (selectedEntry.function != nullptr)
+        {
+            selectedEntry.function();
+            delay(1);
+        }
+        if (selectedEntry.loopFunction != nullptr)
         {
             runLoopFunction(selectedEntry.loopFunction);
         }
-    }
-    else if (data.entryList[data.currentButton].function != nullptr)
-    {
-        data.entryList[data.currentButton].function();
-
-        if (data.entryList[data.currentButton].submenu != nullptr)
+                if (selectedEntry.submenu != nullptr)
         {
-            pushSubmenu(data.entryList[data.currentButton].submenu);
-            data.currentSubmenu = data.entryList[data.currentButton].submenu->entries;
-            data.submenuCount = data.entryList[data.currentButton].submenu->count;
-            data.menuName = data.entryList[data.currentButton].submenu->name;
-            data.isSubmenu = true;
-            data.currentButton = 0;
-            showMenu();
+        showMenu();
         }
     }
-    else if (data.entryList[data.currentButton].submenu != nullptr)
+    else
     {
-        pushSubmenu(data.entryList[data.currentButton].submenu);
-        data.currentSubmenu = data.entryList[data.currentButton].submenu->entries;
-        data.submenuCount = data.entryList[data.currentButton].submenu->count;
-        data.menuName = data.entryList[data.currentButton].submenu->name;
-        data.isSubmenu = true;
-        data.currentButton = 0;
+        entryMenu selectedEntry = data.entryList[data.currentButton];
+
+        if (selectedEntry.submenu != nullptr)
+        {
+            pushSubmenu(selectedEntry.submenu);
+            data.currentSubmenu = selectedEntry.submenu->entries;
+            data.submenuCount = selectedEntry.submenu->count;
+            data.menuName = selectedEntry.submenu->name;
+            data.isSubmenu = true;
+            data.currentButton = 0;
+        }
+        if (selectedEntry.function != nullptr)
+        {
+            selectedEntry.function();
+        }
+        if (selectedEntry.loopFunction != nullptr)
+        {
+            runLoopFunction(selectedEntry.loopFunction);
+        }
+                        if (selectedEntry.submenu != nullptr)
+        {
         showMenu();
-    }
-    else if (data.entryList[data.currentButton].loopFunction != nullptr)
-    {
-        runLoopFunction(data.entryList[data.currentButton].loopFunction);
+        }
     }
 }
 
@@ -544,21 +551,29 @@ void toggleLedsWrapper()
     toggleLeds(true); // or false / toggle logic
 }
 
+void showCast0() { displayWeatherCast(0); }
+void showCast1() { displayWeatherCast(1); }
+void showCast2() { displayWeatherCast(2); }
+void showCast3() { displayWeatherCast(3); }
+void showCast4() { displayWeatherCast(4); }
+void showCast5() { displayWeatherCast(5); }
+void showCast6() { displayWeatherCast(6); }
+
 void initMenus()
 {
-    entryMenu *WeatherItems = new entryMenu[4]{
-        {"Current Weather", initWeatherMenu,
-         currentWeatherMenu, nullptr, nullptr},
-        {"Today's cast", initWeatherMenu, []()
-         { displayWeatherCast(0); }, nullptr, nullptr},
-        {"Tomorrow's cast", initWeatherMenu, []()
-         { displayWeatherCast(1); }, nullptr, nullptr},
-        {"Day After's Cast", initWeatherMenu, []()
-         { displayWeatherCast(2); }, nullptr, nullptr}};
+    entryMenu *WeatherItems = new entryMenu[8]{
+        {"Current Weather", nullptr, currentWeatherMenu, nullptr, nullptr},
+        {"Today's cast", nullptr, showCast0, nullptr, nullptr},
+        {"Sun 01.01.1984", nullptr, showCast1, nullptr, nullptr},
+        {"Sun 01.01.1984", nullptr, showCast2, nullptr, nullptr},
+        {"Sun 01.01.1984", nullptr, showCast3, nullptr, nullptr},
+        {"Sun 01.01.1984", nullptr, showCast4, nullptr, nullptr},
+        {"Sun 01.01.1984", nullptr, showCast5, nullptr, nullptr},
+        {"Sun 01.01.1984", nullptr, showCast6, nullptr, nullptr}};
 
-    Submenu *weatherSubmenu = new Submenu{"Weather", WeatherItems, 4, 4};
+    Submenu *weatherSubmenu = new Submenu{"Weather", WeatherItems, 8, 8};
 
-    entryMenu weatherButton = {"Weather", nullptr, nullptr, weatherSubmenu, &DejaVu_LGC_Sans_Bold_10};
+    entryMenu weatherButton = {"Weather", updateWeatherMenuDates, nullptr, weatherSubmenu, &DejaVu_LGC_Sans_Bold_10};
 
     entryMenu *chartItems = new entryMenu[3]{
         {"Temp Chart", initTempGraph, loopTempGraph, nullptr, nullptr},
@@ -574,7 +589,6 @@ void initMenus()
         {"General Debug", nullptr, generalDebugMenu, nullptr, nullptr},
         {"Cpu Debug", nullptr, CPUDebugMenu, nullptr, nullptr},
         {"WiFi Debug", nullptr, wifiDebugMenu, nullptr, nullptr},
-        {"Touch Debug", nullptr, touchDebugMenu, nullptr, nullptr},
         {"FPS calc", nullptr, fpsCalc, nullptr, nullptr},
         {"Upload OTA", startOTA, nullptr, nullptr, nullptr},
     };

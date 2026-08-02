@@ -80,6 +80,7 @@ void OLED_MANAGER::initDisplay()
     xSemaphoreGive(oledMutex);
 
     oled.clearDisplay();
+    oled.display();
 
     // int barWidth = oled.width() / 16;
 

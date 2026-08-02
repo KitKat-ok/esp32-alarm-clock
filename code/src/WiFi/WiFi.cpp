@@ -1,39 +1,21 @@
 #include "WiFi.h"
+#include <mutex>
 
 WiFiMulti wifiMulti;
 
+// Thread safety Mutex & Task Handle
+std::mutex wifiTaskMutex;
 TaskHandle_t wifiTask = NULL;
-TaskStatus_t wifiTaskStatus;
 
-void initWifi();
+// Forward declarations
 void WiFiEvent(WiFiEvent_t event);
+void turnOffWifi();
+void turnOffWifiMinimal();
+bool isWifiTaskCheck();
 
-bool WiFiTaskRunning = false;
-
+bool WifiTaskRunning = false;
 bool tasksLaunched = false;
 bool WifiOn = false;
-
-void initWiFiHandle(void *parameter)
-{
-  while (true)
-  {
-    vTaskDelete(NULL);
-  }
-}
-
-void initWifi()
-{
-
-  Serial.println("Starting Wifi Task");
-  xTaskCreate(
-      initWiFiHandle, // Task function
-      "WiFiTask",     // Task name
-      4096,           // Stack size
-      NULL,           // Task parameters
-      2,              // Priority
-      &wifiTask       // Task handle
-  );
-}
 
 WiFiCred *wifiCredStatic[SIZE_WIFI_CRED_STAT];
 
@@ -43,6 +25,12 @@ void setWifiCountryCode()
   Serial.println("Setting wifi country code to: " + String(WIFI_COUNTRY_CODE));
   esp_wifi_set_country_code(WIFI_COUNTRY_CODE, !WIFI_COUNTRY_FORCE);
 #endif
+}
+
+bool isWifiTaskCheck()
+{
+  std::lock_guard<std::mutex> lock(wifiTaskMutex);
+  return WifiTaskRunning;
 }
 
 void tryToConnectWifi()
@@ -60,15 +48,31 @@ void tryToConnectWifi()
       Serial.println("Skipping wifi id: " + String(i) + " because bad length");
       continue;
     }
-    Serial.println("Trying to connect to wifi number: " + String(i) + " so: " + String(wifiCredStatic[i]->ssid) + " " + String(wifiCredStatic[i]->password));
-    delay(100);
-    setWifiCountryCode();
-    WiFi.setSleep(WIFI_PS_MAX_MODEM);
-    WiFi.begin(wifiCredStatic[i]->ssid, wifiCredStatic[i]->password);
 
-    for (int i = 0; i < WIFI_SYNC_TIME / 1000; i++)
+    Serial.println("Trying to connect to wifi number: " + String(i) + " so: " + String(wifiCredStatic[i]->ssid));
+    
+    // Clean radio state before initiating session
+    WiFi.disconnect(false);
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    setWifiCountryCode();
+
+    wifi_config_t sta_config;
+    if (esp_wifi_get_config(WIFI_IF_STA, &sta_config) == ESP_OK)
     {
-      delay(1000);
+      sta_config.sta.listen_interval = 1;
+      esp_wifi_set_config(WIFI_IF_STA, &sta_config);
+    }
+
+    WiFi.begin(wifiCredStatic[i]->ssid, wifiCredStatic[i]->password);
+    
+    // Maintain full radio power during active negotiation
+    WiFi.setSleep(WIFI_PS_NONE);
+    WiFi.setTxPower(WIFI_POWER_19_5dBm);
+
+    for (int t = 0; t < WIFI_SYNC_TIME / 1000; t++)
+    {
+      vTaskDelay(pdMS_TO_TICKS(1000));
       if (WiFi.status() == WL_CONNECTED)
       {
         return;
@@ -78,10 +82,6 @@ void tryToConnectWifi()
         Serial.println("Failed to connect to wifi...");
       }
     }
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      return;
-    }
   }
 }
 
@@ -89,29 +89,31 @@ void connectToWiFi(void *parameter)
 {
   WifiOn = true;
 
-  while (WifiOn)
   {
-    WiFi.mode(WIFI_STA);
-    esp_wifi_set_max_tx_power(84);
-    WiFi.setSleep(WIFI_PS_MAX_MODEM);
-    WiFi.setAutoReconnect(true);
-    WiFiTaskRunning = true;
+    std::lock_guard<std::mutex> lock(wifiTaskMutex);
+    WifiTaskRunning = true;
+  }
 
-    esp_wifi_start();
-
-    if (readOtaValue() == false && tasksLaunched == false)
-    {
-      WiFi.onEvent(WiFiEvent);
-    }
-
-    Serial.println("Connecting to WiFi");
-
-    // Add predefined WiFi credentials
+  // Allocate credentials statically once
+  if (wifiCredStatic[0] == NULL) {
     wifiCredStatic[0] = new WiFiCred{SSID1, PASSWORD1};
     wifiCredStatic[1] = new WiFiCred{SSID2, PASSWORD2};
     wifiCredStatic[2] = new WiFiCred{SSID3, PASSWORD3};
+  }
 
-    // Call tryToConnectWifi to handle the connection attempts
+  WiFi.mode(WIFI_STA);
+  esp_wifi_set_max_tx_power(84);
+  WiFi.setAutoReconnect(true);
+
+  if (readOtaValue() == false && tasksLaunched == false)
+  {
+    WiFi.onEvent(WiFiEvent);
+  }
+
+  while (WifiOn)
+  {
+    Serial.println("Connecting to WiFi");
+
     tryToConnectWifi();
 
     if (WiFi.status() == WL_CONNECTED)
@@ -123,51 +125,64 @@ void connectToWiFi(void *parameter)
       IPAddress subnet = WiFi.subnetMask();
       Serial.print("NETMASK: ");
       Serial.println(subnet);
-      break; // Exit the loop after successful connection
+      break; 
     }
     else
     {
       Serial.println("Failed to connect to any WiFi network. Retrying...");
+      turnOffWifiMinimal();
     }
 
-    vTaskDelay(30000 / portTICK_PERIOD_MS); // Wait before retrying
+    vTaskDelay(pdMS_TO_TICKS(30000));
   }
 
-  WiFiTaskRunning = false;
+  {
+    std::lock_guard<std::mutex> lock(wifiTaskMutex);
+    WifiTaskRunning = false;
+    wifiTask = NULL;
+  }
+
   vTaskDelete(NULL);
 }
 
 void createWifiTask()
 {
-  wifi_init_config_t wifi_init_config = WIFI_INIT_CONFIG_DEFAULT();
+  Serial.println("Creating wifi task");
+  
+  if (!isWifiTaskCheck())
+  {
+    Serial.println("xTaskCreate wifi");
+    
+    {
+      std::lock_guard<std::mutex> lock(wifiTaskMutex);
+      WifiTaskRunning = true;
+    }
 
-  esp_wifi_init(&wifi_init_config);
-  xTaskCreate(
-      connectToWiFi, // Task function
-      "WiFiTask",    // Task name
-      4096,          // Stack size
-      NULL,          // Task parameters
-      10,            // Priority
-      &wifiTask      // Task handle
-  );                 // Core (0 or 1)
-}
-
-bool isWifiTaskCheck()
-{
-  bool tmp = WiFiTaskRunning;
-  return tmp;
+    xTaskCreate(
+        connectToWiFi, 
+        "WiFiTask",    
+        4096,          
+        NULL,          
+        10,            
+        &wifiTask      
+    );
+  }
+  else
+  {
+    Serial.println("The task is already running? Skipping creation...");
+  }
 }
 
 void turnOffWifiMinimal()
 {
   if (WiFi.getMode() != WIFI_OFF)
   {
-    if (WiFi.disconnect(true) == false)
+    if (!WiFi.disconnect(true))
     {
       Serial.println("Failed to disconnect from wifi? turning it off anyway");
-      if (WiFi.mode(WIFI_OFF) == false)
+      if (!WiFi.mode(WIFI_OFF))
       {
-        Serial.println("Failed to force set mode of wifi, doing manual esp idf way");
+        Serial.println("Failed to force set mode of wifi");
       }
     }
   }
@@ -175,82 +190,66 @@ void turnOffWifiMinimal()
 
 void turnOffWifi()
 {
-  WifiOn = false;
   Serial.println("Turning wifi off");
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    while (WiFiTaskRunning == true)
-    {
-      vTaskDelay(30);
-      Serial.println("WiFi Task running watiting for it to complete");
-    }
+  WifiOn = false;
 
+  if (isWifiTaskCheck())
+  {
     while (WiFi.scanComplete() == WIFI_SCAN_RUNNING)
     {
-      Serial.println("WiFi Scan running watiting for it to complete");
-      vTaskDelay(30);
+      vTaskDelay(pdMS_TO_TICKS(30));
     }
-    // vTaskSuspend(wifiTask);
-    // delay(1500);
+
+    std::lock_guard<std::mutex> lock(wifiTaskMutex);
+    if (WifiTaskRunning)
+    {
+      if (wifiTask != NULL && eTaskGetState(wifiTask) != eDeleted)
+      {
+        vTaskDelete(wifiTask);
+        wifiTask = NULL;
+      }
+      WifiTaskRunning = false;
+    }
   }
-  esp_wifi_stop();
+
+  turnOffWifiMinimal();
 }
+
 void WiFiEvent(WiFiEvent_t event)
 {
-  Serial.println("WiFi event");
+  Serial.print("WiFi event received: ");
+  Serial.println(event);
 
   switch (event)
   {
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-    Serial.println("WiFi got IP");
-    if (tasksLaunched == false)
+    Serial.println("-> Event: ARDUINO_EVENT_WIFI_STA_GOT_IP");
+    if (!tasksLaunched)
     {
-      delay(4000);
+      vTaskDelay(pdMS_TO_TICKS(4000));
       Serial.println("Launching Tasks");
-      synchronizeAndSetTime();
       Serial.println("Synchronized Time");
-      delay(1000);
+      vTaskDelay(pdMS_TO_TICKS(1000));
       createWeatherTask();
+      createTimeTask();
       showCurrentTime();
       tasksLaunched = true;
     }
     break;
 
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    if (powerConnected == true)
-    {
-      turnOffWifi();
-    }
-    if (!WiFi.isConnected() && WiFiTaskRunning == false && powerConnected == true)
-    {
-      esp_wifi_start();
-      Serial.println("launching WiFi task");
-      createWifiTask();
-    }
-    break;
-
   case ARDUINO_EVENT_PROV_CRED_FAIL:
-    if (powerConnected == true)
-    {
-      turnOffWifi();
-    }
-    if (!WiFi.isConnected() && WiFiTaskRunning == false && powerConnected == true)
-    {
-      esp_wifi_start();
-      Serial.println("launching WiFi task");
-      createWifiTask();
-    }
-    break;
   case ARDUINO_EVENT_WIFI_STA_LOST_IP:
-    if (powerConnected == true)
+    Serial.println("-> Event: WiFi Disconnected/Lost IP");
+    if (powerConnected && !isWifiTaskCheck())
     {
       turnOffWifi();
-    }
-    if (!WiFi.isConnected() && WiFiTaskRunning == false && powerConnected == true)
-    {
-      esp_wifi_start();
-      Serial.println("launching WiFi task");
-      createWifiTask();
+      delay(1000);
+      if (!WiFi.isConnected())
+      {
+        esp_wifi_start();
+        createWifiTask();
+      }
     }
     break;
 

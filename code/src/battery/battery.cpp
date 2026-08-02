@@ -107,7 +107,7 @@ void manageBattery(void *parameter)
         wokeUp = true;
       }
 
-      if (!WiFi.isConnected() && !WiFiTaskRunning)
+      if (!WiFi.isConnected() && !WifiTaskRunning)
       {
         esp_wifi_start();
         Serial.println("launching WiFi task");

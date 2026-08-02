@@ -34,17 +34,45 @@ void weatherTask(void *parameter)
     int dailyWeatherFailCount = 0;
     int currentWeatherFailCount = 0;
 
-    if (!isWeatherAvailable)
+    // Initial sync routine: loop until BOTH daily and current weather succeed
+    while (!isWeatherAvailable)
     {
-        syncDailyWeather();
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        syncCurrentWeather();
+        if (WiFi.status() == WL_CONNECTED)
+        {
+            Serial.println("Attempting initial weather sync...");
+
+            bool dailyOk = syncDailyWeather();
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            bool currentOk = syncCurrentWeather();
+
+            if (dailyOk && currentOk)
+            {
+                isWeatherAvailable = true;
+                uint32_t now = millis();
+                lastDailyWeatherSync = now;
+                lastCurrentWeatherSync = now;
+                Serial.println("Initial weather sync successful! Weather is now available.");
+            }
+            else
+            {
+                isWeatherAvailable = false;
+                Serial.println("Initial weather sync failed. Waiting 30 seconds to retry...");
+                vTaskDelay(pdMS_TO_TICKS(30000)); // Wait 30s on failure
+            }
+        }
+        else
+        {
+            Serial.println("WiFi not connected. Retrying initial sync in 5 seconds...");
+            vTaskDelay(pdMS_TO_TICKS(5000));
+        }
     }
 
+    // Main execution loop for periodic updates
     while (true)
     {
         uint32_t currentTime = millis();
 
+        // ---------------- DAILY WEATHER ----------------
         if (currentTime - lastDailyWeatherSync >= DAILY_WEATHER_INTERVAL)
         {
             if (WiFi.status() == WL_CONNECTED)
@@ -58,7 +86,8 @@ void weatherTask(void *parameter)
                 else
                 {
                     dailyWeatherFailCount++;
-                    Serial.printf("Daily weather sync failed (%d/5). Retrying in 5 seconds.\n", dailyWeatherFailCount);
+                    Serial.printf("Daily weather sync failed (%d/5). Waiting 30 seconds before retry.\n", dailyWeatherFailCount);
+
                     if (dailyWeatherFailCount >= 5)
                     {
                         Serial.println("Daily weather failed 5 times. Waiting 30 minutes before retrying.");
@@ -67,7 +96,7 @@ void weatherTask(void *parameter)
                     }
                     else
                     {
-                        vTaskDelay(pdMS_TO_TICKS(5000));
+                        vTaskDelay(pdMS_TO_TICKS(30000)); // 30 second retry delay
                     }
                 }
             }
@@ -79,6 +108,7 @@ void weatherTask(void *parameter)
 
         vTaskDelay(pdMS_TO_TICKS(5000));
 
+        // ---------------- CURRENT WEATHER ----------------
         if (currentTime - lastCurrentWeatherSync >= CURRENT_WEATHER_INTERVAL)
         {
             if (WiFi.status() == WL_CONNECTED)
@@ -92,7 +122,8 @@ void weatherTask(void *parameter)
                 else
                 {
                     currentWeatherFailCount++;
-                    Serial.printf("Current weather sync failed (%d/5). Retrying in 5 seconds.\n", currentWeatherFailCount);
+                    Serial.printf("Current weather sync failed (%d/5). Waiting 30 seconds before retry.\n", currentWeatherFailCount);
+
                     if (currentWeatherFailCount >= 5)
                     {
                         Serial.println("Current weather failed 5 times. Waiting 30 minutes before retrying.");
@@ -101,7 +132,7 @@ void weatherTask(void *parameter)
                     }
                     else
                     {
-                        vTaskDelay(pdMS_TO_TICKS(5000)); // Retry in 5 seconds
+                        vTaskDelay(pdMS_TO_TICKS(30000)); // 30 second retry delay
                     }
                 }
             }
@@ -146,7 +177,6 @@ bool syncDailyWeather()
     delete omdailyForecast;
 
     // Mark the weather data as available
-    isWeatherAvailable = true;
     return true;
 }
 
@@ -179,64 +209,57 @@ bool syncCurrentWeather()
     delete omCurrentWeather;
 
     // Mark the weather data as available
-    isWeatherAvailable = true;
     return true;
 }
 
 String weatherConditionIdToStr(int code_no)
 {
-    if (isWeatherAvailable == true)
+
+    switch (code_no)
     {
-        switch (code_no)
-        {
-        case 0:
-            return "Clear sky";
-        case 1:
-        case 2:
-        case 3:
-            return "Partly cloudy";
-        case 45:
-        case 48:
-            return "Fog";
-        case 51:
-        case 53:
-        case 55:
-            return "Drizzle";
-        case 56:
-        case 57:
-            return "Freezing drizzle";
-        case 61:
-        case 63:
-        case 65:
-            return "Rain";
-        case 66:
-        case 67:
-            return "Freezing rain";
-        case 71:
-        case 73:
-        case 75:
-            return "Snow";
-        case 77:
-            return "Snow grains";
-        case 80:
-        case 81:
-        case 82:
-            return "Rain showers";
-        case 85:
-        case 86:
-            return "Snow showers";
-        case 95:
-            return "Thunderstorm";
-        case 96:
-        case 99:
-            return "Thunderstorm with hail";
-        default:
-            return "Unknown";
-        }
-    }
-    else
-    {
-        return "N/A";
+    case 0:
+        return "Clear sky";
+    case 1:
+    case 2:
+    case 3:
+        return "Partly cloudy";
+    case 45:
+    case 48:
+        return "Fog";
+    case 51:
+    case 53:
+    case 55:
+        return "Drizzle";
+    case 56:
+    case 57:
+        return "Freezing drizzle";
+    case 61:
+    case 63:
+    case 65:
+        return "Rain";
+    case 66:
+    case 67:
+        return "Freezing rain";
+    case 71:
+    case 73:
+    case 75:
+        return "Snow";
+    case 77:
+        return "Snow grains";
+    case 80:
+    case 81:
+    case 82:
+        return "Rain showers";
+    case 85:
+    case 86:
+        return "Snow showers";
+    case 95:
+        return "Thunderstorm";
+    case 96:
+    case 99:
+        return "Thunderstorm with hail";
+    default:
+        return "Unknown";
     }
 }
 
