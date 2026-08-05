@@ -49,7 +49,7 @@
 #define MCP_LED2_P1 10
 #define MCP_LED2_P2 11
 
-#define AUTO_OFF_DELAY_MS 180000
+#define AUTO_OFF_DELAY_MS 180000 // leds how long until they automatically turn off when using toggle
 
 // Interrupts
 
@@ -158,7 +158,7 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 
 #define VOLTAGE_DIVIDER_PIN GPIO_NUM_4
 #define ADC_VOLTAGE_DIVIDER 710.094f // 300K and 806K
-#define ADC_OFFSET 77 // It subtracts from the read milivolts to calibrate the adc a bit its not great but it works
+#define ADC_OFFSET 400 // It subtracts from the read milivolts to calibrate the adc a bit its not great but it works
 
 #define BATT_TARGET_VOLTAGE 3.85   // Target voltage in volts
 #define BATT_HYSTERESIS 0.15       // charging Hysteresis in volts

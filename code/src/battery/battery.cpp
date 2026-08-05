@@ -287,6 +287,14 @@ void controlCharger()
   if (newChargingState != charging)
   {
     charging = newChargingState;
+    if (charging)
+    {
+      rM.gpioExpander.setPinPullUp(MCP_CHARGER_CONTROL_PIN, true);
+    }
+    else
+    {
+      rM.gpioExpander.setPinPullUp(MCP_CHARGER_CONTROL_PIN, false);
+    }
     rM.gpioExpander.setPinState(MCP_CHARGER_CONTROL_PIN, charging);
   }
 
@@ -359,9 +367,15 @@ double readVoltage(byte pin)
 
 float getBatteryVoltage()
 {
-  double miliVolts = readVoltage(VOLTAGE_DIVIDER_PIN);
-  miliVolts = miliVolts - ADC_OFFSET;
-  float batteryVoltage = miliVolts / ADC_VOLTAGE_DIVIDER;
+double milliVolts = readVoltage(VOLTAGE_DIVIDER_PIN);
+
+Serial.print("milliVolts = ");
+Serial.println(milliVolts);
+milliVolts += ADC_OFFSET;
+float batteryVoltage = milliVolts / ADC_VOLTAGE_DIVIDER;
+
+Serial.print("batteryVoltage = ");
+Serial.println(batteryVoltage, 6);
 
   return batteryVoltage;
 }
