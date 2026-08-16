@@ -12,6 +12,9 @@ void initLightSensor();
 extern SparkFun_Ambient_Light lightMeter;
 int smoothTouchRead(int pin);
 
+void enableLightSensor();
+void disableLightSensor();
+
 bool checkForNight();
 
 int getMmwaveState();

@@ -1,14 +1,8 @@
 #include "hardware.h"
 #include "rtcMem/rtcMem.h"
 
-AS1115 LedDisplay = AS1115(0x00);
-
-AT42QT2120 touch_sensor(Wire, TOUCH_INTERRUPT);
-
-void initLedDisplay();
 void initBuzzer();
 void initButtons();
-void initTouch();
 void mountLittlefs();
 
 void waitForSerialInput()
@@ -92,83 +86,7 @@ void mountLittlefs()
 
 bool readHallSwitch()
 {
-return false;
-}
-
-void initLedDisplay()
-{
-  LedDisplay.init(4, 6);
-  LedDisplay.clear();
-  // LedDisplay.writeRegister(DIG01_INTENSITY, 0x0F);
-  // LedDisplay.writeRegister(DIG23_INTENSITY, 0x00);
-  // LedDisplay.writeRegister(DIG45_INTENSITY, 0x0F);
-  // LedDisplay.writeRegister(DIG67_INTENSITY, 0x00);
-  Serial.println("Led display initialized");
-}
-
-void initTouch()
-{
-  Serial.println("starting init of touch");
-
-  pinMode(TOUCH_INTERRUPT, INPUT);
-
-  touch_sensor.begin();
-  touch_sensor.reset();
-  delay(500);
-
-  Serial.println("touch ic initialized");
-
-  AT42QT2120::KeyControl kc;
-
-  kc.setTouchEnabled(false); // replaces enable_key_output = 1 (best guess mapping)
-  kc.setOutputHigh(false);   // key_output = 0
-  kc.setAdjacentKeySuppressionGroup(1);
-  kc.setGuardEnabled(false); // guard = 0
-
-  for (uint8_t i = 0; i < 12; i++)
-  {
-    touch_sensor.setKeyControl(i, kc);
-  }
-
-  kc.setTouchEnabled(true); // replaces enable_key_output = 0
-
-  for (uint8_t i = 0; i <= 6; i++)
-  {
-    touch_sensor.setKeyControl(i, kc);
-  }
-
-  touch_sensor.setKeyDetectThreshold(0, 12);
-  touch_sensor.setKeyDetectThreshold(1, 12);
-  touch_sensor.setKeyDetectThreshold(2, 12);
-  touch_sensor.setKeyDetectThreshold(3, 12);
-  touch_sensor.setKeyDetectThreshold(4, 12);
-  touch_sensor.setKeyDetectThreshold(5, 12);
-  touch_sensor.setKeyDetectThreshold(6, 12);
-
-  AT42QT2120::KeyPulseScale PulseScale;
-  PulseScale.pulse = 1;
-  PulseScale.scale = 2;
-
-  for (uint8_t i = 0; i <= 6; i++)
-  {
-    touch_sensor.setKeyPulseScale(i, PulseScale);
-  }
-
-  touch_sensor.setDetectionIntegrator(1);
-
-  touch_sensor.setChargeDuration(6);
-  touch_sensor.setMeasurementIntervalCount(1);
-
-  touch_sensor.setAwayDriftCompensationDuration(0);
-  touch_sensor.setDriftCompensationHoldDuration(120);
-  touch_sensor.setRecalibrationDelay(255);
-
-  touch_sensor.triggerCalibration();
-  Serial.println("calibrating touch");
-  while (touch_sensor.calibrating())
-    delay(20);
-
-  turnOnTouch();
+  return false;
 }
 
 bool ledsOn = false;
@@ -176,98 +94,107 @@ bool ledsOn = false;
 void turnOnLeds(bool maxPower)
 {
   ledsOn = true;
+  rM.gpioExpander.setPinPullUp(MCP_LED2_P2, false);
+  rM.gpioExpander.setPinPullUp(MCP_LED1_P2, false);
+  rM.gpioExpander.setPinPullUp(MCP_LED1_P1, false);
+  rM.gpioExpander.setPinPullUp(MCP_LED2_P1, false);
+
   rM.gpioExpander.setPinState(MCP_LED1_P1, false);
+
   rM.gpioExpander.setPinState(MCP_LED2_P1, false);
 
   if (maxPower == true)
   {
     rM.gpioExpander.setPinState(MCP_LED2_P2, false);
+
     rM.gpioExpander.setPinState(MCP_LED1_P2, false);
   }
 }
-
 void turnOffLeds()
 {
   ledsOn = false;
+
   rM.gpioExpander.setPinState(MCP_LED1_P1, true);
+  rM.gpioExpander.setPinPullUp(MCP_LED1_P1, true);
+
   rM.gpioExpander.setPinState(MCP_LED1_P2, true);
+  rM.gpioExpander.setPinPullUp(MCP_LED1_P2, true);
+
   rM.gpioExpander.setPinState(MCP_LED2_P1, true);
+  rM.gpioExpander.setPinPullUp(MCP_LED2_P1, true);
+
   rM.gpioExpander.setPinState(MCP_LED2_P2, true);
+  rM.gpioExpander.setPinPullUp(MCP_LED2_P2, true);
 }
 
-#define CMD_CANCEL  1
+#define CMD_CANCEL 1
 #define CMD_RESTART 2
 
 TaskHandle_t ledDelayTaskHandle = NULL;
 
 void ledAutoOffTask(void *pvParameters)
 {
-    while (true)
+  while (true)
+  {
+    uint32_t notificationValue = 0;
+
+    BaseType_t notified = xTaskNotifyWait(
+        0,
+        ULONG_MAX,
+        &notificationValue,
+        pdMS_TO_TICKS(AUTO_OFF_DELAY_MS));
+
+    if (notified == pdTRUE)
     {
-        uint32_t notificationValue = 0;
-        
-        // Wait for configured delay OR until a command notification arrives
-        BaseType_t notified = xTaskNotifyWait(
-            0,
-            ULONG_MAX,
-            &notificationValue,
-            pdMS_TO_TICKS(AUTO_OFF_DELAY_MS)
-        );
-
-        if (notified == pdTRUE)
-        {
-            if (notificationValue == CMD_CANCEL)
-            {
-                break; // Exit task early
-            }
-            else if (notificationValue == CMD_RESTART)
-            {
-                continue; // Restart delay loop
-            }
-        }
-        else
-        {
-            // Delay expired after 3 minutes
-            turnOffLeds();
-            break;
-        }
+      if (notificationValue == CMD_CANCEL)
+      {
+        break;
+      }
+      else if (notificationValue == CMD_RESTART)
+      {
+        continue; 
+      }
     }
+    else
+    {
+      turnOffLeds();
+      break;
+    }
+  }
 
-    // Clean exit from within task
-    ledDelayTaskHandle = NULL;
-    vTaskDelete(NULL);
+  ledDelayTaskHandle = NULL;
+  vTaskDelete(NULL);
 }
 
 void toggleLeds(bool maxPower)
 {
-    if (ledsOn == true)
+  if (ledsOn == true)
+  {
+    if (ledDelayTaskHandle != NULL)
     {
-        if (ledDelayTaskHandle != NULL)
-        {
-            xTaskNotify(ledDelayTaskHandle, CMD_CANCEL, eSetValueWithOverwrite);
-        }
-        turnOffLeds();
+      xTaskNotify(ledDelayTaskHandle, CMD_CANCEL, eSetValueWithOverwrite);
+    }
+    turnOffLeds();
+  }
+  else
+  {
+    turnOnLeds(maxPower);
+
+    if (ledDelayTaskHandle != NULL)
+    {
+      xTaskNotify(ledDelayTaskHandle, CMD_RESTART, eSetValueWithOverwrite);
     }
     else
     {
-        turnOnLeds(maxPower);
-
-        if (ledDelayTaskHandle != NULL)
-        {
-            xTaskNotify(ledDelayTaskHandle, CMD_RESTART, eSetValueWithOverwrite);
-        }
-        else
-        {
-            xTaskCreate(
-                ledAutoOffTask,
-                "LED_Off_Task",
-                2048,
-                NULL,
-                1,
-                &ledDelayTaskHandle
-            );
-        }
+      xTaskCreate(
+          ledAutoOffTask,
+          "LED_Off_Task",
+          2048,
+          NULL,
+          1,
+          &ledDelayTaskHandle);
     }
+  }
 }
 
 void initButtons()

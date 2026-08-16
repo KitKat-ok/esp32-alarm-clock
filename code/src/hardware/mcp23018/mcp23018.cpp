@@ -78,7 +78,6 @@ inkButtonStates mcp23018::manageInterrupts()
   uint16_t gpio_cause = readRegister(INTF);
   // Then we read the interrupts
   uint16_t gpio_ints = readRegister(INTCAP);
-  mcp23018::digitalRead(MCP_5V);
   // We disable all interrupts, we don't want new ones now
   // writeRegister(GPINTEN, EMPTY_REG); // or not OR NOT we can't in fact do that
   Serial.println("Interrupt bits: " + uint16ToBinaryString(gpio_ints));
@@ -354,6 +353,17 @@ void mcp23018::setDefaultInterrupts()
   setInterrupt(APDS9960_INT, true);
 
   Serial.println("Setting Mcp interrupts");
+}
+
+void mcp23018::enterLowPowerState()
+{
+  setPinMode(APDS9960_INT, MCP_OUTPUT);
+  setPinState(APDS9960_INT, true);
+  setPinPullUp(APDS9960_INT, false);
+
+  setInterrupt(APDS9960_INT, false);
+
+  turnOffLeds();
 }
 
 void mcp23018::setInterrupt(uint8_t pin, bool interrupt)

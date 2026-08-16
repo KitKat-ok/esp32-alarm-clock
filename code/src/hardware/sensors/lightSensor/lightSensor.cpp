@@ -26,7 +26,7 @@ void lightTask(void *pvParameters)
     unsigned long previousMillisChart = 0;
     while (true)
     {
-        unsigned long currentMillis = millis(); // Get the current time
+        unsigned long currentMillis = millis();
         if (currentMillis - previousMillisChart >= INTERVAL_CHARTS)
         {
             getLightLevel();
@@ -44,12 +44,12 @@ void lightTask(void *pvParameters)
 void createLightTask()
 {
     xTaskCreate(
-        lightTask,   /* Task function. */
-        "lightTask", /* String with name of task. */
-        2048,        /* Stack size in words. */
-        NULL,        /* Parameter passed as input of the task */
-        1,           /* Priority of the task. */
-        NULL         /* Task handle. */
+        lightTask,
+        "lightTask",
+        2048,
+        NULL,
+        1,
+        NULL
     );
 }
 
@@ -57,21 +57,21 @@ void createDimmingTask()
 {
     Serial.print("creating dimmingTask");
     xTaskCreate(
-        dimmingTask,       /* Task function. */
-        "DimTask",         /* String with name of task. */
-        4096,              /* Stack size in words. */
-        NULL,              /* Parameter passed as input of the task */
-        1,                 /* Priority of the task. */
-        &dimmingTaskHandle /* Task handle. */
+        dimmingTask,
+        "DimTask",
+        4096,
+        NULL,
+        1,
+        &dimmingTaskHandle
     );
 
     xTaskCreate(
-        oledWakeupTask,       /* Task function. */
-        "InputOledTask",      /* String with name of task. */
-        4096,                 /* Stack size in words. */
-        NULL,                 /* Parameter passed as input of the task */
-        3,                    /* Priority of the task. */
-        &oledWakeupTaskHandle /* Task handle. */
+        oledWakeupTask,
+        "InputOledTask",
+        4096,
+        NULL,
+        3,
+        &oledWakeupTaskHandle
     );
 }
 
@@ -97,7 +97,6 @@ void oledWakeupTask(void *pvParameters)
 
             Serial.print("lock mutex");
             showCurrentTime();
-            LedMut.lock();
 
             if (currentWeatherData.isDay == false)
             {
@@ -107,7 +106,6 @@ void oledWakeupTask(void *pvParameters)
             {
                 setLedIntensity(LED_BRIGHTNESS_MAX);
             }
-            LedMut.unlock();
             Serial.print("unlock mutex");
 
             if (oledMana.dimmed)
@@ -267,7 +265,6 @@ int mapLedWithHysteresis(uint16_t lightLevel)
         (float)(lightLevel - LED_DIM_THRESHOLD) /
         (float)(LED_MAP_MAX_LIGHT - LED_DIM_THRESHOLD);
 
-    // human-eye logarithmic response
     normalized =
         log10f(1.0f + normalized * 9.0f);
 
@@ -294,41 +291,50 @@ void dimLedDisplay(bool checkForOff)
 {
     if (lightLevel < 5000)
     {
-        if (disableHysteresisState)
+        if (xSemaphoreTake(LedMut, portMAX_DELAY))
         {
-            if (lightLevel > LED_DISABLE_THRESHOLD + 6)
-                disableHysteresisState = false;
-        }
-        else
-        {
-            if (lightLevel <= LED_DISABLE_THRESHOLD - 0.5 && checkForNight())
-                disableHysteresisState = true;
-        }
-        LedMut.lock();
-        if (disableHysteresisState && checkForOff == true)
-        {
-            if (millis() < displayHoldUntil)
+            if (disableHysteresisState)
             {
-                LedMut.unlock();
-                return;
+                if (lightLevel > LED_DISABLE_THRESHOLD + 6)
+                    disableHysteresisState = false;
             }
-            LedDisplay.clear();
-            LedDisplayOn = false;
+            else
+            {
+                if (lightLevel <= LED_DISABLE_THRESHOLD - 0.5 && checkForNight())
+                    disableHysteresisState = true;
+            }
+
+            if (disableHysteresisState && checkForOff == true)
+            {
+                if (millis() < displayHoldUntil)
+                {
+                    xSemaphoreGive(LedMut);
+                    return;
+                }
+                
+                if (lockI2C())
+                {
+                    LedDisplay.clear();
+                    unlockI2C();
+                }
+                LedDisplayOn = false;
+            }
+            else if (lightLevel > LED_DIM_THRESHOLD)
+            {
+                LedDisplayOn = true;
+                uint8_t brightness = mapLedWithHysteresis(lightLevel);
+                setLedIntensity(brightness);
+                Serial.println("Brightness of Led display " + String(brightness));
+            }
+            else
+            {
+                LedDisplayOn = true;
+                setLedIntensity(0);
+                Serial.println("Brightness of Led display 0");
+            }
+
+            xSemaphoreGive(LedMut);
         }
-        else if (lightLevel > LED_DIM_THRESHOLD)
-        {
-            LedDisplayOn = true;
-            uint8_t brightness = mapLedWithHysteresis(lightLevel);
-            setLedIntensity(brightness);
-            Serial.println("Brightness of Led display " + String(brightness));
-        }
-        else
-        {
-            LedDisplayOn = true;
-            setLedIntensity(0);
-            Serial.println("Brightness of Led display 0");
-        }
-        LedMut.unlock();
     }
 }
 
@@ -400,7 +406,7 @@ int getMmwaveState()
     {
         Serial.print("deserializeJson() returned ");
         Serial.println(error.c_str());
-        return 3; // Return error code if deserialization fails
+        return 3;
     }
 
     bool state = jsonDoc["Detected"];
@@ -436,16 +442,13 @@ float getLightLevel()
 
 void initLightSensor()
 {
-    float gain = 1;
-    int time = 400;
-
     if (lightMeter.begin(Wire))
         Serial.println("Ready to sense some light!");
     else
         Serial.println("Could not communicate with the sensor!");
 
-    lightMeter.setGain(gain);
-    lightMeter.setIntegTime(time);
+    lightMeter.setGain(1);
+    lightMeter.setIntegTime(400);
 
     Serial.println("Reading settings...");
     Serial.print("Gain: ");
@@ -454,4 +457,17 @@ void initLightSensor()
     Serial.print(" Integration Time: ");
     int timeVal = lightMeter.readIntegTime();
     Serial.println(timeVal);
+}
+
+void disableLightSensor()
+{
+    lightMeter.enablePowSave();
+    Serial.println("Placed light sensor into low-power mode.");
+}
+
+void enableLightSensor()
+{
+    lightMeter.disablePowSave();
+    delay(10);
+    Serial.println("Woke up light sensor and restored normal mode.");
 }

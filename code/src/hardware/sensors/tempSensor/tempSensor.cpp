@@ -3,6 +3,13 @@
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 static bool shtInitialized = false;
 
+// Helper to keep sensor settings in a single place
+static void applyTempSensorSettings()
+{
+    sht4.setPrecision(SHT4X_HIGH_PRECISION);
+    sht4.setHeater(SHT4X_NO_HEATER);
+}
+
 float readTemperature()
 {
     if (!shtInitialized) return -999.0f;
@@ -43,10 +50,10 @@ float readHumidity()
 
 void tempTask(void *pvParameters)
 {
-    unsigned long previousMillisChart = 0; // Will store the last time the function was called
+    unsigned long previousMillisChart = 0;
     while (true)
     {
-        unsigned long currentMillis = millis(); // Get the current time
+        unsigned long currentMillis = millis();
         if (currentMillis - previousMillisChart >= INTERVAL_CHARTS)
         {
             for (int i = 0; i < CHART_READINGS - 1; i++)
@@ -68,12 +75,12 @@ void createTempTask()
     Serial.println("Creating tempTask");
 
     xTaskCreate(
-        tempTask,   /* Task function */
-        "TempTask", /* String with name of task */
-        2048,       /* Stack size in words */
-        NULL,       /* Parameter passed as input of the task */
-        1,          /* Priority of the task */
-        NULL        /* Task handle */
+        tempTask,
+        "TempTask",
+        2048,
+        NULL,
+        1,
+        NULL
     );
 }
 
@@ -86,8 +93,7 @@ void initTempSensor()
         initialized = sht4.begin();
         if (initialized)
         {
-            sht4.setPrecision(SHT4X_HIGH_PRECISION);
-            sht4.setHeater(SHT4X_NO_HEATER);
+            applyTempSensorSettings();
         }
         unlockI2C();
     }
@@ -101,4 +107,30 @@ void initTempSensor()
 
     shtInitialized = true;
     Serial.println("Found SHT4x sensor successfully.");
+}
+
+void disableTempSensor()
+{
+    if (!shtInitialized) return;
+
+    if (lockI2C())
+    {
+        sht4.reset();
+        unlockI2C();
+    }
+
+    Serial.println("SHT4x placed into low-power idle mode.");
+}
+
+void enableTempSensor()
+{
+    if (!shtInitialized) return;
+
+    if (lockI2C())
+    {
+        applyTempSensorSettings();
+        unlockI2C();
+    }
+
+    Serial.println("SHT4x ready for operation.");
 }

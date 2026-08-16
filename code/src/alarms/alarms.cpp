@@ -6,12 +6,16 @@ Alarm alarms[MAX_ALARMS];
 TaskHandle_t alarmTaskHandle;
 TaskHandle_t Alarm;
 
-// External handle to the main UI/Menu task
 extern TaskHandle_t menuTaskHandle;
 
-// Global state variables for light status
 bool initialLightWasOn = false;
-enum LightUserChoice { CHOICE_PENDING, CHOICE_TURN_OFF_NOW, CHOICE_KEEP_PREVIOUS, CHOICE_DEFAULT };
+enum LightUserChoice
+{
+  CHOICE_PENDING,
+  CHOICE_TURN_OFF_NOW,
+  CHOICE_KEEP_PREVIOUS,
+  CHOICE_DEFAULT
+};
 LightUserChoice userLightChoice = CHOICE_PENDING;
 
 void ringAlarm(void *parameter);
@@ -22,24 +26,31 @@ void sendOffPostRequest(bool instant = false);
 void sendTogglePostRequest();
 bool fetchInitialLightState();
 
-// Tasks for background HTTP requests to avoid blocking UI execution
 void httpOnTask(void *param)
 {
-  sendOnPostRequest(false);
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    sendOnPostRequest(false);
+  }
   vTaskDelete(NULL);
 }
 
-// Waits 5 minutes in the background before sending the standard OFF request
 void httpOffTask(void *param)
 {
   vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
-  sendOffPostRequest(false);
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    sendOffPostRequest(false);
+  }
   vTaskDelete(NULL);
 }
 
 void httpToggleTask(void *param)
 {
-  sendTogglePostRequest();
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    sendTogglePostRequest();
+  }
   vTaskDelete(NULL);
 }
 
@@ -51,13 +62,13 @@ void initialzeAlarmArray()
   for (int i = 0; i < MAX_ALARMS; i++)
   {
     alarms[i] = {
-        false,                                      // exists
-        false,                                      // enabled
-        {true, true, true, true, true, true, true}, // days
-        0,                                          // hours
-        0,                                          // minutes
-        true,                                       // soundOn
-        true                                        // lightOn
+        false,
+        false,
+        {true, true, true, true, true, true, true},
+        0,
+        0,
+        true,
+        true
     };
   }
 }
@@ -65,18 +76,18 @@ void initialzeAlarmArray()
 void createAlarmTask()
 {
   xTaskCreate(
-      checkAlarmsTask, // Function to implement the task
-      "Alarms",        // Task name
-      2048,            // Stack size (words)
-      NULL,            // Task input parameter
-      1,               // Priority (0 is lowest)
-      &alarmTaskHandle // Task handle
+      checkAlarmsTask,
+      "Alarms",
+      2048,
+      NULL,
+      1,
+      &alarmTaskHandle
   );
 }
 
 void checkAlarms()
 {
-  int currentDay = weekday() - 1; // Adjust to 0-based index
+  int currentDay = weekday() - 1;
   Serial.println("current day:" + String(currentDay));
 
   for (int i = 0; i < MAX_ALARMS; ++i)
@@ -96,7 +107,9 @@ void checkAlarmsTask(void *pvParameters)
   {
     int s = second();
     if (s != 0)
+    {
       vTaskDelay(pdMS_TO_TICKS((60 - s) * 1000));
+    }
     int currentHour = hour();
     int currentMinute = minute();
 
@@ -152,15 +165,90 @@ void checkAlarm(int index)
   }
 }
 
+String formatTimeUntilNextAlarm()
+{
+  long remainingSeconds = getTimeUntilNextAlarm();
+
+  if (remainingSeconds < 0)
+  {
+    return "No Alarms";
+  }
+
+  long days = remainingSeconds / 86400L;
+  long hours = (remainingSeconds % 86400L) / 3600L;
+  long minutes = (remainingSeconds % 3600L) / 60L;
+
+  String result = "Alarm: ";
+
+  if (days > 0)
+  {
+    result += String(days) + "d " + String(hours) + "h";
+  }
+  else if (hours > 0)
+  {
+    result += String(hours) + "h " + String(minutes) + "m";
+  }
+  else
+  {
+    result += String(minutes) + "m";
+  }
+
+  return result;
+}
+
+long getTimeUntilNextAlarm()
+{
+  int currentDay = weekday() - 1;
+  int currentH = hour();
+  int currentM = minute();
+  int currentS = second();
+
+  long nowInSeconds = ((long)currentDay * 86400L) + ((long)currentH * 3600L) + ((long)currentM * 60L) + currentS;
+
+  long minRemainingSeconds = -1;
+
+  for (int i = 0; i < MAX_ALARMS; i++)
+  {
+    if (!alarms[i].exists || !alarms[i].enabled)
+    {
+      continue;
+    }
+
+    for (int dayOffset = 0; dayOffset < 7; dayOffset++)
+    {
+      int targetDay = (currentDay + dayOffset) % 7;
+
+      if (alarms[i].days[targetDay])
+      {
+        long alarmInSeconds = ((long)targetDay * 86400L) + ((long)alarms[i].hours * 3600L) + ((long)alarms[i].minutes * 60L);
+
+        if (alarmInSeconds <= nowInSeconds)
+        {
+          alarmInSeconds += (7L * 86400L);
+        }
+
+        long diff = alarmInSeconds - nowInSeconds;
+
+        if (minRemainingSeconds == -1 || diff < minRemainingSeconds)
+        {
+          minRemainingSeconds = diff;
+        }
+      }
+    }
+  }
+
+  return minRemainingSeconds;
+}
+
 void createRiningingTask()
 {
   xTaskCreate(
-      ringAlarm,   // Function to implement the task
-      "ringAlarm", // Name of the task
-      4096,        // Stack size (words)
-      NULL,        // Parameter to pass
-      4,           // Priority
-      &Alarm       // Task handle
+      ringAlarm,
+      "ringAlarm",
+      4096,
+      NULL,
+      4,
+      &Alarm
   );
 }
 
@@ -171,7 +259,6 @@ struct Melody
   int length;
 };
 
-// NON-BLOCKING MELODY STEPPER (State Machine)
 void playMelodyStep(const Melody &m, int &noteIdx, unsigned long &noteStartTime, bool &isPlaying)
 {
   if (noteIdx >= m.length)
@@ -196,7 +283,7 @@ void playMelodyStep(const Melody &m, int &noteIdx, unsigned long &noteStartTime,
 
     if (noteIdx >= m.length)
     {
-      noteIdx = 0; // Loop melody continuously
+      noteIdx = 0;
     }
   }
 }
@@ -205,41 +292,44 @@ void showRingingAlarmScreen()
 {
   oled.clearDisplay();
 
-  // 1. Top Section: Date Header (0 - 16px)
   oled.setFont(&DejaVu_LGC_Sans_Bold_9);
   oled.setTextColor(SSD1327_WHITE);
-  centerText(String(day()) + "." + String(month()) + "." + String(year()), 11);
+  
+  String dateStr = String(day()) + "." + String(month()) + "." + String(year());
+  centerText(dateStr, 11);
 
   oled.drawLine(0, 16, 127, 16, 6);
 
-  // 2. Large Time Section (20 - 58px)
   bool showColon = (millis() / 500) % 2 == 0;
-
   String timeStr = formatWithLeadingZero(hour()) + (showColon ? ":" : " ") + formatWithLeadingZero(minute());
 
   oled.setFont(&DejaVu_Sans_Bold_16);
+  oled.setTextColor(SSD1327_WHITE);
   centerText(timeStr, 44);
 
-  // Weekday Subtitle
   oled.setFont(&DejaVu_LGC_Sans_Bold_9);
   oled.setTextColor(12);
   centerText(getCurrentWeekdayName(), 60);
 
   oled.drawLine(0, 66, 127, 66, 6);
 
-  // 3. Middle Section: Dynamic Status Banner (68 - 92px)
-  oled.setFont(&DejaVu_LGC_Sans_Bold_10);
-  oled.setTextColor(SSD1327_WHITE);
-  centerText("ALARM RINGING!", 82);
+  bool isBlinking = (millis() / 500) % 2 == 0;
 
-  if ((millis() / 500) % 2 == 0)
+  oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+
+  if (isBlinking)
   {
-    oled.fillRect(4, 70, 120, 16, SSD1327_WHITE);
-    oled.setTextColor(SSD1327_BLACK, SSD1327_WHITE);
-    centerText("ALARM RINGING!", 82);
+    oled.fillRect(4, 70, 120, 18, 15);
+    oled.setTextColor(0);
+  }
+  else
+  {
+    oled.drawRect(4, 70, 120, 18, 6);
+    oled.setTextColor(SSD1327_WHITE);
   }
 
-  // 4. Bottom Footer: Stop Instructions (96 - 128px)
+  centerText("ALARM RINGING!", 83);
+
   oled.drawLine(0, 96, 127, 96, 6);
 
   oled.setFont(&Roboto_Black_9);
@@ -249,7 +339,11 @@ void showRingingAlarmScreen()
   oled.setTextColor(SSD1327_WHITE);
   centerText("or Hall Sensor to STOP", 121);
 
+  delay(10);
   oledMana.display();
+
+  oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+  oled.setTextColor(SSD1327_WHITE);
 }
 
 void showLightOptionScreen(int selectedOption)
@@ -259,44 +353,50 @@ void showLightOptionScreen(int selectedOption)
   oled.setFont(&DejaVu_LGC_Sans_Bold_9);
   oled.setTextColor(SSD1327_WHITE);
   centerText("LIGHT SETTINGS", 12);
+
   oled.drawLine(0, 16, 127, 16, 6);
+
+  const char *options[] = {"Turn OFF Light", "Keep Prev State"};
+  const int totalOptions = 2;
+  const int boxHeight = 26;
+  const int startY = 22;
+  const int ySpacing = 32;
 
   oled.setFont(&Roboto_Black_9);
 
-  // Option 0: Turn OFF Light
-  if (selectedOption == 0)
+  for (int i = 0; i < totalOptions; i++)
   {
-    oled.fillRect(4, 22, 120, 28, SSD1327_WHITE);
-    oled.setTextColor(SSD1327_BLACK, SSD1327_WHITE);
-    centerText("> Turn OFF Light <", 39);
-  }
-  else
-  {
-    oled.setTextColor(SSD1327_WHITE);
-    centerText("Turn OFF Light", 39);
-  }
+    int boxY = startY + (i * ySpacing);
+    bool isSelected = (selectedOption == i);
 
-  // Option 1: Keep Previous State
-  if (selectedOption == 1)
-  {
-    oled.fillRect(4, 56, 120, 28, SSD1327_WHITE);
-    oled.setTextColor(SSD1327_BLACK, SSD1327_WHITE);
-    centerText("> Keep Prev State <", 73);
-  }
-  else
-  {
-    oled.setTextColor(SSD1327_WHITE);
-    centerText("Keep Prev State", 73);
+    if (isSelected)
+    {
+      oled.fillRect(4, boxY, 120, boxHeight, 15);
+      oled.setTextColor(0);
+      centerText("> " + String(options[i]) + " <", boxY + 17);
+    }
+    else
+    {
+      oled.drawRect(4, boxY, 120, boxHeight, 3);
+      oled.setTextColor(10);
+      centerText(options[i], boxY + 17);
+    }
   }
 
   oled.drawLine(0, 90, 127, 90, 6);
+
   oled.setFont(&Roboto_Black_9);
   oled.setTextColor(12);
   centerText("Up/Down: Switch | Menu: OK", 104);
+
   oled.setTextColor(SSD1327_WHITE);
   centerText("Touch/Back: Default Off", 118);
 
+  delay(10);
   oledMana.display();
+
+  oled.setFont(&DejaVu_LGC_Sans_Bold_10);
+  oled.setTextColor(SSD1327_WHITE);
 }
 
 void ringAlarm(void *parameter)
@@ -304,28 +404,25 @@ void ringAlarm(void *parameter)
   unsigned long startTime = millis();
   bool ringOn = buzzerEnabled;
   bool lightOn = lightCtrlEnabled;
+  bool isWifiAvailable = (WiFi.status() == WL_CONNECTED);
 
-  // Suspend main menu UI task
   if (menuTaskHandle != NULL)
   {
     vTaskSuspend(menuTaskHandle);
   }
 
-  // Fetch initial state of the light at start of alarm
-  if (lightOn && WiFi.status() == WL_CONNECTED)
+  if (lightOn && isWifiAvailable)
   {
     initialLightWasOn = fetchInitialLightState();
     xTaskCreate(httpOnTask, "httpOnTask", 4096, NULL, 1, NULL);
   }
 
-  // Melodies
   int alarmMelody[] = {NOTE_C5, NOTE_C5, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_G4, NOTE_G4};
   int alarmDurations[] = {8, 8, 8, 12, 12, 12, 8, 8};
 
   int SecAlarmMelody[] = {NOTE_C3, NOTE_C3, NOTE_B2, NOTE_B2, NOTE_B2, NOTE_B2, NOTE_G2, NOTE_G2};
   int SecAlarmDurations[] = {4, 4, 4, 8, 8, 8, 4, 4};
 
-  // Softer octave melody for daytime hours (11:00 to 21:00)
   int QuietAlarmMelody[] = {NOTE_C4, NOTE_C4, NOTE_B3, NOTE_B3, NOTE_G3, NOTE_G3};
   int QuietAlarmDurations[] = {16, 16, 16, 16, 16, 16};
 
@@ -339,26 +436,23 @@ void ringAlarm(void *parameter)
   unsigned long lastDisplayTime = 0;
   bool stopAlarmRequested = false;
   unsigned long stopTimerStart = 0;
-  
+
   bool lastInputState = false;
 
   userLightChoice = CHOICE_DEFAULT;
-  int currentMenuOption = 0; // 0 = Turn OFF, 1 = Keep Prev State
+  int currentMenuOption = 0; 
 
-  // Non-blocking melody playback states
   int currentNote = 0;
   unsigned long noteStartTime = 0;
   bool notePlaying = false;
   int activeMelodyType = -1;
 
-  // Initial input grace period (1 second)
   unsigned long inputGracePeriod = millis();
 
   while (true)
   {
     inputDetected = true;
 
-    // --- Single Read Hardware Inputs Per Frame ---
     inkButtonStates btn = useButton();
     touchState touch = useTouch();
     bool hallTriggered = readHallSwitch();
@@ -366,21 +460,19 @@ void ringAlarm(void *parameter)
     bool anyButtonPress = (btn != None) || touch.longPress || hallTriggered;
     bool touchTap = touch.touched && !touch.longPress;
 
-    // --- Render Alarm UI Screen (~10 FPS to save CPU) ---
     if (millis() - lastDisplayTime >= 100)
     {
       if (!stopAlarmRequested)
       {
         showRingingAlarmScreen();
       }
-      else
+      else if (lightOn && isWifiAvailable)
       {
         showLightOptionScreen(currentMenuOption);
       }
       lastDisplayTime = millis();
     }
 
-    // --- Play Melody Non-blocking ---
     if (ringOn && !stopAlarmRequested)
     {
       int currentHour = hour();
@@ -388,18 +480,17 @@ void ringAlarm(void *parameter)
 
       if (currentHour >= 11 && currentHour <= 21)
       {
-        selectedType = 0; // Quiet Daytime Melody
+        selectedType = 0;
       }
       else if (!touch.touched)
       {
-        selectedType = 1; // Standard Melody
+        selectedType = 1; 
       }
       else
       {
-        selectedType = 2; // Alternate Melody when touched
+        selectedType = 2;
       }
 
-      // Reset note index ONLY when switching melodies mid-song
       if (activeMelodyType != selectedType)
       {
         activeMelodyType = selectedType;
@@ -422,39 +513,38 @@ void ringAlarm(void *parameter)
       }
     }
 
-    // --- 30-Minute Continuous Ringing Timeout Check ---
     if (!stopAlarmRequested && (millis() - startTime >= 30 * 60 * 1000))
     {
-      Serial.println("30 minutes elapsed with no input. Silencing alarm...");
-      stopAlarmRequested = true;
-      stopTimerStart = millis();
-      noTone(BUZZER_PIN);
+      Serial.println("30 minutes elapsed with no input. Exiting alarm task...");
+      userLightChoice = CHOICE_DEFAULT;
+      break;
     }
 
-    // --- Process Input Logic ---
     if (millis() - inputGracePeriod > 1000)
     {
       if (!stopAlarmRequested)
       {
-        // Any initial press silences the alarm and opens the option menu
         if ((anyButtonPress || touchTap) && !lastInputState)
         {
           stopAlarmRequested = true;
           stopTimerStart = millis();
           noTone(BUZZER_PIN);
-          
+
+          if (!lightOn || !isWifiAvailable)
+          {
+            Serial.println("Alarm silenced. No Wi-Fi or light ctrl disabled; skipping light menu.");
+            break;
+          }
+
           lastInputState = true;
           Serial.println("Alarm silenced. Opening Light Selection Menu...");
-          vTaskDelay(pdMS_TO_TICKS(500)); // Longer debounce buffer so initial press isn't re-used
+          vTaskDelay(pdMS_TO_TICKS(500));
           continue;
         }
         lastInputState = anyButtonPress || touchTap;
       }
       else
       {
-        // --- Light Option Menu State ---
-
-        // Up / Down buttons switch menu selection
         if ((btn == Up || btn == LongUp) && !lastInputState)
         {
           currentMenuOption = 0;
@@ -465,24 +555,18 @@ void ringAlarm(void *parameter)
           currentMenuOption = 1;
           Serial.println("Selected: Keep Prev State");
         }
-
-        // Menu / LongMenu confirms selected option
         else if ((btn == Menu || btn == LongMenu || hallTriggered) && !lastInputState)
         {
           userLightChoice = (currentMenuOption == 0) ? CHOICE_TURN_OFF_NOW : CHOICE_KEEP_PREVIOUS;
           Serial.println("Choice confirmed via Menu button! Exiting...");
           break;
         }
-
-        // Back / LongBack triggers default behavior immediately
         else if ((btn == Back || btn == LongBack) && !lastInputState)
         {
           userLightChoice = CHOICE_DEFAULT;
           Serial.println("Back pressed. Exiting with default light behavior...");
           break;
         }
-
-        // Touching the touch sensor automatically triggers default behavior
         else if (touchTap && !lastInputState)
         {
           userLightChoice = CHOICE_DEFAULT;
@@ -494,7 +578,6 @@ void ringAlarm(void *parameter)
       }
     }
 
-    // 2-minute menu timeout -> defaults to original slow background behavior
     if (stopAlarmRequested && (millis() - stopTimerStart >= 120000))
     {
       Serial.println("2 minutes timeout elapsed without selection. Using default behavior.");
@@ -502,8 +585,7 @@ void ringAlarm(void *parameter)
       break;
     }
 
-    // Background light toggle request offloaded to background task
-    if (!stopAlarmRequested && millis() - startTime >= 30000)
+    if (!stopAlarmRequested && isWifiAvailable && (millis() - startTime >= 30000))
     {
       if (millis() - lastToggleRequestTime >= 10000)
       {
@@ -518,34 +600,31 @@ void ringAlarm(void *parameter)
       lastLedToggle = millis();
     }
 
-    // Yield CPU time (30 ms)
     vTaskDelay(pdMS_TO_TICKS(30));
   }
 
   turnOffLeds();
   noTone(BUZZER_PIN);
 
-  // Apply final Light behavior based on menu outcome
   if (lightOn && WiFi.status() == WL_CONNECTED)
   {
     if (userLightChoice == CHOICE_TURN_OFF_NOW)
     {
-      sendOffPostRequest(true); // Instant OFF (no transition)
+      sendOffPostRequest(true);
     }
     else if (userLightChoice == CHOICE_KEEP_PREVIOUS)
     {
       if (initialLightWasOn)
       {
-        sendOnPostRequest(true); // Restore ON instantly
+        sendOnPostRequest(true);
       }
       else
       {
-        sendOffPostRequest(true); // Restore OFF instantly
+        sendOffPostRequest(true);
       }
     }
     else
     {
-      // Default Behavior (Timeout, Back button, or Touch): 5-minute delayed background turn off with transition
       xTaskCreate(httpOffTask, "httpOffTask", 4096, NULL, 1, NULL);
     }
   }
@@ -572,8 +651,7 @@ bool fetchInitialLightState()
     if (httpResponseCode > 0)
     {
       String payload = http.getString();
-      
-      // ArduinoJson v7 structure
+
       JsonDocument doc;
       DeserializationError error = deserializeJson(doc, payload);
 

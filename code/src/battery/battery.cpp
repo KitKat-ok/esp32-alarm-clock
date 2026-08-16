@@ -1,30 +1,75 @@
 #include "battery.h"
 #include "rtcMem/rtcMem.h"
+#include "esp_pm.h"
+#include "esp_wifi.h"
+
+// Forward declarations for LED Display power methods
+void disableLedDisplay();
+void enableLedDisplay();
+extern long getTimeUntilNextAlarm();
 
 int batteryPercentage;
 float batteryVoltage;
 
 bool powerConnected = false;
 bool charging = false;
-
 bool wentToSleep = false;
+
+// Task handle to allow external interrupts to wake manageBattery immediately
+TaskHandle_t batteryTaskHandle = NULL;
 
 void enableSleep();
 void initSleep();
-
+void enableAllSensors();
+void disableAllSensors();
 void manageBattery(void *parameter);
-
 void controlCharger();
+void wakeUpAndRestoreState();
+
+void enableAllSensors()
+{
+  enableColorSensor();
+  enableLightSensor();
+  enablePressureSensor();
+  enableTempSensor();
+  setTouchNormalPower();
+  rM.gpioExpander.setDefaultPinStates();
+}
+
+void disableAllSensors()
+{
+  disableColorSensor();
+  disableLightSensor();
+  disablePressureSensor();
+  disableTempSensor();
+  setTouchLowPower();
+  rM.gpioExpander.enterLowPowerState();
+}
+
+void wakeUpAndRestoreState()
+{
+  enableAllSensors();
+  vTaskResume(oledWakeupTaskHandle);
+  vTaskResume(TimeTask);
+  vTaskResume(dimmingTaskHandle);
+  vTaskResume(alarmTaskHandle);
+  if (!ringing)
+  {
+    vTaskResume(menuTaskHandle);
+  }
+  oledMana.enable();
+  enableLedDisplay();
+}
 
 void createBatteryTask()
 {
   xTaskCreate(
-      manageBattery, // Function to implement the task
-      "Battery",     // Task name
-      4096,          // Stack size (words)
-      NULL,          // Task input parameter
-      3,             // Priority (0 is lowest)
-      NULL           // Task handle
+      manageBattery,     // Function to implement the task
+      "Battery",         // Task name
+      4096,              // Stack size (words)
+      NULL,              // Task input parameter
+      3,                 // Priority (0 is lowest)
+      &batteryTaskHandle // Task handle assigned for event notifications
   );
 }
 
@@ -52,9 +97,11 @@ void manageBattery(void *parameter)
 {
   const unsigned long batCheInterval = 15000;
   const unsigned long batteryWaitTimeout = 3000;
+
   unsigned long lastRunBatChe = 0;
   unsigned long batterySettingsTime = 0;
   unsigned long wakeupTime = 0;
+  unsigned long initialWakeupTime = 0; // Tracks when the active wake cycle started
 
   bool setPowerSettings = true;
   bool waitingForPower = false;
@@ -66,7 +113,10 @@ void manageBattery(void *parameter)
 
   while (true)
   {
-    delay(pdMS_TO_TICKS(100));
+    // Block task for up to 100ms or until notified by a hardware interrupt/event.
+    // This enables FreeRTOS Tickless Idle to automatically enter light sleep.
+    ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100));
+
     unsigned long now = millis();
     if (now - lastRunBatChe >= batCheInterval)
     {
@@ -82,24 +132,9 @@ void manageBattery(void *parameter)
     {
       if (!setPowerSettings)
       {
-        Serial.println("Setting power settings");
-        // touchSetCycles(0x500, 0x500);
-        // lightMeter.setActiveMode();
-        vTaskResume(oledWakeupTaskHandle);
-        vTaskResume(TimeTask);
-        vTaskResume(alarmTaskHandle);
-        vTaskResume(menuTaskHandle);
-        // setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD);
-        // setTouchInterrupt(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD);
-        // setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD);
-        // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD);
-        // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD);
-        esp_pm_config_t pm_config = {
-            .max_freq_mhz = 80,
-            .min_freq_mhz = 10,
-            .light_sleep_enable = true,
-        };
-        esp_pm_configure(&pm_config);
+        Serial.println("Setting power settings (AC Mode)");
+        wakeUpAndRestoreState();
+
         setPowerSettings = true;
         batterySleepMode = false;
         waitingForPower = false;
@@ -110,42 +145,27 @@ void manageBattery(void *parameter)
       if (!WiFi.isConnected() && !WifiTaskRunning)
       {
         esp_wifi_start();
-        Serial.println("launching WiFi task");
+        Serial.println("Launching WiFi task");
         createWifiTask();
       }
     }
     else
     {
-
       if (setPowerSettings)
       {
-        Serial.println("Setting battery settings");
+        Serial.println("Setting battery settings (Low-Power DFS Mode)");
+
+        // Shut down Wi-Fi stack and RF domain fully to save max power
         turnOffWifi();
-        // touchSetCycles(0x5000, 0x5000);
-        vTaskSuspend(oledWakeupTaskHandle);
-        vTaskSuspend(TimeTask);
-        vTaskSuspend(dimmingTaskHandle);
-        vTaskSuspend(alarmTaskHandle);
-        vTaskSuspend(menuTaskHandle);
-        // setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD_BAT);
-        // setTouchInterrupt(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD_BAT);
-        // setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD_BAT);
-        // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
-        // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
+        esp_wifi_stop();
+        esp_wifi_deinit();
+
         rM.gpioExpander.setPinState(MCP_CHARGER_CONTROL_PIN, false);
-        // lightMeter.setStandbyMode();
         batterySettingsTime = now;
         waitingForPower = true;
         setPowerSettings = false;
         maxBrightness = false;
         inputDetected = false;
-        esp_wifi_stop();
-        esp_pm_config_t pm_config = {
-            .max_freq_mhz = 40,
-            .min_freq_mhz = 10,
-            .light_sleep_enable = true,
-        };
-        esp_pm_configure(&pm_config);
       }
 
       if (waitingForPower == true)
@@ -153,20 +173,10 @@ void manageBattery(void *parameter)
         if ((useAllButtons() != None || useAllTouch().touched == true || inputDetected == true) || ringing == true)
         {
           waitForInput = true;
-          vTaskResume(menuTaskHandle);
           inputDetected = false;
-          oledMana.enable();
+          wakeUpAndRestoreState();
           setLedIntensity(2);
           showCurrentTime();
-          // if (useAllTouch() != No_Seg)
-          // {
-          //   useTouch();
-          // }
-
-          // if (useAllButtons() != None)
-          // {
-          //   useButton();
-          // }
           batterySettingsTime = now;
         }
 
@@ -174,47 +184,61 @@ void manageBattery(void *parameter)
         {
           batterySleepMode = true;
           waitingForPower = false;
-          Serial.println("Battery mode");
+          Serial.println("Battery mode active");
           syncESP32RTC();
           enableSleep();
+          
+          // Re-evaluate current time immediately after returning from enableSleep()
+          now = millis();
+          wakeupTime = now;
+          initialWakeupTime = now;
         }
       }
 
       if (batterySleepMode)
       {
-        if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER)
+        esp_sleep_wakeup_cause_t wakeup_cause = esp_sleep_get_wakeup_cause();
+
+        if (wakeup_cause == ESP_SLEEP_WAKEUP_TIMER)
         {
           if (!wokeUp)
           {
-            Serial.println("Woke up, waiting for input...");
+            Serial.println("Woke up from Timer, waiting for input...");
             wokeUp = true;
             waitForInput = false;
             wakeupTime = now;
+            initialWakeupTime = now; // Initialize total awake session timer
           }
 
+          // If an input or alarm occurs during timer awake, wake up sensors & LED display
           if ((useAllButtons() != None || useAllTouch().touched == true || inputDetected == true) || ringing == true)
           {
             inputDetected = false;
             if (waitForInput == false)
             {
-              Serial.println("Input or Alarm detected waiting more in timer");
-              vTaskResume(menuTaskHandle);
+              Serial.println("Input or Alarm detected during timer wake");
+              wakeUpAndRestoreState();
               waitForInput = true;
-              oledMana.enable();
               setLedIntensity(2);
               showCurrentTime();
             }
-            Serial.println("resetting sleep timer");
+            Serial.println("Resetting sleep timer");
             delay(10);
-
             wakeupTime = now;
           }
 
-          if (waitForInput == false)
+          // Enforce maximum 5-minute awake cap
+          if (now - initialWakeupTime >= MAX_AWAKE_HARD_LIMIT)
+          {
+            Serial.println("Hard 5-minute awake limit reached, forcing sleep");
+            waitForInput = false;
+            enableSleep();
+          }
+          else if (waitForInput == false)
           {
             if (now - wakeupTime >= TIMER_WAKUP_TIME)
             {
-              Serial.println("No input with timer going back to sleep");
+              Serial.println("No input with timer, going back to sleep");
               waitForInput = false;
               enableSleep();
             }
@@ -223,20 +247,22 @@ void manageBattery(void *parameter)
           {
             if (now - wakeupTime >= GPIO_WAKUP_TIME)
             {
-              Serial.println("No input with input going back to sleep");
+              Serial.println("No input with active session, going back to sleep");
               waitForInput = false;
               enableSleep();
             }
           }
         }
-        if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TOUCHPAD)
+        else if (wakeup_cause == ESP_SLEEP_WAKEUP_EXT1)
         {
           if (!wokeUp)
           {
-            Serial.println("Woke up, waiting for input...");
+            Serial.println("Woke up from Interrupt (EXT1)");
             wokeUp = true;
             wakeupTime = now;
+            initialWakeupTime = now;
             inputDetected = true;
+            enableAllSensors(); // Restore sensors immediately on hardware interrupt
           }
 
           if ((useAllButtons() != None || useAllTouch().touched == true || inputDetected == true) || ringing == true)
@@ -244,22 +270,27 @@ void manageBattery(void *parameter)
             inputDetected = false;
             if (waitForInput == false)
             {
-              Serial.println("Input or Alarm detected waiting more in touch");
-              vTaskResume(menuTaskHandle);
+              Serial.println("Input or Alarm detected during interrupt wake");
+              wakeUpAndRestoreState();
               waitForInput = true;
-              oledMana.enable();
               setLedIntensity(2);
               showCurrentTime();
             }
-            Serial.println("resetting sleep timer");
+            Serial.println("Resetting sleep timer");
             delay(10);
-
             wakeupTime = now;
           }
 
-          if (now - wakeupTime >= GPIO_WAKUP_TIME)
+          // Enforce maximum 5-minute awake cap
+          if (now - initialWakeupTime >= MAX_AWAKE_HARD_LIMIT)
           {
-            Serial.println("No input after input going back to sleep");
+            Serial.println("Hard 5-minute awake limit reached, forcing sleep");
+            waitForInput = false;
+            enableSleep();
+          }
+          else if (now - wakeupTime >= GPIO_WAKUP_TIME)
+          {
+            Serial.println("No input after interrupt, going back to sleep");
             waitForInput = false;
             enableSleep();
           }
@@ -311,46 +342,78 @@ uint64_t pinToMask(uint8_t pin)
 
 void initSleep()
 {
-  esp_sleep_enable_ext1_wakeup((1ULL << TOUCH_INTERRUPT) | (1ULL << MCP_INTERRUPT_PIN), ESP_EXT1_WAKEUP_ANY_LOW);
-  esp_sleep_enable_timer_wakeup(SLEEPING_TIME);
+  // Always configure hardware interrupts (Touch, MCP Expander)
+  esp_sleep_enable_ext1_wakeup(
+      (1ULL << TOUCH_INTERRUPT) | (1ULL << MCP_INTERRUPT_PIN),
+      ESP_EXT1_WAKEUP_ANY_LOW);
+
+  // Get remaining time until the next alarm in seconds
+  long secondsToNextAlarm = getTimeUntilNextAlarm();
+
+  if (secondsToNextAlarm > 0)
+  {
+    // Convert seconds to microseconds for ESP32 timer wakeup
+    uint64_t sleepMicros = (uint64_t)secondsToNextAlarm * 1000000ULL;
+    esp_sleep_enable_timer_wakeup(sleepMicros);
+    Serial.printf("Timer wakeup set for next alarm in %ld seconds.\n", secondsToNextAlarm);
+  }
+  else
+  {
+    // No upcoming active alarm found: Disable timer wakeup entirely
+    esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_TIMER);
+    Serial.println("No active alarms found. Timer wakeup disabled (Device will only wake on GPIO/Interrupt).");
+  }
 }
 
 void enableSleep()
 {
+  // Pre-Sleep Input Guard Check: Abort sleep if input or alarm was triggered before disabling peripherals
+  if (useAllButtons() != None || useAllTouch().touched == true || inputDetected == true || ringing == true)
+  {
+    Serial.println("Sleep aborted: Pending input detected before peripheral shutdown.");
+    wakeUpAndRestoreState();
+    return;
+  }
 
-  delay(500);
-  vTaskSuspend(menuTaskHandle);
+  // Turn off display peripherals
   oledMana.disable();
-  oledMana.disable(); // Just to make sure because manager can take a bit before reacting if many write operations are ordered
-  delay(500);
-  setLedIntensity(0);
-  delay(100);
-  LedDisplay.clear();
+  disableLedDisplay();
+
+  // Put all external sensors into low-power / sleep modes
+  disableAllSensors();
   initSleep();
   wokeUp = false;
+
+  // Suspend active tasks right before entering sleep mode
+  vTaskSuspend(oledWakeupTaskHandle);
+  vTaskSuspend(TimeTask);
+  vTaskSuspend(dimmingTaskHandle);
+  vTaskSuspend(alarmTaskHandle);
+  vTaskSuspend(menuTaskHandle);
+
+  // Final sanity check right before light sleep call
+  if (useAllButtons() != None || useAllTouch().touched == true || inputDetected == true || ringing == true)
+  {
+    Serial.println("Sleep aborted: Pending input detected right before sleep start.");
+    wakeUpAndRestoreState();
+    return;
+  }
+
   esp_err_t sleep_result = esp_light_sleep_start();
 
-  if (sleep_result == ESP_OK)
+  // Handle sleep failure or immediate return
+  if (sleep_result != ESP_OK)
   {
-    Serial.println("Light sleep entered and woke up successfully.");
+    Serial.printf("Sleep attempt failed or rejected (Error: %d). Restoring tasks.\n", sleep_result);
+    wakeUpAndRestoreState();
+    return;
   }
-  else if (sleep_result == ESP_ERR_SLEEP_REJECT)
-  {
-    Serial.println("Sleep request rejected: Wakeup source set before the sleep request.");
-  }
-  else if (sleep_result == ESP_ERR_SLEEP_TOO_SHORT_SLEEP_DURATION)
-  {
-    Serial.println("Sleep duration too short: Minimum sleep duration not met.");
-  }
-  else
-  {
-    Serial.printf("Unexpected sleep error: %d\n", sleep_result);
-  }
-  // setTouchInterrupt(TOUCH_1_Seg_PIN, TOUCH_1_Seg_THRESHOLD_BAT);
-  // setTouchInterrupt(TOUCH_2_Seg_PIN, TOUCH_2_Seg_THRESHOLD_BAT);
-  // setTouchInterrupt(TOUCH_3_Seg_PIN, TOUCH_3_Seg_THRESHOLD_BAT);
-  // setTouchInterrupt(TOUCH_4_Seg_PIN, TOUCH_4_Seg_THRESHOLD_BAT);
-  // setTouchInterrupt(TOUCH_5_Seg_PIN, TOUCH_5_Seg_THRESHOLD_BAT);
+
+  Serial.println("Light sleep entered and woke up successfully.");
+
+  // Always restore peripherals & tasks when leaving sleep mode
+  wakeUpAndRestoreState();
+
   syncTimeLibWithRTC();
   checkAlarms();
   delay(200);
@@ -358,24 +421,30 @@ void enableSleep()
 
 double readVoltage(byte pin)
 {
-  double reading = analogRead(VOLTAGE_DIVIDER_PIN);
-  if (reading < 1 || reading > 4095)
-    return 0;
-  double voltage = -0.000000000000016 * pow(reading, 4) + 0.000000000118171 * pow(reading, 3) - 0.000000301211691 * pow(reading, 2) + 0.001109019271794 * reading + 0.034143524634089;
-  return voltage * 1000;
+  int reading = analogRead(pin);
+
+  constexpr double c4 = -1.6000000000000e-14;
+  constexpr double c3 =  1.1817100000000e-10;
+  constexpr double c2 = -3.0121169100000e-07;
+  constexpr double c1 =  1.1090192717940e-03;
+  constexpr double c0 =  3.4143524634089e-02;
+
+  double voltage = (((c4 * reading + c3) * reading + c2) * reading + c1) * reading + c0;
+
+  return voltage * 1000.0; 
 }
 
 float getBatteryVoltage()
 {
-double milliVolts = readVoltage(VOLTAGE_DIVIDER_PIN);
+  double milliVolts = readVoltage(VOLTAGE_DIVIDER_PIN);
 
-Serial.print("milliVolts = ");
-Serial.println(milliVolts);
-milliVolts += ADC_OFFSET;
-float batteryVoltage = milliVolts / ADC_VOLTAGE_DIVIDER;
+  Serial.print("milliVolts = ");
+  Serial.println(milliVolts);
+  milliVolts += ADC_OFFSET;
+  float batteryVoltage = milliVolts / ADC_VOLTAGE_DIVIDER;
 
-Serial.print("batteryVoltage = ");
-Serial.println(batteryVoltage, 6);
+  Serial.print("batteryVoltage = ");
+  Serial.println(batteryVoltage, 6);
 
   return batteryVoltage;
 }
@@ -390,5 +459,7 @@ int getBatteryPercentage()
     return percentage;
   }
   else
+  {
     return percentage;
+  }
 }

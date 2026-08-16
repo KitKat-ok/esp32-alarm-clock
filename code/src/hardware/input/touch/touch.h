@@ -10,6 +10,11 @@ struct touchState
     bool butoonsPressed[7];
 };
 
+extern AT42QT2120 touch_sensor;
+void initTouch();
+void setTouchLowPower();
+void setTouchNormalPower();
+
 extern bool touchActivated;
 extern std::mutex touchMut;
 extern bool touchInterrupt;

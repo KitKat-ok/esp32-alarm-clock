@@ -60,11 +60,10 @@
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 128
 
-// Used for software SPI
+#define SCREEN_ORBIT_INTERVAL 3600000
+
 #define OLED_CLK 20
 #define OLED_MOSI 19
-
-// Used for software or hardware SPI
 #define OLED_CS 22
 #define OLED_DC 21
 
@@ -162,10 +161,13 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 
 #define BATT_TARGET_VOLTAGE 3.85   // Target voltage in volts
 #define BATT_HYSTERESIS 0.15       // charging Hysteresis in volts
+#define BAT_CHE_INTERVAL 15000 // how often to check battery voltage and control charger
 
-#define TIMER_WAKUP_TIME 500 // How long it will stay awake after waking up from timer
+#define TIMER_WAKUP_TIME 5000 // How long it will stay awake after waking up from timer
 #define GPIO_WAKUP_TIME 30000 // How long to stay awake after waking up from input
 #define SLEEPING_TIME 50 * 1000000 // In microseconds how long it will sleep for 
+#define MAX_AWAKE_HARD_LIMIT 300000 // Hard limit on how long it can stay awake on battery
+#define BATTERY_WAIT_TIMEOUT 30000 // How long it waits before sleeping for the first time
 
 // Charts
 #define CHART_READINGS 55 // Number of readings to keep

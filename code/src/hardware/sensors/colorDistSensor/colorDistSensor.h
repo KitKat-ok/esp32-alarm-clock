@@ -25,4 +25,7 @@ float readProximityDistance();
 
 void setGestureInterrupt(bool enable);
 
+void disableColorSensor();
+void enableColorSensor();
+
 extern bool colorSensorInitialized;

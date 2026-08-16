@@ -10,7 +10,7 @@ void checkForRunOta()
         oled.clearDisplay();
         centerText("Connecting To WiFi", 30);
         centerText("Starting OTA", 40);
-        oled.display();
+        oledMana.display();
         while (WiFi.status() != WL_CONNECTED)
         {
             delay(100);

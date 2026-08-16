@@ -1,5 +1,7 @@
 #include "LedDisplay.h"
 
+AS1115 LedDisplay = AS1115(0x00);
+
 uint8_t currentIntensity;
 
 void showTimeTask(void *pvParameters);
@@ -8,12 +10,17 @@ void LedDisplayTask(void *pvParameters);
 TaskHandle_t TimeTask;
 TaskHandle_t LedTask;
 
-std::mutex LedMut;
+SemaphoreHandle_t LedMut = nullptr;
 
 void createLedDisplayTask()
 {
 
   Serial.print("creating Led display task");
+
+  if (LedMut == nullptr)
+  {
+    LedMut = xSemaphoreCreateMutex();
+  }
 
   xTaskCreate(
       showTimeTask, /* Task function. */
@@ -44,20 +51,21 @@ void setLedIntensity(uint8_t target)
 
 void showCurrentTime()
 {
-  LedMut.lock();
-
-  String h = String(hour());
-  String m = String(minute());
-  if (hour() < 10)
-    h = "0" + h;
-  if (minute() < 10)
-    m = "0" + m;
-  if (lockI2C())
+  if (xSemaphoreTake(LedMut, portMAX_DELAY))
   {
-    LedDisplay.display((h + "." + m).c_str());
-    unlockI2C();
+    String h = String(hour());
+    String m = String(minute());
+    if (hour() < 10)
+      h = "0" + h;
+    if (minute() < 10)
+      m = "0" + m;
+    if (lockI2C())
+    {
+      LedDisplay.display((h + "." + m).c_str());
+      unlockI2C();
+    }
+    xSemaphoreGive(LedMut);
   }
-  LedMut.unlock();
 }
 
 void updateIntensity()
@@ -69,7 +77,7 @@ void updateIntensity()
     if (lockI2C())
     {
       LedDisplay.setIntensity(i);
-      LedMut.unlock();
+      unlockI2C();
 
       delay(30);
     }
@@ -121,4 +129,40 @@ void LedDisplayTask(void *pvParameters)
 
     vTaskDelay(pdMS_TO_TICKS(100));
   }
+}
+
+void initLedDisplay()
+{
+  if (LedMut == nullptr)
+  {
+    LedMut = xSemaphoreCreateMutex();
+  }
+
+  if (lockI2C())
+  {
+    LedDisplay.init(4, 6);
+    LedDisplay.clear();
+    unlockI2C();
+  }
+  Serial.println("Led display initialized");
+}
+
+void disableLedDisplay()
+{
+  if (lockI2C())
+  {
+    LedDisplay.shutdown(true);
+    unlockI2C();
+  }
+  Serial.println("Led display placed in shutdown with preserve");
+}
+
+void enableLedDisplay()
+{
+  if (lockI2C())
+  {
+    LedDisplay.resume(true);
+    unlockI2C();
+  }
+  Serial.println("Led display resumed with preserve");
 }

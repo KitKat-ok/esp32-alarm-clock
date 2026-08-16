@@ -199,3 +199,58 @@ uint16_t calculateLux(const ColorData &data)
     // APDS-9960's internal IR and UV filters. 
     return apds.calculateLux(data.red, data.green, data.blue);
 }
+
+void disableColorSensor()
+{
+    if (!colorSensorInitialized) return;
+
+    if (lockI2C())
+    {
+        // 1. Disable active feature engines
+        apds.enableColor(false);
+        apds.enableProximity(false);
+
+#if GESTURES_ENABLED == true
+        apds.enableGesture(false);
+        apds.setGestureIntEnable(false);
+#else
+        apds.disableProximityInterrupt();
+#endif
+
+        // 2. Shut off power to the APDS-9960 internal engine
+        apds.enable(false);
+
+        unlockI2C();
+    }
+
+    Serial.println(F("[ColorSensor] Entered low-power sleep mode."));
+}
+
+void enableColorSensor()
+{
+    if (!colorSensorInitialized) return;
+
+    if (lockI2C())
+    {
+        // 1. Re-enable main device power
+        apds.enable(true);
+
+        // 2. Re-enable required feature engines
+        apds.enableColor(true);
+        apds.enableProximity(true);
+
+#if GESTURES_ENABLED == true
+        apds.enableGesture(true);
+        apds.setGestureIntEnable(true);
+#else
+        apds.enableProximityInterrupt();
+#endif
+
+        unlockI2C();
+    }
+
+    // Short stabilization delay after waking up the hardware
+    delay(10);
+
+    Serial.println(F("[ColorSensor] Woke up and restored normal mode."));
+}

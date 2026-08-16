@@ -99,7 +99,7 @@ void addNewAlarm()
     oled.print("Max alarm");
     oled.setCursor(rectX + 10, rectY + 20);
     oled.print("number reached");
-    oled.display();
+    oledMana.display();
     delay(5000);
 }
 
@@ -357,7 +357,7 @@ void manageAlarms()
         // Bottom Decorative Line
         oled.drawLine(0, 116, 127, 116, 6);
 
-        oled.display();
+        oledMana.display();
     };
 
     auto updateAlarmValueUp = [&]()

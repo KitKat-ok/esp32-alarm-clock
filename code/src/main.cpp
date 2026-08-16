@@ -11,10 +11,10 @@ void setup()
   readAlarms();
   createAlarmTask();
   initMenus();
-  createBatteryTask();
   createTempTask();
   createPressureTask();
   createLightTask();
+  createBatteryTask();
   oled.invertDisplay(false);
 }
 

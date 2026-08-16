@@ -1,7 +1,6 @@
 #include "mainPage.h"
 
 #define NUMBER_OF_PAGES 6
-
 void showFirstPage();
 void showForecastPage();
 void showInfoPage();
@@ -10,6 +9,7 @@ void showOptSensorPage();
 void showScreensaver();
 void setupScreensaver();
 void turnOffScreensaver();
+void drawPageIndicator(int startX = -1, int startY = 4);
 
 const uint8_t PROGMEM
     toastermask0[] = {
@@ -45,7 +45,6 @@ const uint8_t *const img[] PROGMEM = {
 unsigned long lastExecutionTime = 0;
 int PageNumberToShow = 1;
 int LastPageShown = 1;
-bool oneTimeMenuDisplayed = false;
 
 unsigned long previousMillisMenu = 0;
 const long intervalMenu = 1000;
@@ -56,7 +55,16 @@ const unsigned long cycleInterneval = 1000;
 static bool lastTouched = false;
 static bool pressLocked = false;
 
-void cyclePagesDown()
+void drawPageIndicator(int startX, int startY)
+{
+    oled.setFont(&Roboto_Black_9);
+    oled.setTextColor(5);
+    oled.setCursor(startX, startY);
+    oled.print(String(PageNumberToShow) + "/" + String(NUMBER_OF_PAGES));
+    oled.setTextColor(SSD1327_WHITE);
+}
+
+void cyclePagesUp()
 {
     Serial.println("main page cycling down");
     if (LastPageShown >= NUMBER_OF_PAGES)
@@ -70,7 +78,7 @@ void cyclePagesDown()
     LastPageShown = PageNumberToShow;
 }
 
-void cyclePagesUp()
+void cyclePagesDown()
 {
     Serial.println("main page cycling up");
     if (LastPageShown <= 1)
@@ -98,11 +106,19 @@ void manageKeys(bool butoonsPressed[])
 
     if (keyPressed <= 2)
     {
-        cyclePagesDown();
+
+        cyclePagesUp();
     }
     else if (keyPressed >= 4)
     {
-        cyclePagesUp();
+        if (PageNumberToShow == 0)
+        {
+            PageNumberToShow = LastPageShown;
+        }
+        else
+        {
+            cyclePagesDown();
+        }
     }
     else
     {
@@ -192,7 +208,6 @@ void showMainPage()
             lastExecutionTime = currentTime;
             PageNumberToShow = 0;
             previousMillisMenu = millis() - intervalMenu;
-            oneTimeMenuDisplayed = false;
             Serial.println("resetting menus");
             setupScreensaver();
         }
@@ -209,11 +224,9 @@ void showMainPage()
                 break;
 
             case 2:
-                if (!oneTimeMenuDisplayed)
-                {
-                    oneTimeMenuDisplayed = true;
-                    currentWeather();
-                }
+                currentWeather();
+                drawPageIndicator(112, 22);
+                oledMana.display();
                 break;
 
             case 3:
@@ -269,7 +282,6 @@ void showMainPage()
 
 void turnOffScreensaver()
 {
-    oneTimeMenuDisplayed = false;
     previousMillisMenu = millis() - intervalMenu;
 }
 
@@ -277,50 +289,45 @@ void showFirstPage()
 {
     oled.clearDisplay();
 
-    // 1. Top Section: Month & Year Header
+    drawPageIndicator(110, 13);
+
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
     oled.setTextColor(SSD1327_WHITE);
-    
-    // Header text (e.g., "AUGUST 2026")
+
     String headerText = getCurrentMonthName() + " " + String(year());
-    headerText.toUpperCase();
     centerText(headerText, 14);
 
-    // Dim header separator line
     oled.drawLine(0, 20, 127, 20, 6);
-
-    // 2. Middle Section: Clean Calendar Card Layout
-    // Full Weekday Name
     oled.setFont(&DejaVu_Sans_Bold_16);
     oled.setTextColor(SSD1327_WHITE);
-    centerText(getCurrentWeekdayName(), 50);
+    centerText(getCurrentWeekdayName(), 46);
 
-    // Day & Month Line (e.g., "2 August")
     oled.setFont(&DejaVu_LGC_Sans_Bold_10);
-    oled.setTextColor(12); // Slightly dimmed tone for subtle contrast
-    centerText(String(day()) + " " + getCurrentMonthName(), 70);
+    oled.setTextColor(12);
+    centerText(String(day()) + " " + getCurrentMonthName(), 65);
 
-    // Formatted Numeric Date (e.g., "02.08.2026")
     String dayStr = (day() < 10 ? "0" : "") + String(day());
     String monthStr = (month() < 10 ? "0" : "") + String(month());
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
-    oled.setTextColor(6); // Dimmed gray level
-    centerText(dayStr + "." + monthStr + "." + String(year()), 88);
+    oled.setTextColor(6);
+    centerText(dayStr + "." + monthStr + "." + String(year()), 82);
 
-    // 3. Bottom Status Bar: Battery % and Wi-Fi Info
-    oled.drawLine(0, 112, 127, 112, 6); // Bottom separator line
+    oled.setFont(&DejaVu_LGC_Sans_Bold_9);
+    oled.setTextColor(12);
+    centerText(formatTimeUntilNextAlarm(), 98);
+
+    oled.drawLine(0, 112, 127, 112, 6);
 
     oled.setFont(&Roboto_Black_9);
-    
-    // Left: Battery Indicator
+
     oled.setTextColor(SSD1327_WHITE);
     oled.setCursor(4, 123);
     oled.print("Bat: ");
     oled.setTextColor(12);
     oled.print(getBatteryPercentage());
+    oled.setTextColor(6);
     oled.print("%");
 
-    // Right: Wi-Fi Status / Signal Quality
     oled.setTextColor(SSD1327_WHITE);
     oled.setCursor(72, 123);
     if (WiFi.status() == WL_CONNECTED)
@@ -335,105 +342,104 @@ void showFirstPage()
         oled.print("Offline");
     }
 
-    // Refresh display
     delay(10);
     oledMana.display();
 
-    // Restore default font
     oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
-
-auto formatTemperature = [](float minTemp, float maxTemp)
-{
-    char tempStr[6];
-    float avgTemp = (minTemp + maxTemp) / 2.0;
-    dtostrf(avgTemp, 4, 1, tempStr);
-    return String(tempStr) + "C";
-};
 
 void showForecastPage()
 {
     oled.clearDisplay();
 
-    // 1. Header Section: Date Header (0 to 14px)
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
     oled.setTextColor(SSD1327_WHITE);
-    oled.setCursor(32, 10);
+    oled.setCursor(10, 10);
     oled.print(String(day()) + "." + String(month()) + "." + String(year()));
 
-    // Dim separator line
+    drawPageIndicator(110, 10);
+
     oled.drawLine(0, 14, 127, 14, 6);
 
-    // 2. Three-Column Layout (Days 0, 1, 2)
     const int colWidth = 42;
 
     for (int i = 0; i < 3; i++)
     {
-        int colX = i * colWidth + 1; // Column offset
+        int colX = i * colWidth + 1;
 
-        // Vertical column dividers
         if (i > 0)
         {
             oled.drawLine(colX - 1, 15, colX - 1, 114, 4);
         }
 
-        // --- Day Name (Anchored at y=24) ---
         oled.setFont(&DejaVu_LGC_Sans_Bold_9);
         oled.setTextColor(SSD1327_WHITE);
         oled.setCursor(colX + 4, 24);
         oled.print(getShortNextDay(i));
 
-        // --- Weather Widget Icon (Shifted down to y=28) ---
-        displaySmallWidget(weatherDailyForecastData[i].weatherConditionId, colX + 5, 28);
+        displaySmallWidget(weatherDailyForecastData[i].weatherConditionId, colX + 1, 24);
 
-        // --- Data Grid (Shifted 1 line lower) ---
         float tmax = weatherDailyForecastData[i].maxTemp;
         float tmin = weatherDailyForecastData[i].minTemp;
+        int popVal = weatherDailyForecastData[i].pop;
 
         oled.setFont(&DejaVu_LGC_Sans_Bold_9);
-        
-        // High Temp
+
+        // H: High Temperature (hides unit if >= 3 digits)
         oled.setCursor(colX + 2, 70);
         oled.setTextColor(SSD1327_WHITE);
         oled.print("H:");
-        oled.print((int)round(tmax));
-        oled.setTextColor(12); // Dim unit only
-        oled.print("°C");
+        int tmaxVal = (int)round(tmax);
+        oled.print(tmaxVal);
+        if (abs(tmaxVal) < 100)
+        {
+            oled.setTextColor(6);
+            oled.print("°C");
+        }
 
-        // Low Temp
+        // L: Low Temperature (hides unit if >= 3 digits)
         oled.setCursor(colX + 2, 81);
         oled.setTextColor(SSD1327_WHITE);
         oled.print("L:");
-        oled.print((int)round(tmin));
-        oled.setTextColor(12); // Dim unit only
-        oled.print("°C");
+        int tminVal = (int)round(tmin);
+        oled.print(tminVal);
+        if (abs(tminVal) < 100)
+        {
+            oled.setTextColor(6);
+            oled.print("°C");
+        }
 
-        // Precipitation (POP)
+        // P: Probability of Precipitation (hides unit if >= 3 digits)
         oled.setCursor(colX + 2, 92);
         oled.setTextColor(SSD1327_WHITE);
         oled.print("P:");
-        oled.print(weatherDailyForecastData[i].pop);
-        oled.setTextColor(12); // Dim unit only
-        oled.print("%");
+        oled.print(popVal);
+        if (popVal < 100)
+        {
+            oled.setTextColor(6);
+            oled.print("%");
+        }
 
-        // Wind Speed
+        // Wind Speed (hides unit if >= 3 digits)
         oled.setCursor(colX + 2, 103);
         oled.setTextColor(SSD1327_WHITE);
-        oled.print(weatherDailyForecastData[i].windSpeed, 0);
-        oled.setTextColor(12); // Dim unit only
-        oled.print("m/s");
+        float windVal = weatherDailyForecastData[i].windSpeed;
+        oled.print(windVal, 0);
+        if (windVal < 100.0f)
+        {
+            oled.setTextColor(6);
+            oled.print("m/s");
+        }
     }
 
-    // 3. Footer Section: Dynamic day name + weather condition
-    oled.drawLine(0, 114, 127, 114, 6); // Dim separator line
-    
+    oled.drawLine(0, 114, 127, 114, 6);
+
     oled.setFont(&Roboto_Black_9);
     oled.setTextColor(SSD1327_WHITE);
-    oled.setCursor(2, 124); // Safe baseline
-    
+    oled.setCursor(2, 124);
+
     if (isWeatherAvailable)
     {
-        // Dynamic label: Uses tomorrow's actual day name (e.g., "Mon: Clear sky")
         oled.print(getShortNextDay(1) + ": " + String(weatherConditionIdToStr(weatherDailyForecastData[1].weatherConditionId)));
     }
     else
@@ -444,9 +450,9 @@ void showForecastPage()
     delay(10);
     oledMana.display();
 
-    // Restore default font
     oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
+
 void displayWiFiSignal(int x, int y)
 {
     int32_t rssi = WiFi.RSSI();
@@ -485,17 +491,15 @@ void showInfoPage()
 {
     oled.clearDisplay();
 
-    // 1. Top Bar: Date Header (0 to 14px)
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
     oled.setTextColor(SSD1327_WHITE);
-    oled.setCursor(32, 10);
+    oled.setCursor(10, 10);
     oled.print(String(day()) + "." + String(month()) + "." + String(year()));
 
-    // Dim header separator line
+    drawPageIndicator(110, 10);
+
     oled.drawLine(0, 14, 127, 14, 6);
 
-    // 2. Power Section: Battery Icon, Status, Voltage & Percentage (16 to 42px)
-    // Draw Battery Icon (24x24) on the left
     if (charging == true)
     {
         oled.drawGrayscaleBitmap(4, 16, battery_charging_duotone_24x24, 24, 24);
@@ -506,20 +510,22 @@ void showInfoPage()
         oled.fillRect(8, 25, map(getBatteryPercentage(), 0, 100, 0, 14), 6, SSD1327_WHITE);
     }
 
-    // Battery Percentage & Voltage
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
     oled.setCursor(34, 26);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("Batt: ");
     oled.print(getBatteryPercentage());
-    oled.setTextColor(12); // Dim unit
+    oled.setTextColor(6);
     oled.print("%");
-
     oled.setTextColor(SSD1327_WHITE);
+
     oled.setCursor(34, 37);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("Volt: ");
     oled.print(getBatteryVoltage(), 2);
-    oled.setTextColor(12); // Dim unit
+    oled.setTextColor(6);
     oled.print("V");
+    oled.setTextColor(SSD1327_WHITE);
 
     if (charging)
     {
@@ -528,58 +534,52 @@ void showInfoPage()
         oled.print("CHG");
     }
 
-    // Section Divider Line
     oled.drawLine(0, 42, 127, 42, 6);
 
-    // 3. Network & Wi-Fi Section (44 to 112px)
-    // Wi-Fi Signal Icon (Placed on the left)
     displayWiFiSignal(4, 46);
 
-    // WiFi Info Column
     oled.setTextColor(SSD1327_WHITE);
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
-    
-    // SSID
+
     oled.setCursor(34, 53);
     oled.print("SSID:");
-    
+
     oled.setFont(&DejaVu_LGC_Sans_Bold_8);
     oled.setCursor(34, 63);
     oled.setTextColor(12);
     oled.print(WiFi.SSID());
 
-    // Signal Quality & RSSI
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
     oled.setTextColor(SSD1327_WHITE);
     oled.setCursor(2, 77);
     oled.print("Signal: ");
-    oled.setTextColor(12);
-    oled.print(getSignalQuality(WiFi.RSSI()));
-    oled.print(" (");
-    oled.print(WiFi.RSSI());
-    oled.print("dBm)");
+    int rssi = WiFi.RSSI();
+    int percent = (rssi <= -100) ? 0 : (rssi >= -50) ? 100
+                                                     : 2 * (rssi + 100);
 
-    // Channel
+    oled.setTextColor(12);
+    oled.print(percent);
+    oled.setTextColor(6);
+    oled.print("% " + String(rssi) + "dBm");
+
     oled.setTextColor(SSD1327_WHITE);
     oled.setCursor(2, 88);
     oled.print("Channel: ");
     oled.setTextColor(12);
     oled.print(WiFi.channel());
 
-    // IP Address (New useful data for 128x128 space)
     oled.setTextColor(SSD1327_WHITE);
     oled.setCursor(2, 99);
     oled.print("IP: ");
     oled.setTextColor(12);
     oled.print(WiFi.localIP().toString());
 
-    // 4. Footer Section: System Status Banner
-    oled.drawLine(0, 114, 127, 114, 6); // Dim separator line
-    
+    oled.drawLine(0, 114, 127, 114, 6);
+
     oled.setFont(&Roboto_Black_9);
     oled.setTextColor(SSD1327_WHITE);
     oled.setCursor(2, 124);
-    
+
     if (WiFi.status() == WL_CONNECTED)
     {
         oled.print("Status: Connected");
@@ -592,7 +592,6 @@ void showInfoPage()
     delay(10);
     oledMana.display();
 
-    // Restore default font
     oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
@@ -600,20 +599,18 @@ void showEnvSensorPage()
 {
     oled.clearDisplay();
 
-    // --- Header Section: Date Header (0 to 14px) ---
+    drawPageIndicator(110, 10);
+
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
     oled.setTextColor(SSD1327_WHITE);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
 
-    // Dim header separator line
     oled.drawLine(0, 14, 127, 14, 6);
 
-    // --- Section 1: Temp & Humidity Sensor (16 to 52px) ---
     oled.setCursor(2, 24);
     oled.setTextColor(SSD1327_WHITE);
-    oled.print("Hum / Tmp Sensor");
+    oled.print("-Hum Sensor-");
 
-    // Section 1 Line 1: Temperature
     int ySens1Temp = 36;
     oled.setCursor(2, ySens1Temp);
     oled.setTextColor(SSD1327_WHITE);
@@ -621,12 +618,10 @@ void showEnvSensorPage()
     oled.setTextColor(12);
     oled.print(readTemperature(), 1);
     oled.setTextColor(6);
-    oled.print(" °C");
+    oled.print("°C");
 
-    // Thermometer Icon
     oled.drawGrayscaleBitmap(110, ySens1Temp - 11, thermometer_cold_duotone_24x24, 16, 16);
 
-    // Section 1 Line 2: Humidity
     int ySens1Hum = 48;
     oled.setCursor(2, ySens1Hum);
     oled.setTextColor(SSD1327_WHITE);
@@ -634,21 +629,16 @@ void showEnvSensorPage()
     oled.setTextColor(12);
     oled.print(readHumidity(), 1);
     oled.setTextColor(6);
-    oled.print(" %");
+    oled.print("%");
 
-    // Drop Icon
     oled.drawGrayscaleBitmap(110, ySens1Hum - 11, drop_simple_duotone_24x24, 16, 16);
 
-    // Section 1 Separator
     oled.drawLine(0, 54, 127, 54, 6);
 
-
-    // --- Section 2: Pressure & Temp Sensor (BMP) (56 to 124px) ---
     oled.setCursor(2, 64);
     oled.setTextColor(SSD1327_WHITE);
-    oled.print("Press / BMP Sensor");
+    oled.print("-Press Sensor-");
 
-    // Section 2 Line 1: Pressure
     int yPress = 76;
     oled.setCursor(2, yPress);
     oled.setTextColor(SSD1327_WHITE);
@@ -656,12 +646,10 @@ void showEnvSensorPage()
     oled.setTextColor(12);
     oled.print(readPressure(), 1);
     oled.setTextColor(6);
-    oled.print(" hPa");
+    oled.print("hPa");
 
-    // Drop/Pressure Icon
     oled.drawGrayscaleBitmap(110, yPress - 11, drop_simple_duotone_24x24, 16, 16);
 
-    // Section 2 Line 2: Altitude
     int yAlt = 88;
     oled.setCursor(2, yAlt);
     oled.setTextColor(SSD1327_WHITE);
@@ -669,12 +657,10 @@ void showEnvSensorPage()
     oled.setTextColor(12);
     oled.print((int)readAltitude());
     oled.setTextColor(6);
-    oled.print(" m");
+    oled.print("m");
 
-    // Drop Icon
     oled.drawGrayscaleBitmap(110, yAlt - 11, drop_simple_duotone_24x24, 16, 16);
 
-    // Section 2 Line 3: BMP Temperature
     int yBmpTemp = 100;
     oled.setCursor(2, yBmpTemp);
     oled.setTextColor(SSD1327_WHITE);
@@ -682,12 +668,10 @@ void showEnvSensorPage()
     oled.setTextColor(12);
     oled.print(readTemperatureBMP(), 1);
     oled.setTextColor(6);
-    oled.print(" °C");
+    oled.print("°C");
 
-    // Thermometer Hot Icon
     oled.drawGrayscaleBitmap(110, yBmpTemp - 11, thermometer_hot_duotone_24x24, 16, 16);
 
-    // Restoration & Refresh
     oled.setTextColor(SSD1327_WHITE);
     delay(10);
     oledMana.display();
@@ -697,28 +681,25 @@ void showEnvSensorPage()
 void showOptSensorPage()
 {
     oled.clearDisplay();
-    
-    // --- Header Section: Date at Top ---
+
+    drawPageIndicator(110, 10);
+
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
     oled.setTextColor(SSD1327_WHITE);
     centerText(String(day()) + "." + String(month()) + "." + String(year()), 10);
 
-    // Header separator line
     oled.drawLine(0, 14, 127, 14, 6);
 
-    // --- Read APDS9960 Optical Sensor Data ---
     ColorData rgbData = {0, 0, 0, 0};
     bool colorDataValid = readColorData(rgbData);
 
     float proxDist = readProximityDistance();
     uint16_t colorTemp = colorDataValid ? readColorTemperature(rgbData) : 0;
 
-    // --- Section 1: ALS Sensor ---
     oled.setCursor(2, 24);
     oled.setTextColor(SSD1327_WHITE);
-    oled.print("ALS Light Sensor");
+    oled.print("-ALS Light Sensor-");
 
-    // Line 1: Main Light Level (ALS)
     int yAlsLight = 36;
     oled.setCursor(2, yAlsLight);
     oled.setTextColor(SSD1327_WHITE);
@@ -726,37 +707,34 @@ void showOptSensorPage()
     oled.setTextColor(12);
     oled.print(getLightLevel(), 1);
     oled.setTextColor(6);
-    oled.print(" lux");
-    
-    // ALS Light Icon
+    oled.print("lux");
+
     oled.drawGrayscaleBitmap(110, yAlsLight - 11, thermometer_cold_duotone_24x24, 16, 16);
 
-    // Section 1 Separator Line
     oled.drawLine(0, 42, 127, 42, 6);
 
-    // --- Section 2: RGB & Proximity Sensor ---
     oled.setTextColor(SSD1327_WHITE);
     oled.setCursor(2, 52);
-    oled.print("RGB & Prox Sensor");
+    oled.print("-RGB & Prox Sensor-");
 
-    // Line 2: Proximity Distance
     int yProx = 64;
     oled.setCursor(2, yProx);
     oled.setTextColor(SSD1327_WHITE);
     oled.print("Dist: ");
     oled.setTextColor(12);
-    if (proxDist < 0.0f) {
+    if (proxDist < 0.0f)
+    {
         oled.print("---");
-    } else {
+    }
+    else
+    {
         oled.print(proxDist, 1);
         oled.setTextColor(6);
-        oled.print(" cm");
+        oled.print("cm");
     }
 
-    // Distance Icon
     oled.drawGrayscaleBitmap(110, yProx - 11, drop_simple_duotone_24x24, 16, 16);
 
-    // Line 3: Color Temperature
     int yColorTemp = 76;
     oled.setCursor(2, yColorTemp);
     oled.setTextColor(SSD1327_WHITE);
@@ -764,24 +742,24 @@ void showOptSensorPage()
     oled.setTextColor(12);
     oled.print(colorTemp);
     oled.setTextColor(6);
-    oled.print(" K");
+    oled.print("K");
 
-    // Color Temp Icon
     oled.drawGrayscaleBitmap(110, yColorTemp - 11, thermometer_hot_duotone_24x24, 16, 16);
 
-    // Line 4: Raw RGB Channels
     int yRGB = 88;
     oled.setCursor(2, yRGB);
     oled.setTextColor(SSD1327_WHITE);
     oled.print("RGB: ");
     oled.setTextColor(12);
-    if (colorDataValid) {
+    if (colorDataValid)
+    {
         oled.print("R" + String(rgbData.red) + " G" + String(rgbData.green) + " B" + String(rgbData.blue));
-    } else {
+    }
+    else
+    {
         oled.print("No Data");
     }
 
-    // Line 5: Clear Channel (C)
     int yClear = 100;
     oled.setCursor(2, yClear);
     oled.setTextColor(SSD1327_WHITE);
@@ -789,12 +767,12 @@ void showOptSensorPage()
     oled.setTextColor(12);
     oled.print(rgbData.ambient);
 
-    // Footer Refresh
     oled.setTextColor(SSD1327_WHITE);
     delay(10);
     oledMana.display();
     oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
+
 struct Flyer
 {
     int16_t x, y;

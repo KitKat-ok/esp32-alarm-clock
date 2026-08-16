@@ -9,6 +9,8 @@ void disableAllAlarms();
 void enableAllAlarms();
 
 void initialzeAlarmArray();
+long getTimeUntilNextAlarm();
+String formatTimeUntilNextAlarm();
 
 void checkAlarms();
 

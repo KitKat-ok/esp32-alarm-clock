@@ -9,3 +9,5 @@ float readTemperatureBMP();
 float readAltitude();
 void initPressureSensor();
 
+void disablePressureSensor();
+void enablePressureSensor();

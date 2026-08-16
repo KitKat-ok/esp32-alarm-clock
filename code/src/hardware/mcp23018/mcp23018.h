@@ -85,6 +85,8 @@ public:
   uint8_t readSingleRegister(uint8_t reg);
   void setDefaultPinStates();
   bool resetVerify(bool withDefault);
+  void enterLowPowerState();
+
 
 private:
   uint16_t iodirReg;

@@ -12,7 +12,7 @@ void currentWeatherMenu()
 {
 
     currentWeather();
-
+    oledMana.display();
     checkExit();
 }
 
@@ -39,53 +39,65 @@ void currentWeather()
     oled.print(currentWeatherData.isDay ? "Daytime" : "Nighttime");
 
     // Dim separator line (gray value 6 out of 15)
-    oled.drawLine(0, 42, 127, 42, 6);
+    oled.drawLine(0, 46, 127, 46, 6);
 
     // 2. Middle Section: Temperature & Clouds
     oled.setTextColor(SSD1327_WHITE);
     oled.setFont(&DejaVu_Sans_Bold_16);
-    oled.setCursor(2, 65);
+    oled.setCursor(2, 67);
     oled.print(String(currentWeatherData.temp, 1));
 
-    // Lower/Smaller "°C" for temperature unit
+    // Lower/Smaller "°C" for temperature unit (dimmed)
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
-    oled.print(" °C");
+    oled.setTextColor(6);
+    oled.print(" C");
 
     // Cloud coverage on right side
-    oled.setCursor(72, 57);
+    oled.setCursor(72, 59);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("Clouds:");
-    oled.setCursor(72, 68);
-    oled.setTextColor(12);
-    oled.print(String(currentWeatherData.cloudsPerc) + "%");
+    oled.setCursor(72, 70);
+    oled.setTextColor(SSD1327_WHITE);
+    oled.print(currentWeatherData.cloudsPerc);
+    oled.setTextColor(6);
+    oled.print("%");
 
     // Dim separator line
     oled.drawLine(0, 74, 127, 74, 6);
 
     // 3. Data Grid: Compact labels to prevent line wrapping
-    oled.setTextColor(SSD1327_WHITE);
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
 
     // Row 1: Wind speed, direction & Gusts
     oled.setCursor(2, 86);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("Wind: ");
     oled.print(currentWeatherData.windSpeed, 1);
+    oled.setTextColor(6);
     oled.print("m/s ");
+    oled.setTextColor(SSD1327_WHITE);
     oled.print(convertWindDirection(currentWeatherData.windDirection));
 
     oled.setCursor(2, 97);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("Gust: ");
     oled.print(currentWeatherData.windGusts, 1);
+    oled.setTextColor(6);
     oled.print("m/s");
 
-    // Row 2: Humidity & Pressure (Shortened to H and P, shifted left to fit)
+    // Row 2: Humidity & Pressure
     oled.setCursor(2, 108);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("H: ");
     oled.print(currentWeatherData.humidity);
+    oled.setTextColor(6);
     oled.print("%");
 
     oled.setCursor(52, 108); // Shifted left to x=52 to guarantee no overflow for "P: 1013hPa"
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("P: ");
     oled.print((int)currentWeatherData.pressure);
+    oled.setTextColor(6);
     oled.print("hPa");
 
     // 4. Footer Section: Bottom status description
@@ -104,11 +116,6 @@ void currentWeather()
         oled.print("N/A");
     }
 
-    // Refresh display
-    delay(10);
-    oledMana.display();
-
-    // Restore default font
     oled.setFont(&DejaVu_LGC_Sans_Bold_10);
 }
 
@@ -127,14 +134,15 @@ void displayWeatherCast(int dayIndex)
     oled.setCursor(52, 18);
     oled.print(getNextDayName(dayIndex));
 
-    oled.setTextColor(12);
     oled.setCursor(52, 30);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("P(Rain): ");
     oled.print(weatherDailyForecastData[dayIndex].pop);
+    oled.setTextColor(6);
     oled.print("%");
 
     // Dim separator line
-    oled.drawLine(0, 42, 127, 42, 6);
+    oled.drawLine(0, 46, 127, 46, 6);
 
     // 2. Temperatures: Main Average Temp with Compact Min/Max
     float tmax = weatherDailyForecastData[dayIndex].maxTemp;
@@ -143,42 +151,50 @@ void displayWeatherCast(int dayIndex)
 
     oled.setTextColor(SSD1327_WHITE);
     oled.setFont(&DejaVu_Sans_Bold_16);
-    oled.setCursor(2, 65);
+    oled.setCursor(2, 67);
     oled.print(String(tavg, 1));
 
-    // Lower/Smaller "°C"
+    // Lower/Smaller "°C" (dimmed)
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
-    oled.print(" °C");
+    oled.setTextColor(6);
+    oled.print(" C");
 
     // Min & Max temperatures
-    oled.setCursor(72, 57);
+    oled.setCursor(72, 59);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("Mx: ");
     oled.print(String(tmax, 1));
+    oled.setTextColor(6);
     oled.print("°");
 
-    oled.setCursor(72, 68);
-    oled.setTextColor(12);
+    oled.setCursor(72, 70);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("Mn: ");
     oled.print(String(tmin, 1));
+    oled.setTextColor(6);
     oled.print("°");
 
     // Dim separator line
     oled.drawLine(0, 74, 127, 74, 6);
 
     // 3. Extended Daily Data: Wind, Gusts, Sunrise
-    oled.setTextColor(SSD1327_WHITE);
     oled.setFont(&DejaVu_LGC_Sans_Bold_9);
 
     // Row 1: Wind & Gusts
     oled.setCursor(2, 86);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("Wind: ");
     oled.print(weatherDailyForecastData[dayIndex].windSpeed, 1);
+    oled.setTextColor(6);
     oled.print("m/s ");
+    oled.setTextColor(SSD1327_WHITE);
     oled.print(convertWindDirection(weatherDailyForecastData[dayIndex].windDirection));
 
     oled.setCursor(2, 97);
+    oled.setTextColor(SSD1327_WHITE);
     oled.print("Gust: ");
     oled.print(weatherDailyForecastData[dayIndex].windGusts, 1);
+    oled.setTextColor(6);
     oled.print("m/s");
 
     // Row 2: Sunrise formatted as HH:MM directly from UNIX timestamp
@@ -197,7 +213,8 @@ void displayWeatherCast(int dayIndex)
     oled.print("Set: ");
     oled.print(sunsetStr);
 
-    oled.setCursor(2, 108); // Shifted left to x=52 to match grid alignment
+    oled.setCursor(2, 108); 
+    oled.setTextColor(12);
     oled.print("Sun: ");
     oled.print(sunriseStr);
 

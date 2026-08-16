@@ -329,11 +329,11 @@ void displaywidget(int weatherCode)
             break;
         }
 
-        oled.drawBitmap(0, 3, bitmap, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
+        oled.drawBitmap(0, -1, bitmap, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
     else
     {
-        oled.drawBitmap(0, 3, wi_cloud_down_50x50, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
+        oled.drawBitmap(0, -1, wi_cloud_down_50x50, 50, 50, SSD1327_BLACK, SSD1327_WHITE); // Adjust color as needed
     }
 }
 
