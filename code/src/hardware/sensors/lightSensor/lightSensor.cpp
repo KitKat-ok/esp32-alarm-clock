@@ -433,7 +433,8 @@ float getLightLevel()
 
         if (!isnan(currentLightLevel))
         {
-            lightLevel = currentLightLevel;
+            // Apply exponential moving average filter using the defined macro
+            lightLevel = (LIGHT_ALPHA * currentLightLevel) + ((1.0f - LIGHT_ALPHA) * lightLevel);
         }
     }
 

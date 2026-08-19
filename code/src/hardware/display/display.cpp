@@ -5,8 +5,6 @@ OrbitSSD1327 oled(128, 128, &spi, OLED_DC, OLED_RESET, OLED_CS, 5000000UL);
 
 OLED_MANAGER oledMana;
 
-#define MIN_CONTRAST 80
-#define MAX_CONTRAST 255
 #define SSD1327_PRECHARGE_DEFAULT 0x22
 
 const uint8_t graytable_highCotr[] = {
@@ -30,11 +28,15 @@ void OrbitSSD1327::drawPixel(int16_t x, int16_t y, uint16_t color)
     int16_t px = x + offsetX;
     int16_t py = y + offsetY;
 
-    if (px < 0) px = 0;
-    else if (px >= SCREEN_WIDTH) px = SCREEN_WIDTH - 1;
+    if (px < 0)
+        px = 0;
+    else if (px >= SCREEN_WIDTH)
+        px = SCREEN_WIDTH - 1;
 
-    if (py < 0) py = 0;
-    else if (py >= SCREEN_HEIGHT) py = SCREEN_HEIGHT - 1;
+    if (py < 0)
+        py = 0;
+    else if (py >= SCREEN_HEIGHT)
+        py = SCREEN_HEIGHT - 1;
 
     Adafruit_SSD1327::drawPixel(px, py, color);
 }
@@ -153,12 +155,21 @@ void OLED_MANAGER::enable()
 
 void OLED_MANAGER::fadeIn()
 {
+
     if (!dimmed)
         return;
+    bool isNight = checkForNight();
+    int maxContrast = MAX_CONTRAST;
+    int minContrast = MIN_CONTRAST;
 
+    if (isNight)
+    {
+        maxContrast = MAX_CONTRAST_NIGHT;
+        minContrast = MIN_CONTRAST_NIGHT;
+    }
     if (xSemaphoreTake(oledMutex, portMAX_DELAY))
     {
-        for (int dim = MIN_CONTRAST; dim <= MAX_CONTRAST; dim += 10)
+        for (int dim = minContrast; dim <= maxContrast; dim += 10)
         {
             oled.oled_command(SSD1327_SETCONTRAST);
             oled.oled_command(dim);
@@ -174,12 +185,22 @@ void OLED_MANAGER::fadeIn()
 
 void OLED_MANAGER::fadeOut()
 {
+
     if (dimmed)
         return;
 
+    bool isNight = checkForNight();
+    int maxContrast = MAX_CONTRAST;
+    int minContrast = MIN_CONTRAST;
+    if (isNight)
+    {
+        maxContrast = MAX_CONTRAST_NIGHT;
+        minContrast = MIN_CONTRAST_NIGHT;
+    }
+
     if (xSemaphoreTake(oledMutex, portMAX_DELAY))
     {
-        for (int dim = MAX_CONTRAST; dim >= MIN_CONTRAST; dim -= 10)
+        for (int dim = maxContrast; dim >= minContrast; dim -= 10)
         {
             oled.oled_command(SSD1327_SETCONTRAST);
             oled.oled_command(dim);
@@ -215,7 +236,7 @@ void OLED_MANAGER::stepOrbit()
 
 void OLED_MANAGER::OrbitTask(void *pvParameters)
 {
-        OLED_MANAGER *mgr = (OLED_MANAGER *)pvParameters;
+    OLED_MANAGER *mgr = (OLED_MANAGER *)pvParameters;
 
     while (true)
     {

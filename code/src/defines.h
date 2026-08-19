@@ -67,7 +67,11 @@
 #define OLED_CS 22
 #define OLED_DC 21
 
-// Used for I2C or SPI
+#define MIN_CONTRAST 80
+#define MAX_CONTRAST 255
+#define MIN_CONTRAST_NIGHT 40
+#define MAX_CONTRAST_NIGHT 150
+
 #define OLED_RESET -1
 
 // I2C
@@ -106,6 +110,7 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define LED_DISABLE_THRESHOLD 1 // lux at which led screen will turn off
 
 #define DISPLAY_HOLD_DELAY 30000
+#define LIGHT_ALPHA 0.2f // Smoothing factor (lower = smoother, higher = more responsive)
 
 #define DIMMING_INTERVAL 1000 // how often to update screen brightness
 
@@ -132,7 +137,6 @@ Supported country codes are "01"(world safe mode) "AT","AU","BE","BG","BR", "CA"
 #define RESET_DELAY_TOUCH 2000
 #define CALIBRATION_LOOP_DELAY_TOUCH 50
 #define KEYS_AMMOUNT 7
-
 
 // Menus
 #define LOOP_FUNCTION_TIMEOUT_MS 120000 // how fast to exit from the loop function in menu this only works if the loop is calling shouldExitLoop()
@@ -204,12 +208,12 @@ typedef enum
 #include "hardware/input/buttons/combinations.h"
 #include "hardware/input/touch/touch.h"
 #include "hardware/input/gestures/gestures.h"
+#include "hardware/LedDisplay/LedDisplay.h"
 #include "functions.h"
 #include "WiFi/WiFi.h"
 #include "WiFi/ota.h"
 #include "NTP/NTP.h"
 #include "weather/weather.h"
-#include "LedDisplay/LedDisplay.h"
 #include "oledDisplay/interface.h"
 #include "oledDisplay/mainPage.h"
 #include "oledDisplay/menus/alarmMenu.h"
